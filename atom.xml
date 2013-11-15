@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-15T16:18:39+08:00</updated>
+  <updated>2013-11-15T17:20:44+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,69 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[持续更新]常用unix命令]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/"/>
+    <updated>2013-11-15T16:59:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling</id>
+    <content type="html"><![CDATA[<h3>1.列出文件</h3>
+
+<p>ls 参数 目录名</p>
+
+<h3>2.转换目录</h3>
+
+<p>cd</p>
+
+<h3>3.建立新目录</h3>
+
+<p>mkdir 目录名
+mkdir /User/用户名/Desktop/backup</p>
+
+<h3>4.拷贝文件</h3>
+
+<p>cp 参数 源文件 目标文件
+把驱动目录下的所有文件备份到桌面backup
+cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
+
+<h3>5.删除文件</h3>
+
+<p>rm 参数 文件
+rm -rf /System/Library/Extensions.kextcache
+参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
+
+<h3>6.移动文件</h3>
+
+<p>mv 文件
+例：想把AppleHDA.Kext 移到桌面
+mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
+
+<h3>7.文本编辑</h3>
+
+<p>nano 文件名<br/>
+vim 文件名</p>
+
+<h3>8.删除一个目录</h3>
+
+<p>rmdir dirname</p>
+
+<h3>9.移动或重命名一个目录</h3>
+
+<p>mvdir dir1 dir2</p>
+
+<h3>10.显示当前目录的路径名</h3>
+
+<p>pwd</p>
+
+<h3>11.生成一个新文件</h3>
+
+<p>touch readMe.txt</p>
+
+<h3>12.重复上次的命令</h3>
+
+<p>!!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[今天开始搭建完成了github博客]]></title>
