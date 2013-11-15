@@ -1,12 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>
+            http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/
+        </loc>
+        <lastmod>2013-11-15T16:18:25+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://MonaDogg.github.io/blog/archives/</loc>
-        <lastmod>2013-11-15T14:47:51+08:00</lastmod>
+        <lastmod>2013-11-15T16:18:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://MonaDogg.github.io/</loc>
-        <lastmod>2013-11-15T14:47:51+08:00</lastmod>
+        <lastmod>2013-11-15T16:18:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://MonaDogg.github.io/robots.txt</loc>
