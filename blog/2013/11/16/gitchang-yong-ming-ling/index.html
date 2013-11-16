@@ -5,14 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>[持续更新]常用unix命令 - MonaDogg's blog</title>
+  <title>[持续更新]git常用命令 - MonaDogg's blog</title>
   <meta name="author" content="MonaDogg">
 
   
-  <meta name="description" content="1.列出文件 ls 参数 目录名 2.转换目录 cd 3.建立新目录 mkdir 目录名
-mkdir /User/用户名/Desktop/backup 4.拷贝文件 cp 参数 源文件 目标文件
-把驱动目录下的所有文件备份到桌面backup
-cp -R /System/Library/ &hellip;">
+  <meta name="description" content="如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从文章末尾的推荐阅读的资料开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景. 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +18,7 @@ cp -R /System/Library/ &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling">
+  <link rel="canonical" href="http://MonaDogg.github.io/blog/2013/11/16/gitchang-yong-ming-ling">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="MonaDogg's blog" type="application/atom+xml">
@@ -65,7 +62,7 @@ cp -R /System/Library/ &hellip;">
   
   <header>
     
-      <h1 class="entry-title">[持续更新]常用unix命令</h1>
+      <h1 class="entry-title">[持续更新]git常用命令</h1>
     
     
       <p class="meta">
@@ -81,68 +78,76 @@ cp -R /System/Library/ &hellip;">
   
 
 
-<time datetime="2013-11-15T16:59:00+08:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+<time datetime="2013-11-16T22:35:00+08:00" pubdate data-updated="true">Nov 16<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h3>1.列出文件</h3>
+<div class="entry-content"><p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从文章末尾的推荐阅读的资料开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
 
-<p>ls 参数 目录名</p>
+<h1>1.本地操作</h1>
 
-<h3>2.转换目录</h3>
+<h2>1.1初始化</h2>
 
-<p>cd</p>
+<h3>1.1.1全局变量</h3>
 
-<h3>3.建立新目录</h3>
+<p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
 
-<p>mkdir 目录名
-mkdir /User/用户名/Desktop/backup</p>
+<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#120;&#120;&#120;&#64;&#113;&#x71;&#46;&#99;&#111;&#109;">&#x78;&#120;&#x78;&#64;&#113;&#113;&#46;&#99;&#x6f;&#109;</a>&rdquo;</p>
 
-<h3>4.拷贝文件</h3>
+<p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
 
-<p>cp 参数 源文件 目标文件
-把驱动目录下的所有文件备份到桌面backup
-cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
+<h3>1.1.2初始化新版本库</h3>
 
-<h3>5.删除文件</h3>
+<p>git init 只会在根目录下建立一个名为.git文件夹</p>
 
-<p>rm 参数 文件
-rm -rf /System/Library/Extensions.kextcache
-参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
+<h3>1.1.3设置忽略的文件</h3>
 
-<h3>6.移动文件</h3>
+<p><strong>1.设置每个人都需要忽略的文件</strong></p>
 
-<p>mv 文件
-例：想把AppleHDA.Kext 移到桌面
-mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
+<p>1)在根目录新建一个名为.gitignore的文本文件</p>
 
-<h3>7.文本编辑</h3>
+<p>2)在命令行执行echo *.jpg>.gitignore,注意>左右不要有空格</p>
 
-<p>nano 文件名<br/>
-vim 文件名</p>
+<p>3)将.gitignore文件加入版本库并提交</p>
 
-<h3>8.删除一个目录</h3>
+<p><strong>2.设置只有自己忽略的文件</strong></p>
 
-<p>rmdir dirname</p>
+<p>1)修改.git/info/exclude文件</p>
 
-<h3>9.移动或重命名一个目录</h3>
+<p>2)可以使用正则表达式,例如*.[oa]等价于*.o和*.a</p>
 
-<p>mvdir dir1 dir2</p>
+<h3>1.1.4添加文件到版本库</h3>
 
-<h3>10.显示当前目录的路径名</h3>
+<p><strong>1.添加单个文件</strong></p>
 
-<p>pwd</p>
+<p>git add somefile.tet</p>
 
-<h3>11.生成一个新文件</h3>
+<p><strong>2.添加所有txt文件</strong></p>
 
-<p>touch readMe.txt</p>
+<p>git add *.txt</p>
 
-<h3>12.重复上次的命令</h3>
+<p><strong>3.添加所有文件</strong></p>
 
-<p>!!</p>
+<p>git add . 包含子目录但是不包含空目录</p>
+
+<h3>1.1.5提交</h3>
+
+<p><strong>1.提交</strong></p>
+
+<p>git commit -m &ldquo;add all files&rdquo;</p>
+
+<h2>1.2日常操作</h2>
+
+<h1>2.远程操作</h1>
+
+<h2>2.1初始化</h2>
+
+<h2>2.2日常操作</h2>
+
+<h2>2.3github</h2>
 </div>
 
 
@@ -165,7 +170,7 @@ vim 文件名</p>
   
 
 
-<time datetime="2013-11-15T16:59:00+08:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+<time datetime="2013-11-16T22:35:00+08:00" pubdate data-updated="true">Nov 16<span>th</span>, 2013</time>
       
 
 
@@ -203,10 +208,8 @@ var jiathis_config = {data_track_clickback:'true'};
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/" title="Previous Post: 今天开始搭建完成了github博客">&laquo; 今天开始搭建完成了github博客</a>
+        <a class="basic-alignment left" href="/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/" title="Previous Post: [持续更新]常用unix命令">&laquo; [持续更新]常用unix命令</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/11/16/gitchang-yong-ming-ling/" title="Next Post: [持续更新]git常用命令">[持续更新]git常用命令 &raquo;</a>
       
     </p>
   </footer>
