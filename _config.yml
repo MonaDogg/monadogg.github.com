@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://MonaDogg.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: MonaDogg's blog
+subtitle:
+author: MonaDogg
 simple_search: http://google.com/search
 description:
 
@@ -95,3 +95,5 @@ google_analytics_tracking_id:
 
 # Facebook Like
 facebook_like: false
+
+weibo_share: true
