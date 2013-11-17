@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "[持续更新]常用unix命令"
+title: "常用unix命令"
 date: 2013-11-15 16:59
 comments: true
-categories: 
+categories: OS
 ---
 
 ###1.列出文件
@@ -38,4 +38,5 @@ pwd
 touch readMe.txt
 
 ###12.重复上次的命令
-!!
+
+!!
