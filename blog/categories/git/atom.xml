@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[MonaDogg's blog]]></title>
-  <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Git | MonaDogg's blog]]></title>
+  <link href="http://MonaDogg.github.io/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
   <updated>2013-11-17T12:50:38+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
@@ -28,7 +28,7 @@
 
 <p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#x78;&#x78;&#120;&#64;&#113;&#x71;&#x2e;&#99;&#111;&#109;">&#x78;&#120;&#120;&#x40;&#x71;&#113;&#x2e;&#99;&#x6f;&#109;</a>&rdquo;</p>
+<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#x78;&#x78;&#x78;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#x6d;">&#x78;&#x78;&#120;&#64;&#x71;&#x71;&#x2e;&#99;&#111;&#109;</a>&rdquo;</p>
 
 <p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
 
@@ -81,78 +81,6 @@
 <h2>2.2日常操作</h2>
 
 <h2>2.3github</h2>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[常用unix命令]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/"/>
-    <updated>2013-11-15T16:59:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling</id>
-    <content type="html"><![CDATA[<h3>1.列出文件</h3>
-
-<p>ls 参数 目录名</p>
-
-<h3>2.转换目录</h3>
-
-<p>cd</p>
-
-<h3>3.建立新目录</h3>
-
-<p>mkdir 目录名
-mkdir /User/用户名/Desktop/backup</p>
-
-<h3>4.拷贝文件</h3>
-
-<p>cp 参数 源文件 目标文件
-把驱动目录下的所有文件备份到桌面backup
-cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
-
-<h3>5.删除文件</h3>
-
-<p>rm 参数 文件
-rm -rf /System/Library/Extensions.kextcache
-参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
-
-<h3>6.移动文件</h3>
-
-<p>mv 文件
-例：想把AppleHDA.Kext 移到桌面
-mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
-
-<h3>7.文本编辑</h3>
-
-<p>nano 文件名<br/>
-vim 文件名</p>
-
-<h3>8.删除一个目录</h3>
-
-<p>rmdir dirname</p>
-
-<h3>9.移动或重命名一个目录</h3>
-
-<p>mvdir dir1 dir2</p>
-
-<h3>10.显示当前目录的路径名</h3>
-
-<p>pwd</p>
-
-<h3>11.生成一个新文件</h3>
-
-<p>touch readMe.txt</p>
-
-<h3>12.重复上次的命令</h3>
-
-<p>!!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[今天开始搭建完成了github博客]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/"/>
-    <updated>2013-11-15T16:17:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke</id>
-    <content type="html"><![CDATA[<p>今天完成了github的博客搭建,现在记录下载大家过程中遇到的困难.</p>
 ]]></content>
   </entry>
   
