@@ -96,7 +96,7 @@
 
 <p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#x3a;&#120;&#x78;&#120;&#64;&#113;&#x71;&#46;&#x63;&#x6f;&#x6d;">&#120;&#x78;&#120;&#x40;&#x71;&#x71;&#46;&#99;&#x6f;&#x6d;</a>&rdquo;</p>
+<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#120;&#120;&#120;&#64;&#x71;&#x71;&#46;&#99;&#111;&#109;">&#x78;&#120;&#120;&#x40;&#113;&#x71;&#x2e;&#99;&#x6f;&#x6d;</a>&rdquo;</p>
 
 <p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
 
@@ -141,6 +141,66 @@
 <p>git commit -m &ldquo;add all files&rdquo;</p>
 
 <h2>1.2日常操作</h2>
+
+<h3>1.2.1提交</h3>
+
+<p><strong>1.提交所有修改</strong></p>
+
+<p>git commit -m &ldquo;some message&rdquo; -a</p>
+
+<p><strong>2.提交单个文件</strong></p>
+
+<p>git commit -m &ldquo;some message&rdquo; readMe.txt</p>
+
+<p><strong>3.增补提交</strong></p>
+
+<p>git commit -C head -a -amend</p>
+
+<p>不会产生新的提交历史记录</p>
+
+<h3>1.2.2撤销修改</h3>
+
+<p><strong>1.撤销尚未提交的修改</strong></p>
+
+<p>1)撤销少量文件</p>
+
+<p>git checkout head readMe.txt toDo.txt</p>
+
+<p>2)撤销所有txt文件</p>
+
+<p>git checkout head *.txt</p>
+
+<p>3)撤销所有文件</p>
+
+<p>git checkout head</p>
+
+<p><strong>2.撤销提交后的修改</strong></p>
+
+<p>1)撤销某次提交,但是这次操作也会作为一次提交保存</p>
+
+<p>git revert -no-commit head</p>
+
+<p>2)复位,将当前head内容重置不会留下痕迹</p>
+
+<p>git reset head/git reset head<filename></p>
+
+<p>3)复位到head之前的版本,不会在版本库留下痕迹</p>
+
+<p>git reset &mdash;hard head^</p>
+
+<p>4)永久删除最后3个commit(即HEAD, HEAD^和HEAD~2)</p>
+
+<p>git reset &mdash;hard head~3</p>
+
+<h3>1.2.3分支</h3>
+
+<h3>1.2.4解决冲突</h3>
+
+<h3>1.2.5标签</h3>
+
+<h3>1.2.6查看状态</h3>
+
+<h3>1.2.7其他</h3>
 
 <h1>2.远程操作</h1>
 
