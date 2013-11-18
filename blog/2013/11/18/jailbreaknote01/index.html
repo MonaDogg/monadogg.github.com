@@ -7,9 +7,9 @@
 	<meta name="author" content="MonaDogg">
 
 	
-	<meta name="description" content="1准备工具 1安装iOS sdk Step1:安装iOS SDK。
-http://developer.apple.com/devcenter/ios/index.action 2下载theos 可以简单理解theos为越狱开发的环境 export THEOS=/opt/theos
-//设置环境变量 &hellip;">
+	<meta name="description" content="1准备工具 1安装iOS sdk Step1:安装iOS SDK. 2下载theos 可以简单理解theos为越狱开发的环境 export THEOS=/opt/theos
+//设置环境变量
+svn co http://svn.howett.net/svn/theos/trunk $THEOS &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -85,8 +85,7 @@ http://developer.apple.com/devcenter/ios/index.action 2下载theos 可以简单�
 
 <h2>1安装iOS sdk</h2>
 
-<p>Step1:安装iOS SDK。
-<a href="http://developer.apple.com/devcenter/ios/index.action">http://developer.apple.com/devcenter/ios/index.action</a></p>
+<p>Step1:安装<a href="http://developer.apple.com/devcenter/ios/index.action">iOS SDK</a>.</p>
 
 <h2>2下载theos</h2>
 
@@ -123,9 +122,11 @@ mv ~/Desktop/ldid $THEOS/bin/ldid
 </pre>
 
 
-<h2>4安装dpkg</h2>
+<h2>4安装MacPorts和dpkg</h2>
 
-<p>dpkg的作用是将你的app打包为debian paceage.</p>
+<p>1.先安装<a href="http://www.macports.org/install.php">Macports</a>,选择合适的系统版本,有可能会卡在最后一分钟，需要重启后断网安装即可。</p>
+
+<p>2.dpkg的作用是将你的app打包为debian paceage.</p>
 
 <pre>
 sudo port install dpkg
