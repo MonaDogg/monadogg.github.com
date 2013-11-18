@@ -4,7 +4,7 @@
   <title><![CDATA[MonaDogg's blog]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-18T11:11:55+08:00</updated>
+  <updated>2013-11-18T17:26:07+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -12,6 +12,120 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[越狱开发相关笔记]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/11/18/jailbreaknote01/"/>
+    <updated>2013-11-18T13:06:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/11/18/jailbreaknote01</id>
+    <content type="html"><![CDATA[<h1>1准备工具</h1>
+
+<h2>1安装iOS sdk</h2>
+
+<p>Step1:安装iOS SDK。
+<a href="http://developer.apple.com/devcenter/ios/index.action">http://developer.apple.com/devcenter/ios/index.action</a></p>
+
+<h2>2下载theos</h2>
+
+<p>可以简单理解theos为越狱开发的环境</p>
+
+<pre>
+export THEOS=/opt/theos
+//设置环境变量
+svn co http://svn.howett.net/svn/theos/trunk $THEOS
+//svn下载相关内容到位置
+</pre>
+
+
+<h2>3下载ldid</h2>
+
+<p>ldid的功能是给app签名</p>
+
+<p>下载并解压到桌面上:
+<a href="http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip">http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip</a></p>
+
+<pre>
+chmod +x ~/Desktop/ldid
+//设置ldid可以执行的权限
+
+mv ~/Desktop/ldid $THEOS/bin/ldid
+//将ldid移动到指定的位置
+</pre>
+
+
+<h2>4安装dpkg</h2>
+
+<p>dpkg的作用是将你的app打包为debian paceage.</p>
+
+<pre>
+sudo port install dpkg
+</pre>
+
+
+<h2>5创建一个新的项目</h2>
+
+<p>theos使用一个叫做nic(new instance tool)的工具来创建新的工程。执行下面的命令：</p>
+
+<pre>
+$THEOS/bin/nic.pl
+</pre>
+
+
+<p>就可以开始创建。下面是一个创建jailbroken 应用程序的例子：</p>
+
+<pre>
+author$ $THEOS/bin/nic.pl
+NIC 1.0 - New Instance Creator
+——————————
+  [1.] iphone/application
+  [2.] iphone/library
+  [3.] iphone/preference_bundle
+  [4.] iphone/tool
+  [5.] iphone/tweak
+Choose a Template (required): 1
+Project Name (required): firstdemo
+Package Name [com.yourcompany.firstdemo]: 
+Author/Maintainer Name [Author Name]: 
+Instantiating iphone/application in firstdemo/…
+Done.
+</pre>
+
+
+<p>这样就会在当前目录下创建一个名为fistdemo的文件夹</p>
+
+<h2>6生成文件说明</h2>
+
+<p>1.control: 包含applicaton/tweak的信息，当你从Cydia安装时，你可以看到这些信息，包括名字，作者，版本，等等。</p>
+
+<p>2.main.m，程序启动的入口.</p>
+
+<p>3.firstDemoApplication:app的代理文件类</p>
+
+<p>4.Makefile：包含必要的编译命令</p>
+
+<p>5.Resources：包含info.plist文件等</p>
+
+<p>6.RootViewController.h/mm :根vc</p>
+
+<p>其中Makefile的内容为:</p>
+
+<pre>
+include theos/makefiles/common.mk
+
+APPLICATION_NAME = firstDemo
+firstDemo_FILES = main.m firstDemoApplication.mm RootViewController.mm
+firstDemo_FRAMEWORKS = UIKit CoreGraphics
+
+include $(THEOS_MAKE_PATH)/application.mk
+
+</pre>
+
+
+<p><strong>参考资料</strong></p>
+
+<p>1.<a href="http://wufawei.com/2013/08/iOS-jailbroken-programming-1/">http://wufawei.com/2013/08/iOS-jailbroken-programming-1/</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[[持续更新]git常用命令]]></title>
@@ -28,7 +142,7 @@
 
 <p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x78;&#120;&#120;&#x40;&#x71;&#113;&#46;&#99;&#x6f;&#x6d;">&#x78;&#120;&#x78;&#64;&#x71;&#x71;&#x2e;&#x63;&#111;&#x6d;</a>&rdquo;</p>
+<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#120;&#x78;&#120;&#x40;&#113;&#113;&#46;&#99;&#111;&#109;">&#120;&#120;&#120;&#x40;&#x71;&#x71;&#x2e;&#99;&#x6f;&#x6d;</a>&rdquo;</p>
 
 <p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
 
