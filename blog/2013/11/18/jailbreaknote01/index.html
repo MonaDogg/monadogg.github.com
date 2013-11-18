@@ -100,6 +100,13 @@ svn co http://svn.howett.net/svn/theos/trunk $THEOS
 </pre>
 
 
+<p>可以使用下列语句打印看看:</p>
+
+<pre>
+echo $THEOS
+</pre>
+
+
 <h2>3下载ldid</h2>
 
 <p>ldid的功能是给app签名</p>
@@ -183,6 +190,62 @@ include $(THEOS_MAKE_PATH)/application.mk
 
 </pre>
 
+
+<h2>7重新设置环境变量</h2>
+
+<p>设置下列环境变量:环境位置,sdk版本,设备ip地址.</p>
+
+<pre>
+export THEOS=/opt/theos/
+export SDKVERSION=7.0
+export THEOS_DEVICE_IP=xxx.xxx.xxx.xxx
+</pre>
+
+
+<h2>8构建工程</h2>
+
+<p><strong>1.make</strong></p>
+
+<pre>
+$ make
+Making all for application firstdemo…
+ Compiling main.m…
+ Compiling firstdemoApplication.mm…
+ Compiling RootViewController.mm…
+ Linking application firstdemo…
+ Stripping firstdemo…
+ Signing firstdemo…
+</pre>
+
+
+<p><strong>2.make package</strong></p>
+
+<pre>
+make package
+Making all for application firstdemo…
+make[2]: Nothing to be done for ‘internal-application-compile’.
+Making stage for application firstdemo…
+ Copying resource directories into the application wrapper…
+dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
+</pre>
+
+
+<p><strong>3.make install</strong></p>
+
+<pre>
+$ make package install
+Making all for application firstdemo…
+make[2]: Nothing to be done for `internal-application-compile’.
+Making stage for application firstdemo…
+ Copying resource directories into the application wrapper…
+dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
+...
+root@ip’s password: 
+...
+</pre>
+
+
+<p>这个过程会提示你输入几次iphone或者ipad的密码。默认是:alpine.</p>
 
 <p><strong>参考资料</strong></p>
 
