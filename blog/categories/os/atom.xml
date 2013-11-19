@@ -4,7 +4,7 @@
   <title><![CDATA[Category: os | MonaDogg's blog]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/os/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-18T23:01:08+08:00</updated>
+  <updated>2013-11-19T09:48:02+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -28,7 +28,7 @@
 
 <p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#109;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x78;&#x78;&#120;&#64;&#x71;&#x71;&#x2e;&#99;&#x6f;&#109;">&#x78;&#120;&#x78;&#64;&#113;&#x71;&#x2e;&#x63;&#x6f;&#109;</a>&rdquo;</p>
+<p>git config &mdash;global user.email &ldquo;<a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#120;&#x78;&#x78;&#64;&#x71;&#113;&#x2e;&#99;&#x6f;&#x6d;">&#x78;&#x78;&#x78;&#x40;&#113;&#x71;&#x2e;&#x63;&#x6f;&#109;</a>&rdquo;</p>
 
 <p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
 
