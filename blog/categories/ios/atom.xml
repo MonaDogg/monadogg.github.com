@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios | MonaDogg's blog]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-19T09:48:02+08:00</updated>
+  <updated>2013-11-20T22:40:55+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -212,7 +212,8 @@ dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/D
 </pre>
 
 
-<p><strong>3.make install</strong></p>
+<p><strong>3.make install</strong>
+执行次操作之前确保iPhone安装了OpenSSH,并且在同一局域网.</p>
 
 <pre>
 $ make package install
@@ -228,6 +229,78 @@ root@ip’s password:
 
 
 <p>这个过程会提示你输入几次iphone或者ipad的密码。默认是:alpine.</p>
+
+<h2>9.构建一个Tweak</h2>
+
+<p>本文介绍如果hook ios中任意类的方法的例子.</p>
+
+<p><strong>1.下载<a href="http://www.mediafire.com/?2upm53uzzj0488u">libsubstrate.dylib</a>到/opt/theos/lib.</strong></p>
+
+<p><strong>2.class-dump相关头文件到/opt/theos/include目录下</strong></p>
+
+<p><strong>3.创建tweak项目</strong></p>
+
+<p>执行 $THEOS/bin/nic.pl,选择5</p>
+
+<pre>
+author$ $THEOS/bin/nic.pl
+NIC 1.0 - New Instance Creator
+——————————
+  [1.] iphone/application
+  [2.] iphone/library
+  [3.] iphone/preference_bundle
+  [4.] iphone/tool
+  [5.] iphone/tweak
+
+Choose a Template (required): 5
+Project Name (required): WelcomeWagon 
+Package Name [com.yourcompany.welcomewagon]: 
+Author/Maintainer Name [Brandon Trebitowski]: 
+MobileSubstrate Bundle filter [com.apple.springboard]: 
+Instantiating iphone/tweak in welcomewagon/…
+Done.
+</pre>
+
+
+<p><strong>4.改写Tweak.xm文件</strong></p>
+
+<p>一旦你创建了项目，你会发现Theos生成了一个叫做Tweak.xm的文件，这是个特殊的文件，hook的相关代码就将写在这个文件。</p>
+
+<pre>
+#import <SpringBoard/SpringBoard.h>
+//引入相关的dump出的头文件
+
+%hook SpringBoard
+//hook的类名
+
+-(void)applicationDidFinishLaunching:(id)application {
+%orig;
+//执行原方法
+
+UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Welcome" 
+message:@"Welcome to your iPhone Brandon!" 
+delegate:nil 
+cancelButtonTitle:@"Thanks" 
+otherButtonTitles:nil]
+[alert show];
+[alert release];
+}
+//新增的hook代码
+
+%end
+//代码结束
+
+</pre>
+
+
+<p><strong>5.更改makefile文件,加入相关的类库</strong></p>
+
+<pre>
+WelcomeWagon_FRAMEWORKS = UIKit
+</pre>
+
+
+<p><strong>6.make, make package, make install</strong></p>
 
 <p><strong>参考资料</strong></p>
 
