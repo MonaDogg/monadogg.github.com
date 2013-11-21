@@ -89,15 +89,21 @@
 
 <h3>1.1.1全局变量</h3>
 
-<p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
+<pre>
+git config --global user.name "xxx"
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#x3a;&#x78;&#120;&#120;&#64;&#x71;&#113;&#x2e;&#x63;&#x6f;&#109;">&#x78;&#x78;&#120;&#64;&#113;&#x71;&#x2e;&#99;&#111;&#109;</a>&rdquo;</p>
+git config --global user.email "xxx@qq.com"
 
-<p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
+git config --global color.ui "always"
+</pre>
+
 
 <h3>1.1.2初始化新版本库</h3>
 
-<p>git init 只会在根目录下建立一个名为.git文件夹</p>
+<pre>
+git init 只会在根目录下建立一个名为.git文件夹
+</pre>
+
 
 <h3>1.1.3设置忽略的文件</h3>
 
@@ -119,21 +125,33 @@
 
 <p><strong>1.添加单个文件</strong></p>
 
-<p>git add somefile.tet</p>
+<pre>
+git add somefile.tet
+</pre>
+
 
 <p><strong>2.添加所有txt文件</strong></p>
 
-<p>git add *.txt</p>
+<pre>
+git add *.txt
+</pre>
+
 
 <p><strong>3.添加所有文件</strong></p>
 
-<p>git add . 包含子目录但是不包含空目录</p>
+<pre>
+git add . 包含子目录但是不包含空目录
+</pre>
+
 
 <h3>1.1.5提交</h3>
 
 <p><strong>1.提交</strong></p>
 
-<p>git commit -m &ldquo;add all files&rdquo;</p>
+<pre>
+git commit -m "add all files"
+</pre>
+
 
 <h2>1.2日常操作</h2>
 
@@ -141,15 +159,24 @@
 
 <p><strong>1.提交所有修改</strong></p>
 
-<p>git commit -m &ldquo;some message&rdquo; -a</p>
+<pre>
+git commit -m "some message" -a
+</pre>
+
 
 <p><strong>2.提交单个文件</strong></p>
 
-<p>git commit -m &ldquo;some message&rdquo; readMe.txt</p>
+<pre>
+git commit -m "some message" readMe.txt
+</pre>
+
 
 <p><strong>3.增补提交</strong></p>
 
-<p>git commit -C head -a -amend</p>
+<pre>
+git commit -C head -a -amend 
+</pre>
+
 
 <p>不会产生新的提交历史记录</p>
 
@@ -159,43 +186,270 @@
 
 <p>1)撤销少量文件</p>
 
-<p>git checkout head readMe.txt toDo.txt</p>
+<pre>
+git checkout head readMe.txt toDo.txt
+</pre>
+
 
 <p>2)撤销所有txt文件</p>
 
-<p>git checkout head *.txt</p>
+<pre>
+git checkout head *.txt
+</pre>
+
 
 <p>3)撤销所有文件</p>
 
-<p>git checkout head</p>
+<pre>
+git checkout head
+</pre>
+
 
 <p><strong>2.撤销提交后的修改</strong></p>
 
 <p>1)撤销某次提交,但是这次操作也会作为一次提交保存</p>
 
-<p>git revert -no-commit head</p>
+<pre>
+git revert -no-commit head
+</pre>
+
 
 <p>2)复位,将当前head内容重置不会留下痕迹</p>
 
-<p>git reset head/git reset head<filename></p>
+<pre>
+git reset head/git reset head<filename>
+</pre>
+
 
 <p>3)复位到head之前的版本,不会在版本库留下痕迹</p>
 
-<p>git reset &mdash;hard head^</p>
+<pre>
+git reset --hard head^
+</pre>
+
 
 <p>4)永久删除最后3个commit(即HEAD, HEAD^和HEAD~2)</p>
 
-<p>git reset &mdash;hard head~3</p>
+<pre>
+git reset --hard head~3
+</pre>
+
 
 <h3>1.2.3分支</h3>
 
+<p>1)列出本地分支</p>
+
+<pre>
+git branch
+</pre>
+
+
+<p>2)列出所有分支</p>
+
+<pre>
+git branch -a
+</pre>
+
+
+<p>3)基于当前分支末梢创建新分支</p>
+
+<pre>
+git branch <branchname>
+</pre>
+
+
+<p>4)检出分支</p>
+
+<pre>
+git checkout <branchname>
+</pre>
+
+
+<p>5)基于当前分支的末梢创建新分支并检出分支</p>
+
+<pre>
+git checkout -b <branchname>
+</pre>
+
+
+<p>6)基于某次提交/分支/标签 创建新分支</p>
+
+<pre>
+git branch emputy bfe57de0      //用来查看某个历史断面很方便
+
+git branch emputy2 emputy       //基于分支创建分支
+</pre>
+
+
+<p>7)合并分支</p>
+
+<p><strong>1.普通合并</strong>:把两条分支以上的历史轨迹合并，交汇到一起</p>
+
+<p>合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,可以直接使用git checkout head撤销所有尚未提交的修改.</p>
+
+<pre>
+git merage <branchname>
+</pre>
+
+
+<p>合并但并不提交</p>
+
+<pre>
+git merage --no--commit
+</pre>
+
+
+<p><strong>2.压合合并</strong>:将一条分支上的若干个提交条目合成一个提交条目，提交到另一个分支末梢。</p>
+
+<p>压合合并并提交</p>
+
+<pre>
+git merge --squash <branchname>
+</pre>
+
+
+<p>压合合并并不提交</p>
+
+<pre>
+git merge --squash --no-commit<branchname>
+</pre>
+
+
+<p><strong>3.拣选合并</strong>:拣选另一条分支上的某个提交条目的改动带到当前分支上。</p>
+
+<p>挑选某次提交合并但不提交</p>
+
+<pre>
+git cherry-pick --no-commit 5b62b6
+</pre>
+
+
+<p>8)重命名分支</p>
+
+<pre>
+git branch -m <branchname><newname> 不会覆盖已存在同名分支
+
+git branch -M <branchname><newname> 会覆盖已存在的同名分支
+</pre>
+
+
+<p>9)删除分支</p>
+
+<pre>
+git branch -d new2  如果分支没有被合并会删除失败
+
+git branch -D new2  如果分支没有被合并也会被删除
+</pre>
+
+
 <h3>1.2.4解决冲突</h3>
+
+<p>1)冲突很少时,直接编辑冲突文件提交即可</p>
 
 <h3>1.2.5标签</h3>
 
+<p>1)创建标签</p>
+
+<p><strong>1.为当前分支最近一次提交创建标签</strong></p>
+
+<pre>
+git tag 1.0 //标签无法重新命名
+</pre>
+
+
+<p><strong>2.为其他分支最近一次提交创建标签</strong></p>
+
+<pre>
+git tag tagName branchName
+</pre>
+
+
+<p><strong>3.为某次历史提交创建标签</strong></p>
+
+<pre>
+git tag 1.1 4e6861d5
+</pre>
+
+
+<p>2)显示标签列表</p>
+
+<pre>
+git tag
+</pre>
+
+
+<p>3)检出标签</p>
+
+<pre>
+git checkout 1.0    //查看标签断面很重要,但是不能提交
+</pre>
+
+
+<p>4)由标签创建分支</p>
+
+<pre>
+git branch b1.1 1.1
+git checkout -b b1.1 1.1
+</pre>
+
+
+<p>5)删除标签</p>
+
+<pre>
+git tag -d 1.1
+</pre>
+
+
 <h3>1.2.6查看状态</h3>
 
+<p>1)当前状态</p>
+
+<pre>
+git status
+</pre>
+
+
+<p>2)历史记录</p>
+
+<pre>
+
+git log
+
+gitk    //查看当前分支的历史记录
+
+gitk <branchname>   //查看某分支历史记录
+
+gitk --all  //查看所有分支
+
+git branch -v   //每个分之最后的提交
+
+</pre>
+
+
 <h3>1.2.7其他</h3>
+
+<p>1)git导出项目,更多用法请参照git help archive</p>
+
+<pre>
+
+git archive [options] < tree-ish > [< path >…]
+
+git archive --format zip -o filename.zip HEAD
+
+git archive --format zip -o filename.zip source
+
+</pre>
+
+
+<p><strong>一其中tree-ish可以是:</strong></p>
+
+<pre>
+HEAD
+Tags
+Branch names
+Branch names with remotes, like origin/somebranch
+</pre>
+
 
 <h1>2.远程操作</h1>
 
