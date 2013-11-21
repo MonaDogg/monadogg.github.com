@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>[50%]git常用命令 - MonaDogg's blog</title>
+	<title>git常用命令 - MonaDogg's blog</title>
 	<meta name="author" content="MonaDogg">
 
 	
@@ -80,7 +80,7 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">[50%]git常用命令</h2>
+	<h2 class="title">Git常用命令</h2>
 	<div class="entry-content"><p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从文章末尾的推荐阅读的资料开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
 
 <h1>1.本地操作</h1>
@@ -455,9 +455,66 @@ Branch names with remotes, like origin/somebranch
 
 <h2>2.1初始化</h2>
 
+<p>1)克隆版本库</p>
+
+<pre>
+git clone <url>
+</pre>
+
+
+<p>2)别名</p>
+
+<pre>
+git remote add <别名> <远程版本库的URL> //添加远程版本库的别名
+
+git remote rm <别名>      //删除远程库的别名和相关分支
+</pre>
+
+
 <h2>2.2日常操作</h2>
 
-<h2>2.3github</h2>
+<p>1)分支</p>
+
+<pre>
+git branch -r   //列出远程分支
+
+git remote prune origin     //删除远程库中已经不存在的分支
+</pre>
+
+
+<p>2)从远程获取</p>
+
+<p><strong>1.获取远程版本库但是并不合并</strong></p>
+
+<pre>
+git fetch <远程版本库> //获取但不合并
+
+git fetch origin    //origin是远程库的别名
+
+git fetch d:\git\source     //本地版本库
+</pre>
+
+
+<p><strong>2.获取远程版本库并且和当前分支合并</strong></p>
+
+<pre>
+git pull origin 
+
+git pull d:\git\source master
+</pre>
+
+
+<p>3)推入远程库</p>
+
+<pre>
+
+git push origin master  //推入远程库
+</pre>
+
+
+<p><strong>参考文献:</strong></p>
+
+<p>1.本文内容来自:weibo.com/crespoxiao的微博配图</p>
 </div>
 
 
