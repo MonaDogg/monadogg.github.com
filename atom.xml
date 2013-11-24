@@ -4,7 +4,7 @@
   <title><![CDATA[MonaDogg's blog]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-21T16:19:29+08:00</updated>
+  <updated>2013-11-24T18:26:45+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -446,10 +446,10 @@ git revert -no-commit head
 </pre>
 
 
-<p>2)复位,将当前head内容重置不会留下痕迹</p>
+<p>2)复位,将当前head内容重置,会留下痕迹</p>
 
 <pre>
-git reset head/git reset head<filename>
+git reset head/git reset head &lt;filename>
 </pre>
 
 
@@ -486,21 +486,21 @@ git branch -a
 <p>3)基于当前分支末梢创建新分支</p>
 
 <pre>
-git branch <branchname>
+git branch &lt;branchname>
 </pre>
 
 
 <p>4)检出分支</p>
 
 <pre>
-git checkout <branchname>
+git checkout &lt;branchname>
 </pre>
 
 
 <p>5)基于当前分支的末梢创建新分支并检出分支</p>
 
 <pre>
-git checkout -b <branchname>
+git checkout -b &lt;branchname>
 </pre>
 
 
@@ -520,7 +520,7 @@ git branch emputy2 emputy       //基于分支创建分支
 <p>合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,可以直接使用git checkout head撤销所有尚未提交的修改.</p>
 
 <pre>
-git merage <branchname>
+git merage &lt;branchname>
 </pre>
 
 
@@ -536,14 +536,14 @@ git merage --no--commit
 <p>压合合并并提交</p>
 
 <pre>
-git merge --squash <branchname>
+git merge --squash &lt;branchname>
 </pre>
 
 
 <p>压合合并并不提交</p>
 
 <pre>
-git merge --squash --no-commit<branchname>
+git merge --squash --no-commit &lt;branchname>
 </pre>
 
 
@@ -559,9 +559,9 @@ git cherry-pick --no-commit 5b62b6
 <p>8)重命名分支</p>
 
 <pre>
-git branch -m <branchname><newname> 不会覆盖已存在同名分支
+git branch -m &lt;branchname>&lt;newname> 不会覆盖已存在同名分支
 
-git branch -M <branchname><newname> 会覆盖已存在的同名分支
+git branch -M &lt;branchname>&lt;newname> 会覆盖已存在的同名分支
 </pre>
 
 
@@ -649,7 +649,7 @@ git log
 
 gitk    //查看当前分支的历史记录
 
-gitk <branchname>   //查看某分支历史记录
+gitk &lt;branchname>    //查看某分支历史记录
 
 gitk --all  //查看所有分支
 
@@ -664,7 +664,7 @@ git branch -v   //每个分之最后的提交
 
 <pre>
 
-git archive [options] < tree-ish > [< path >…]
+git archive [options] &lt;tree-ish> [&lt;path>…]
 
 git archive --format zip -o filename.zip HEAD
 
@@ -690,16 +690,16 @@ Branch names with remotes, like origin/somebranch
 <p>1)克隆版本库</p>
 
 <pre>
-git clone <url>
+git clone &lt;url>
 </pre>
 
 
 <p>2)别名</p>
 
 <pre>
-git remote add <别名> <远程版本库的URL> //添加远程版本库的别名
+git remote add &lt;别名> &lt;远程版本库的URL>   //添加远程版本库的别名
 
-git remote rm <别名>      //删除远程库的别名和相关分支
+git remote rm &lt;别名>       //删除远程库的别名和相关分支
 </pre>
 
 
@@ -719,7 +719,7 @@ git remote prune origin     //删除远程库中已经不存在的分支
 <p><strong>1.获取远程版本库但是并不合并</strong></p>
 
 <pre>
-git fetch <远程版本库> //获取但不合并
+git fetch &lt;远程版本库>  //获取但不合并
 
 git fetch origin    //origin是远程库的别名
 
@@ -818,11 +818,146 @@ vim 文件名</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[今天开始搭建完成了github博客]]></title>
+    <title type="html"><![CDATA[又是一个github博客]]></title>
     <link href="http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/"/>
     <updated>2013-11-15T16:17:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke</id>
-    <content type="html"><![CDATA[<p>今天完成了github的博客搭建,现在记录下载大家过程中遇到的困难.</p>
+    <content type="html"><![CDATA[<p>在github上拥有一个博客地址,本人觉得是一件挺酷的事情,于是乎翻遍了网上大部分的教程,在花费了一天半的时间后,终于搭建完成了,其中遇到了很多的坑,幸亏在时间的软磨硬泡下,一一被我解决了(主要是对ruby环境的不熟悉造成的).</p>
+
+<h1>1.搭建ruby环境</h1>
+
+<p>搭建rvm环境和相关的设置</p>
+
+<p>rvm是一个命令行工具，可以提供一个便捷的多版本ruby环境的管理和切换,下面的代码是用来安装rvm的.</p>
+
+<pre>
+bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+</pre>
+
+
+<p>然后需要设置环境变量:</p>
+
+<pre>
+echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile
+source ~/.bash_profile
+
+# If using Zsh do this instead
+echo '[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm' >> ~/.zshrc
+source ~/.zshrc
+</pre>
+
+
+<p>最终需要安装ruby环境(不知道为何安装1.9.2会报奇怪的错,换成1.9.3就好了):</p>
+
+<pre>
+rvm install 1.9.3 && rvm use 1.9.3
+rvm rubygems latest
+</pre>
+
+
+<h1>2.安装Octopress</h1>
+
+<p>克隆代码到当前目录下,并且进入octopress目录:</p>
+
+<pre>
+git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+</pre>
+
+
+<p>安装相关的依赖库:</p>
+
+<pre>
+gem install bundler
+bundle install
+</pre>
+
+
+<p>最后安装Octopress</p>
+
+<pre>
+rake install
+</pre>
+
+
+<h1>3.简单设置你的博客</h1>
+
+<p>1)修改文件_config.yml,里面基本上是一些博客名称,作者姓名等等之类的设置信息.</p>
+
+<p>2)修改source文件夹下一些html中twitter,google等政府屏蔽网站的相关资源,会造成页面加载缓慢,具体判断建议使用chrome,查看每项资源的加载时间,将无法获取的资源保存到本地,或者换为墙内的加载地址.</p>
+
+<h1>4.设置github账号</h1>
+
+<p>在github上创建一个名为 账号名.github.com 的代码仓库。</p>
+
+<h1>5.写博客</h1>
+
+<p>写博客的主要命令为：</p>
+
+<pre>
+rake new_post[‘article name’] 生成博文框架，然后修改生成的文件即可
+rake generate 生成静态文件
+rake preview 在http://localhost:4000 访问博文内容
+rake deploy 将生成的博文推送到你的github上
+</pre>
+
+
+<p>同时我也建议把所有的源码也推送到github进行保存,代码一般为:</p>
+
+<pre>
+git add .
+git commit -m "add source files"
+git push origin source
+</pre>
+
+
+<h1>6.关于markdown</h1>
+
+<p>Markdown 是一种轻量级标记语言，创始人为约翰·格鲁伯（John Gruber）和亚伦·斯沃茨（Aaron Swartz）。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”</p>
+
+<p>我们在github上面存放的博客其实是通过ruby下的一个框架,将我们使用markdown语法编写的博文
+转换为html网页.在这里赞赏下网友们的智慧.</p>
+
+<p>而markdown的教程网上有很多,你可以先点击<a href="http://zh.wikipedia.org/wiki/Markdown">这里</a>进行了解.</p>
+
+<h1>7.美化我们的博客</h1>
+
+<p>如果你觉得我们安装好的博客挺丑的,而且评论功能也很难用,还有那个定制栏能不能放点别的什么,那我们就需要动手改造了,在这里我仅仅介绍下安装主题的方法.</p>
+
+<p>我使用的主题是<a href="https://github.com/gehaxelt/CSS-WhiteLake">whitelake</a>:</p>
+
+<pre>
+cd octopress
+git clone https://github.com/gehaxelt/CSS-WhiteLake.git .themes/whitelake
+rake install['whitelake']
+rake generate
+rake preview
+</pre>
+
+
+<p>别的模块定制方法也许你应该看看<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">这个</a>.</p>
+
+<p><strong>参考文献:</strong></p>
+
+<p>1.首先感谢唐巧的博客,本文的大部分内容都是来自他的一篇<a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">博文</a>,作为iOS工程师我也建议你关注他们的微博,并且仔细研读他的每篇博文,真是收获颇丰.</p>
+
+<p>2.<a href="http://ishalou.com/blog/2012/10/15/how-to-use-octopress/">http://ishalou.com/blog/2012/10/15/how-to-use-octopress/</a></p>
+
+<p>3.<a href="http://hahaya.github.io/2013/06/26/build-blog-on-github.html">http://hahaya.github.io/2013/06/26/build-blog-on-github.html</a></p>
+
+<p>4.<a href="http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html">http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html</a></p>
+
+<p>5.<a href="http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/">http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/</a></p>
+
+<p>以下是美化博客:</p>
+
+<p>6.<a href="http://yanping.me/cn/blog/2012/01/07/theming-and-customization/">http://yanping.me/cn/blog/2012/01/07/theming-and-customization/</a></p>
+
+<p>7.<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/</a></p>
+
+<p>8.<a href="http://xuhehuan.com/886.html">http://xuhehuan.com/886.html</a></p>
+
+<p>9.<a href="http://lucifr.com/2012/02/05/slash-theme-for-octopress/">http://lucifr.com/2012/02/05/slash-theme-for-octopress/</a></p>
 ]]></content>
   </entry>
   

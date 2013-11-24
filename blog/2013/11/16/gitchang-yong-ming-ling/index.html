@@ -214,10 +214,10 @@ git revert -no-commit head
 </pre>
 
 
-<p>2)复位,将当前head内容重置不会留下痕迹</p>
+<p>2)复位,将当前head内容重置,会留下痕迹</p>
 
 <pre>
-git reset head/git reset head<filename>
+git reset head/git reset head &lt;filename>
 </pre>
 
 
@@ -254,21 +254,21 @@ git branch -a
 <p>3)基于当前分支末梢创建新分支</p>
 
 <pre>
-git branch <branchname>
+git branch &lt;branchname>
 </pre>
 
 
 <p>4)检出分支</p>
 
 <pre>
-git checkout <branchname>
+git checkout &lt;branchname>
 </pre>
 
 
 <p>5)基于当前分支的末梢创建新分支并检出分支</p>
 
 <pre>
-git checkout -b <branchname>
+git checkout -b &lt;branchname>
 </pre>
 
 
@@ -288,7 +288,7 @@ git branch emputy2 emputy       //基于分支创建分支
 <p>合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,可以直接使用git checkout head撤销所有尚未提交的修改.</p>
 
 <pre>
-git merage <branchname>
+git merage &lt;branchname>
 </pre>
 
 
@@ -304,14 +304,14 @@ git merage --no--commit
 <p>压合合并并提交</p>
 
 <pre>
-git merge --squash <branchname>
+git merge --squash &lt;branchname>
 </pre>
 
 
 <p>压合合并并不提交</p>
 
 <pre>
-git merge --squash --no-commit<branchname>
+git merge --squash --no-commit &lt;branchname>
 </pre>
 
 
@@ -327,9 +327,9 @@ git cherry-pick --no-commit 5b62b6
 <p>8)重命名分支</p>
 
 <pre>
-git branch -m <branchname><newname> 不会覆盖已存在同名分支
+git branch -m &lt;branchname>&lt;newname> 不会覆盖已存在同名分支
 
-git branch -M <branchname><newname> 会覆盖已存在的同名分支
+git branch -M &lt;branchname>&lt;newname> 会覆盖已存在的同名分支
 </pre>
 
 
@@ -417,7 +417,7 @@ git log
 
 gitk    //查看当前分支的历史记录
 
-gitk <branchname>   //查看某分支历史记录
+gitk &lt;branchname>    //查看某分支历史记录
 
 gitk --all  //查看所有分支
 
@@ -432,7 +432,7 @@ git branch -v   //每个分之最后的提交
 
 <pre>
 
-git archive [options] < tree-ish > [< path >…]
+git archive [options] &lt;tree-ish> [&lt;path>…]
 
 git archive --format zip -o filename.zip HEAD
 
@@ -458,16 +458,16 @@ Branch names with remotes, like origin/somebranch
 <p>1)克隆版本库</p>
 
 <pre>
-git clone <url>
+git clone &lt;url>
 </pre>
 
 
 <p>2)别名</p>
 
 <pre>
-git remote add <别名> <远程版本库的URL> //添加远程版本库的别名
+git remote add &lt;别名> &lt;远程版本库的URL>   //添加远程版本库的别名
 
-git remote rm <别名>      //删除远程库的别名和相关分支
+git remote rm &lt;别名>       //删除远程库的别名和相关分支
 </pre>
 
 
@@ -487,7 +487,7 @@ git remote prune origin     //删除远程库中已经不存在的分支
 <p><strong>1.获取远程版本库但是并不合并</strong></p>
 
 <pre>
-git fetch <远程版本库> //获取但不合并
+git fetch &lt;远程版本库>  //获取但不合并
 
 git fetch origin    //origin是远程库的别名
 
