@@ -4,7 +4,7 @@
   <title><![CDATA[Category: os | MonaDogg's blog]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/os/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-24T18:26:45+08:00</updated>
+  <updated>2013-11-24T21:01:08+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -12,6 +12,17 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[20131124]近期学习计划]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/11/24/jin-qi-xue-xi-ji-hua/"/>
+    <updated>2013-11-24T20:32:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/11/24/jin-qi-xue-xi-ji-hua</id>
+    <content type="html"><![CDATA[<p>最近由于微博上好友分享的几篇越狱相关的好文章,让我步入了越狱的世界,THEOS和IOSOpenDev环境也都搭建好了,并且也调试了几个相关的demo,但是无奈手中没有越狱设备,所以调试程序也极不方便,况且越狱开发目前来看前景也不好,除了能从其他方面更加理解iphone 的sdk,在程序编写方面并不是帮助很大,但是吧,学习一门技术不能这么短视是吧?所以吧,我现在准备开始复习数据结构和算法相关的内容,由于精力的分散加上自己的懒惰,之前准备学习几次都失败了,所以现在决定再一次系统的学习下.</p>
+
+<p>这里开一片日志,用来记录学习中的点滴.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[git常用命令]]></title>
