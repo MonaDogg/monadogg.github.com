@@ -4,7 +4,6 @@ title: "AKTabBarController笔记"
 date: 2013-12-03 11:13
 comments: true
 categories: iOS
-
 ---
 因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了AKTabBarController,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下:
 

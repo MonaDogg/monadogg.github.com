@@ -3,8 +3,7 @@ layout: post
 title: "越狱开发知乎精彩回答"
 date: 2013-12-03 11:12
 comments: true
-categories: os
-
+categories: iOS
 ---
 
 最近笔者研究越狱开发,现总结了一些资料知乎上他人对越狱开发学习流程的精彩回答.

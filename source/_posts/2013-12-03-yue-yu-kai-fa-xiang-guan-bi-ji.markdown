@@ -3,8 +3,7 @@ layout: post
 title: "越狱开发相关笔记"
 date: 2013-12-03 11:12
 comments: true
-categories: os
-
+categories: iOS
 ---
 
 ##1安装iOS sdk

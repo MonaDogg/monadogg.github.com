@@ -3,8 +3,7 @@ layout: post
 title: "[git权威指南]读书笔记"
 date: 2013-12-03 14:13
 comments: true
-categories: os
-
+categories: OS
 ---
 #第四章 git初始化
 ##1设置git别名可以使用更加简洁的命令
