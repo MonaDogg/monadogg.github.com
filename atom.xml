@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[MonaDogg's blog]]></title>
+  <title><![CDATA[MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-11-17T22:47:03+08:00</updated>
+  <updated>2013-12-03T14:17:36+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -14,11 +14,626 @@
 
   
   <entry>
-    <title type="html"><![CDATA[[持续更新]git常用命令]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/16/gitchang-yong-ming-ling/"/>
-    <updated>2013-11-16T22:35:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/16/gitchang-yong-ming-ling</id>
-    <content type="html"><![CDATA[<p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从文章末尾的推荐阅读的资料开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
+    <title type="html"><![CDATA[[git权威指南]读书笔记]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/gitquan-wei-zhi-nan-du-shu-bi-ji/"/>
+    <updated>2013-12-03T14:13:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/gitquan-wei-zhi-nan-du-shu-bi-ji</id>
+    <content type="html"><![CDATA[<h1>第四章 git初始化</h1>
+
+<h2>1设置git别名可以使用更加简洁的命令</h2>
+
+<h3>1)希望注册的别名可以被所有的用户使用</h3>
+
+<pre>
+sudo git config --system alias.st status
+</pre>
+
+
+<h3>2)希望注册的别名仅仅被本用户使用</h3>
+
+<pre>
+git config --global alias.st status
+</pre>
+
+
+<h3>3)git在输出中开启颜色显示</h3>
+
+<pre>
+git config --global color.ui true
+</pre>
+
+
+<h3>4)一些初始化的操作</h3>
+
+<pre>
+mkdir demo
+cd demo
+git init
+</pre>
+
+
+<p>输出:</p>
+
+<pre>
+Initialized empty Git repository in /Users/lee/sourceCode/gitTest/demo/.git/
+</pre>
+
+
+<p>从上面的输出可以看出,创建了隐藏的名为.git的目录,这个目录就是Git版本库,也叫仓库.</p>
+
+<p>为其添加一些文件:</p>
+
+<pre>
+echo "Hello." > welcome.txt
+</pre>
+
+
+<p>这样我们就可以进行一次提交</p>
+
+<pre>
+git add welcome.txt
+</pre>
+
+
+<p>git会强制要求进行提交说明,如果没有在命令行进行说明那么git就会默认打开一个编辑器.</p>
+
+<pre>
+git commit -m "initialized"
+</pre>
+
+
+<h3>5)git config命令的参数有什么区别</h3>
+
+<p>分别对应三个不同级别的配置文件:版本库级别配置文件,全局配置文件(用户主目录下)和系统级别配置文件(/ect目录下).优先级别也是按照此顺序,版本库>全局>系统级别.
+配置文件采用的是INI文件格式,git config可以用于读取和更改INI配置文件中的内容,命令格式为:</p>
+
+<pre>
+git config <section>.<key>  //读取
+git config <section>.<key> <value>  //设置
+
+git config core.bare
+git config a.b something
+
+//设置全局的姓名和邮件地址
+git config --global user.name "monadogg"
+git config --global user.email just4lee@qq.com
+</pre>
+
+
+<h3>6)其他内容</h3>
+
+<p>如果没有设置全局的姓名和邮件,就无法直到提交者的信息.</p>
+
+<h3>7>备份本章的工作成果</h3>
+
+<p>git clone demo demo-step-1</p>
+
+<h1>第五章 git缓存区</h1>
+
+<p>可以使用git log查看提交日志,如果带上参数&mdash;stat可以查看每次提交文件变更统计.</p>
+
+<pre>
+git log --stat
+</pre>
+
+
+<h3>1)修改后不能直接提交么?</h3>
+
+<pre>
+echo "nice to meet you" >> welcome.txt
+git diff
+</pre>
+
+
+<p>可以通过git diff查看修改后的文件与版本库中的文件的差异(实际上和本地比较的是中间状态的文件而不是版本库中的文件).</p>
+
+<p>使用git status可以查看文件状态.</p>
+
+<h3>2暂存区的秘密</h3>
+
+<p>.git/index实际上就是一个包含文件索引的目录树,像是一个虚拟的工作区,其中记录了文件名和文件的状态信息,文件内容没有存储再其中,而是保存再git对象库.git/objects目录中,文件索引建立了文件和对象库中对象实体之间的对应.(以下内容如果有的地方想不明白,看后续的文章也许就会明白)</p>
+
+<ul>
+<li><p>当对工作区进行修改(或新增)的文件执行git add命令的时候,暂存区的目录树会被更新,同时工作区的修改(或新增)的文件内容会被写入到对象库中的一个新的对象中,而该对象的id会被记录在暂存区的文件索引中.</p></li>
+<li><p>当执行某次提交操作的时候(git commit),暂存区的目录树会写到版本库(对象库)中,master分支会做相应的更新,即master最新指向的目录树就是提交时原暂存区的目录树.</p></li>
+<li><p>当执行git reset HEAD命令的时候,暂存区的目录树会被重写,会被master分支所指向的目录树所替换,但是工作区不受影响.</p></li>
+<li><p>当执行git rm &mdash;cached <file>命令时,会直接从暂存区删除文件,工作区则不会做出改变.</p></li>
+<li><p>当执行git checkout . 或者 git checkout &mdash; <file>命令时,会用暂存区全部的文件或指定的文件文件替换工作区的文件,这个操作很危险,会清除工作区中为未添加到暂存区的改动.</p></li>
+<li><p>当执行git checkou HEAD .或者git checkout HEAD <file>命令时,会用HEAD指向的master分支的全部文件或者部分文件替换暂存区和工作区的文件,这个命令也是很危险的,因为不但会清除工作区中未提交的改动,也会清楚暂存区中未提交的改动.</p></li>
+</ul>
+
+
+<h3>3.git diff魔法</h3>
+
+<p>本章目前出现了工作区,暂存区和版本库(当前分支,HEAD)三个不同的目录树.</p>
+
+<p>如何查看暂存区和HEAD(版本库当前的提交)中的目录树?</p>
+
+<pre>
+git ls-tree -l HEAD
+
+100644 blob 26a21daa71bbf9129789b81d18c04f8a75f0bb9f      24    welcome.txt
+</pre>
+
+
+<p>第一个字段是文件的属性,第二个说明的是文件的类型,第三个说明的是文件在对象库中对应的id,第四个字段说明的文件的大小,第五个字段是文件名.</p>
+
+<p>在浏览暂存区的目录树之前,需要清除工作区当前的改动,清除当前工作区没有加入版本库的文件和目录(非跟踪文件和目录),然后执行git checkout .命令,用暂存区内容刷新工作区.然后做出一些修改,并添加到暂存区,最后再对工作区做出修改.</p>
+
+<pre>
+echo "bye...88" >> welcome.txt
+lee-macbook-pro:demo lee$ mkdir -p a/b/c
+lee-macbook-pro:demo lee$ echo "hello2" >a/b/c/hello.txt
+lee-macbook-pro:demo lee$ git add .
+lee-macbook-pro:demo lee$ echo "bye~~~" >> a/b/c/hello.txt
+lee-macbook-pro:demo lee$ git status -s
+
+AM a/b/c/hello.txt
+M  welcome.txt
+</pre>
+
+
+<p>上述命令运行完毕之后,工作区,暂存区,和版本库当前分支的最新版本(HEAD)各不相同,要显示暂存区的目录树可以使用git ls-files命令.</p>
+
+<pre>
+$ git ls-files -s
+100644 14be0d41c639d701e0fe23e835b5fe9524b4459d 0   a/b/c/hello.txt
+100644 1a73102d46407057acaa040f1ebb6e175d366506 0   welcome.txt
+</pre>
+
+
+<p>其中需要注意的是第三个字段不是文件的大小,而是暂存区编号.</p>
+
+<p>如果想针对暂存区的目录树使用git ls-tree命令,需要先将暂存区的目录树写入Git对象库(git write-tree命令),然后针对该目录树执行git ls-tree命令.</p>
+
+<pre>
+$ git write-tree
+23fbfeddde830a81e25eb8f18c570eb6029fad74
+
+$ git ls-tree -l 23fb
+040000 tree f7a6bdc6b9b6555a6db7092610d67a26a76e86a5       -    a
+100644 blob 1a73102d46407057acaa040f1ebb6e175d366506      54    welcome.txt
+</pre>
+
+
+<ul>
+<li>命令git write-tree的输出就是写入Git对象库中的Tree ID,这个ID作为下一条命令输入.</li>
+<li>git ls-tree命令中,没有把40位的id写全,只要不冲突,可以随意简写.</li>
+<li>可以看出第一条是个tree对象,第二条记录是一个文件.</li>
+</ul>
+
+
+<p>通过使用不同的参数调用git diff命令就可以对工作区,暂存区和HEAD的内容进行两两比较.</p>
+
+<p><strong>1.工作区和暂存区比较</strong>
+git diff</p>
+
+<p><strong>2.暂存区和HEAD比较</strong>
+git diff &mdash;cached</p>
+
+<p><strong>3.工作区和HEAD比较</strong>
+git diff HEAD</p>
+
+<h3>3.其他的说明</h3>
+
+<p>不要使用git commit -a
+该命令可以对本地所有变更的文件执行提交操作,包括本地修改的文件和删除的文件,但是不包括未被版本库跟踪的文件.</p>
+
+<p>搁置问题,暂存状态</p>
+
+<pre>
+$ git status
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#   new file:   a/b/c/hello.txt
+#   modified:   welcome.txt
+#
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#   modified:   a/b/c/hello.txt
+#
+
+</pre>
+
+
+<p>git体贴得告诉用户,如果将暂存区的文件从暂存区撤离,以便让暂存区和HEAD一致,这样就不会发生提交.</p>
+
+<p>还告诉用户,暂存区更新后在的工作区再一次修改有两个选择,一个是添加到暂存区,一个是取消工作区做出的改动.目前保存当前的工作进度所以使用:</p>
+
+<pre>
+git stash
+
+git status //所有的改动都不见了
+</pre>
+
+
+<p>HEAD和master可以相互替换,一次提交包含了三个SHAI哈希值标识的对象id,分别是:本次提交的唯一标识,本地提交对应的目录树,本次提交的父提交.</p>
+
+<p>git branch  可以显示当前的分支</p>
+
+<h1>第六章</h1>
+
+<p>master的实现就是master分支在版本库的引用目录(.git/refs)中体现为一个引用文件.git/refs/heads/master,其内容就是分支最新提交的ID.</p>
+
+<h1>第七章</h1>
+
+<p>引用refs/heads/master就像是一个游标,再有新的提交发生的时候,就指向提交,git提供了git reset命令可以将&#8221;游标&#8221;指向任何一个存在的提交id,如果使用了&mdash;hard参数,会破坏工作区未提交的改动.</p>
+
+<p>HEAD^ 代表HEAD的父提交</p>
+
+<pre>
+git reset --hard HEAD^
+git reset --hard 9e8a761
+</pre>
+
+
+<p>重置命令很危险,会彻底丢弃历史,而且不能恢复.</p>
+
+<p>git reset 命令详解</p>
+
+<pre>
+git reset [-q] [<commit>] [--] <paths>…
+</pre>
+
+
+<p>在命令中包含路径<paths>为了避免路径和引用(或者提交的ID)同名而发生冲突,可以在<paths>前用两个连续的短线作为分割.这种用法不会重置引用,也不会改变工作区,而是制定提交状态(<commit>)下的文件(<paths>)替换暂存区的文件,例如命令:</p>
+
+<p>git reset HEAD <path>相当于取消之前执行的git add <paths>命令的时候改变的暂存区.</p>
+
+<pre>
+git reset [--soft | --mixed | --hard |--merge | -keep] [-q] [<commit>]
+</pre>
+
+
+<p>会重置引用,根据不同的选项,可以对暂存区或者工作区进行重置</p>
+
+<p>(1).替换引用的指向,引用指向新的提交ID</p>
+
+<p>(2).替换暂存区,替换后,暂存区的内容和引用指向的目录树一致</p>
+
+<p>(3).替换工作区,替换后,工作区的内容会变得和暂存区一致,也和HEAD所指向的目录书内容一致.</p>
+
+<p>&mdash;hard,会执行操作(1)(2)(3).</p>
+
+<p>&mdash;soft进行操作(1),只改变引用指向,不改变暂存区和工作区.</p>
+
+<p>&mdash;mixed(默认参数),会执行操作(1)(2),会改变引用的指向及重置暂存区,但是不改变工作区.</p>
+
+<p>实例:</p>
+
+<pre>
+git reset
+git reset HEAD 
+仅用HEAD指向的目录树重置暂存区,工作区不受影响,相当于之前用git add命令更新到暂存区的内容撤出暂存区,引用,也没有改变.
+
+git reset -- filename
+git reset HEAD filename
+仅将文件filename的改动撤离出暂存区,暂存区的其他文件不改变,相当于git add filename的反向操作.
+
+git reset --soft HEAD^
+工作区和暂存区不改变,但是引用向前回退一次,当对最新提交的提交说明,或提交的更改不满意时候,撤销最新的提交,以便重新提交.
+
+git reset HEAD^
+工作区不改变,但是暂存区会回退到上一次提交之前,引用也会回退一次.
+
+git reset --mixed HEAD ^
+同上
+
+git reset --hard HEAD^
+彻底撤销最近的提交,引用回归到前一次,而且工作区和暂存区都会回退到上一次提交的状态,自上一次以来的提交全部丢失.
+</pre>
+
+
+<p>p127</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[AKTabBarController笔记]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/aktabbarcontrollerbi-ji/"/>
+    <updated>2013-12-03T11:13:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/aktabbarcontrollerbi-ji</id>
+    <content type="html"><![CDATA[<p>因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了AKTabBarController,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下:</p>
+
+<p>1.AKTabbarController 是用来控制所有所有view的展示关系(例如tabbar,contentview什么时候展示,展示何种样式),并且初始化AKTabbarView,并将其展示在view上.此处还实现了代理方法,根据点击展示不同的view到contentview上.</p>
+
+<p>2.AKTabbarView包含,AKTabbar以及contentview,用来展示tabbar的不同形态和contentview的不同形态.其供controller调用,用于展示不同的效果,例如tab被选中,或者contentview被推送,但是其并不直到发生了什么,只是按照要求展示内容.</p>
+
+<p>3.AKTabbar是tabbar的整体,包含多个AKTab及其分割线等东西.用于展示tabbar的整体,通过设置其属性tabs(一个AKTab的数组),调用 setNeedsLayout,来间接调用layoutSubviews计算各个tab的frame,通过调用setNeedsDisplay间接点用drawRect将所有tab和分割线等东西绘制再屏幕上.此处还为每个tab添加了action,并且定义了delegate,让tab被点击的时候调用代理方法.</p>
+
+<p>4.AKTab是每个具体的tab样式和行为,根据属性进行绘制tab上的内容,将背景和内容分为两个方法进行绘制.</p>
+
+<p>5.使用category设置vc,nvc等vc在tabbar上的titile和image,这里用的很巧妙.
+但是这些设置有些太多,太细已经超过我的预期,所以我准备编写另一个适合自己的可定制的tabbar.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[越狱开发知乎精彩回答]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da/"/>
+    <updated>2013-12-03T11:12:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da</id>
+    <content type="html"><![CDATA[<p>最近笔者研究越狱开发,现总结了一些资料知乎上他人对越狱开发学习流程的精彩回答.</p>
+
+<p>1.suu，iOS Researcher</p>
+
+<pre>
+①去Cydia下载Theos Tutorials，并在谷歌上了解theos相关信息。
+②Mac上安装iOSOpenDev，并了解相关信息。
+入门教程最多Hello World，剩下的去Github上找源码吧，比如killbackgrounds
+
+我也上传了一个:
+http://github.com/al1enSuu/Slide2Dismiss
+</pre>
+
+
+<p>2.季逸超，Peak-Labs创始人/CEO,猛犸浏览器、Rasgue…</p>
+
+<pre>
+有幸被邀请回答，不过不知道您要了解的'系统机制'有多深入? ;-)
+按照意图和深度的话，大概有这么几种途径与资源：
+
+1.为了学习框架，提升开发水平，可以看看私有API列表。iOS (Cocoa Touch)的各私有API都可以通过runtime查看获得，您可以自己写个method browser。如果觉得麻烦的话可以到Github看现成的，我收藏了俩: https://github.com/kennytm/iphone-private-frameworks 和 https://github.com/nst/iOS-Runtime-Headers ，但还是推荐自己来实时获取，因为iOS在更新，API也在更新。在App Store产品中使用私有API是违反苹果规定的，所以能不用这些API而实现一些功能是iOS工程师水平的体现。
+
+2.对iOS工程师而言，如果只是开发的话(1)也就差不多了。如果您十分有爱，想了解API以下的东西的话，依然可以利用Obj-C的runtime。可以在这里看到 http://opensource.apple.com/source/objc4/objc4-493.11/runtime/ ，尤其是objc-runtime.m，这里提供了很多学习用的"工具"。比如经典的method_exchangeImplementations()，您可以用它研究很多黑箱过程的来龙去脉。值得一提的是，这种技巧(method swizzling)是合法的,可以在App Store 中使用! 苹果曾给使用了相关技巧的开发者发过邮件，表示出于安全性和稳定性最好不再使用，但没有禁止。
+
+3.如果是对系统本身感兴趣的话，不妨越狱看看。iOS和Mac OS X类似，基于Darwin，是一种UNIX系统。越狱后你就有了root权，可以安装个Terminal，装gcc都没问题的哈哈~ 接下来就像您研究Linux那样摆弄就好了。对于开发者来说，有了root权也就可以写一些system tweak或全局的代码，自然也可以用来深入了解系统、原生app等。这方面我很久没折腾了，所以不敢瞎说。
+
+4.如果您是想成为一名iOS Hacker的话，最近有本书挺火的: http://www.amazon.com/iOS-Hackers-Handbook-Charlie-Miller/ 我没空看不知道咋样，但作者很神。另外现在iOS越狱界也有了自己的大会，可以看看“越狱梦之队”的演讲和文档: http://absinthejailbreak.com/dream-team-presentation-at-hitbsecconf-videos/ 。如果您还是没有满足的话，可以看看从硬件入手的逆向工程和调试，分享一个我收藏的宝贝: http://wenku.baidu.com/view/dae22c30eefdc8d376ee32c9.html
+
+5.另外说iOS代码是封闭/闭源的其实不全对，苹果算是开源界的一面大旗了，比如WebKit。iOS的组成部分也一样是开源的，可以在官网 http://opensource.apple.com/ 看到，最新的iOS 5.1.1在这: http://opensource.apple.com/release/ios-511/ 。但是如您所见，这里并没有iOS操作系统的代码，而是一些库和编译器、调试器...其中JavaScriptCore和WebCore很有用，这两者是WebKit的基础，可以说WebKit是iOS最重要的组成之一，截止iOS 5 (6我还没下呢=___=)，所有多于一行文字的控件其实都是WebKit标准的(不可思议吧?!)。很多iOS的Hack都是从这里开始的。说到WebKit,之前Comex大神的Spirit越狱(那个"Slide to Jailbreak")就是利用Safari->WebKit->PDF Engine->TIFF字体的漏洞实现了代码注入！所以每一个系统组件都可能是iOS逆向/Hack的突破口！
+</pre>
+
+
+<h1>参考资料:</h1>
+
+<p>1.<a href="http://www.zhihu.com/question/20954912">http://www.zhihu.com/question/20954912</a>
+2.<a href="http://www.zhihu.com/question/20317296/answer/14735312">http://www.zhihu.com/question/20317296/answer/14735312</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[越狱开发相关笔记]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji/"/>
+    <updated>2013-12-03T11:12:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji</id>
+    <content type="html"><![CDATA[<h2>1安装iOS sdk</h2>
+
+<p>Step1:安装iOS SDK.</p>
+
+<h2>2下载theos</h2>
+
+<p>可以简单理解theos为越狱开发的环境</p>
+
+<pre>
+export THEOS=/opt/theos
+//设置环境变量
+svn co http://svn.howett.net/svn/theos/trunk $THEOS
+//svn下载相关内容到位置
+</pre>
+
+
+<p>可以使用下列语句打印看看:</p>
+
+<pre>
+echo $THEOS
+</pre>
+
+
+<h2>3下载ldid</h2>
+
+<p>ldid的功能是给app签名
+下载并解压到桌面上: <a href="http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip">http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip</a></p>
+
+<pre>
+chmod +x ~/Desktop/ldid
+//设置ldid可以执行的权限
+
+mv ~/Desktop/ldid $THEOS/bin/ldid
+//将ldid移动到指定的位置
+</pre>
+
+
+<h2>4安装MacPorts和dpkg</h2>
+
+<p>1.先安装Macports,选择合适的系统版本,有可能会卡在最后一分钟，需要重启后断网安装即可。</p>
+
+<p>2.dpkg的作用是将你的app打包为debian paceage.
+sudo port install dpkg</p>
+
+<h2>5创建一个新的项目</h2>
+
+<p>theos使用一个叫做nic(new instance tool)的工具来创建新的工程。执行下面的命令：
+$THEOS/bin/nic.pl
+就可以开始创建。</p>
+
+<p>下面是一个创建jailbroken 应用程序的例子：</p>
+
+<pre>
+author$ $THEOS/bin/nic.pl
+NIC 1.0 - New Instance Creator
+——————————
+  [1.] iphone/application
+  [2.] iphone/library
+  [3.] iphone/preference_bundle
+  [4.] iphone/tool
+  [5.] iphone/tweak
+Choose a Template (required): 1
+Project Name (required): firstdemo
+Package Name [com.yourcompany.firstdemo]: 
+Author/Maintainer Name [Author Name]: 
+Instantiating iphone/application in firstdemo/…
+Done.
+</pre>
+
+
+<p>这样就会在当前目录下创建一个名为fistdemo的文件夹</p>
+
+<h2>6生成文件说明</h2>
+
+<p>1.control: 包含applicaton/tweak的信息，当你从Cydia安装时，你可以看到这些信息，包括名字，作者，版本，等等。</p>
+
+<p>2.main.m，程序启动的入口.</p>
+
+<p>3.firstDemoApplication:app的代理文件类</p>
+
+<p>4.Makefile：包含必要的编译命令</p>
+
+<p>5.Resources：包含info.plist文件等</p>
+
+<p>6.RootViewController.h/mm :根vc
+其中Makefile的内容为:</p>
+
+<pre>
+include theos/makefiles/common.mk
+
+APPLICATION_NAME = firstDemo
+firstDemo_FILES = main.m firstDemoApplication.mm RootViewController.mm
+firstDemo_FRAMEWORKS = UIKit CoreGraphics
+
+include $(THEOS_MAKE_PATH)/application.mk
+</pre>
+
+
+<h2>7重新设置环境变量</h2>
+
+<p>设置下列环境变量:环境位置,sdk版本,设备ip地址.</p>
+
+<pre>
+export THEOS=/opt/theos/
+export SDKVERSION=7.0
+export THEOS_DEVICE_IP=xxx.xxx.xxx.xxx
+</pre>
+
+
+<h2>8构建工程</h2>
+
+<p>1.make</p>
+
+<pre>
+$ make
+Making all for application firstdemo…
+ Compiling main.m…
+ Compiling firstdemoApplication.mm…
+ Compiling RootViewController.mm…
+ Linking application firstdemo…
+ Stripping firstdemo…
+ Signing firstdemo…
+</pre>
+
+
+<p>
+2.make package</p>
+
+<pre>
+make package
+Making all for application firstdemo…
+make[2]: Nothing to be done for ‘internal-application-compile’.
+Making stage for application firstdemo…
+ Copying resource directories into the application wrapper…
+dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
+</pre>
+
+
+<p>3.make install 执行次操作之前确保iPhone安装了OpenSSH,并且在同一局域网.</p>
+
+<pre>
+$ make package install
+Making all for application firstdemo…
+make[2]: Nothing to be done for `internal-application-compile’.
+Making stage for application firstdemo…
+ Copying resource directories into the application wrapper…
+dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
+...
+root@ip’s password: 
+...
+</pre>
+
+
+<p>这个过程会提示你输入几次iphone或者ipad的密码。默认是:alpine.</p>
+
+<h2>9.构建一个Tweak</h2>
+
+<p>本文介绍如果hook ios中任意类的方法的例子.</p>
+
+<p>1.下载libsubstrate.dylib到/opt/theos/lib.</p>
+
+<p>2.class-dump相关头文件到/opt/theos/include目录下</p>
+
+<p>3.创建tweak项目
+执行 $THEOS/bin/nic.pl,选择5</p>
+
+<pre>
+author$ $THEOS/bin/nic.pl
+NIC 1.0 - New Instance Creator
+——————————
+  [1.] iphone/application
+  [2.] iphone/library
+  [3.] iphone/preference_bundle
+  [4.] iphone/tool
+  [5.] iphone/tweak
+
+Choose a Template (required): 5
+Project Name (required): WelcomeWagon 
+Package Name [com.yourcompany.welcomewagon]: 
+Author/Maintainer Name [Brandon Trebitowski]: 
+MobileSubstrate Bundle filter [com.apple.springboard]: 
+Instantiating iphone/tweak in welcomewagon/…
+Done.
+</pre>
+
+
+<p>4.改写Tweak.xm文件
+一旦你创建了项目，你会发现Theos生成了一个叫做Tweak.xm的文件，这是个特殊的文件，hook的相关代码就将写在这个文件。</p>
+
+<pre>
+#import 
+//引入相关的dump出的头文件
+
+%hook SpringBoard
+//hook的类名
+
+-(void)applicationDidFinishLaunching:(id)application {
+%orig;
+//执行原方法
+
+UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Welcome" 
+message:@"Welcome to your iPhone Brandon!" 
+delegate:nil 
+cancelButtonTitle:@"Thanks" 
+otherButtonTitles:nil]
+[alert show];
+[alert release];
+}
+//新增的hook代码
+
+%end
+//代码结束
+</pre>
+
+
+<p>5.更改makefile文件,加入相关的类库</p>
+
+<p>WelcomeWagon_FRAMEWORKS = UIKit</p>
+
+<p>6.make, make package, make install</p>
+
+<h1>参考资料</h1>
+
+<p>1.<a href="http://wufawei.com/2013/08/iOS-jailbroken-programming-1/">http://wufawei.com/2013/08/iOS-jailbroken-programming-1/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[git常用命令]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/gitchang-yong-ming-ling/"/>
+    <updated>2013-12-03T11:12:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/gitchang-yong-ming-ling</id>
+    <content type="html"><![CDATA[<p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">这里</a>开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
 
 <h1>1.本地操作</h1>
 
@@ -26,19 +641,25 @@
 
 <h3>1.1.1全局变量</h3>
 
-<p>git config &mdash;global user.name &ldquo;xxx&rdquo;</p>
+<pre>
+git config --global user.name "xxx"
 
-<p>git config &mdash;global user.email &ldquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#120;&#120;&#120;&#64;&#x71;&#x71;&#46;&#99;&#111;&#109;">&#x78;&#120;&#120;&#x40;&#113;&#x71;&#x2e;&#99;&#x6f;&#x6d;</a>&rdquo;</p>
+git config --global user.email "xxx@qq.com"
 
-<p>git config &mdash;global color.ui &ldquo;always&rdquo;</p>
+git config --global color.ui "always"
+</pre>
+
 
 <h3>1.1.2初始化新版本库</h3>
 
-<p>git init 只会在根目录下建立一个名为.git文件夹</p>
+<pre>
+git init 只会在根目录下建立一个名为.git文件夹
+</pre>
+
 
 <h3>1.1.3设置忽略的文件</h3>
 
-<p><strong>1.设置每个人都需要忽略的文件</strong></p>
+<p>1.设置每个人都需要忽略的文件</p>
 
 <p>1)在根目录新建一个名为.gitignore的文本文件</p>
 
@@ -46,29 +667,38 @@
 
 <p>3)将.gitignore文件加入版本库并提交</p>
 
-<p><strong>2.设置只有自己忽略的文件</strong></p>
+<p>2.设置只有自己忽略的文件</p>
 
 <p>1)修改.git/info/exclude文件</p>
 
-<p>2)可以使用正则表达式,例如*.[oa]等价于*.o和*.a</p>
+<p>2)可以使用正则表达式,例如<em>.[oa]等价于</em>.o和*.a</p>
 
 <h3>1.1.4添加文件到版本库</h3>
 
-<p><strong>1.添加单个文件</strong></p>
+<p>1.添加单个文件</p>
 
-<p>git add somefile.tet</p>
+<pre>
+git add somefile.tet
+</pre>
 
-<p><strong>2.添加所有txt文件</strong></p>
 
-<p>git add *.txt</p>
+<p>2.添加所有txt文件</p>
 
-<p><strong>3.添加所有文件</strong></p>
+<pre>
+git add *.txt
+</pre>
 
-<p>git add . 包含子目录但是不包含空目录</p>
+
+<p>3.添加所有文件</p>
+
+<pre>
+git add . 包含子目录但是不包含空目录
+</pre>
+
 
 <h3>1.1.5提交</h3>
 
-<p><strong>1.提交</strong></p>
+<p>1.提交</p>
 
 <p>git commit -m &ldquo;add all files&rdquo;</p>
 
@@ -76,79 +706,372 @@
 
 <h3>1.2.1提交</h3>
 
-<p><strong>1.提交所有修改</strong></p>
+<p>1.提交所有修改</p>
 
-<p>git commit -m &ldquo;some message&rdquo; -a</p>
+<pre>
+git commit -m "some message" -a
+</pre>
 
-<p><strong>2.提交单个文件</strong></p>
 
-<p>git commit -m &ldquo;some message&rdquo; readMe.txt</p>
+<p>2.提交单个文件</p>
 
-<p><strong>3.增补提交</strong></p>
+<pre>
+git commit -m "some message" readMe.txt
+</pre>
 
-<p>git commit -C head -a -amend</p>
+
+<p>3.增补提交</p>
+
+<pre>
+git commit -C head -a -amend 
+</pre>
+
 
 <p>不会产生新的提交历史记录</p>
 
 <h3>1.2.2撤销修改</h3>
 
-<p><strong>1.撤销尚未提交的修改</strong></p>
+<p>1.撤销尚未提交的修改</p>
 
 <p>1)撤销少量文件</p>
 
-<p>git checkout head readMe.txt toDo.txt</p>
+<pre>
+git checkout head readMe.txt toDo.txt
+</pre>
+
 
 <p>2)撤销所有txt文件</p>
 
-<p>git checkout head *.txt</p>
+<pre>
+git checkout head *.txt
+</pre>
+
 
 <p>3)撤销所有文件</p>
 
-<p>git checkout head</p>
+<pre>
+git checkout head
+</pre>
 
-<p><strong>2.撤销提交后的修改</strong></p>
+
+<p>2.撤销提交后的修改</p>
 
 <p>1)撤销某次提交,但是这次操作也会作为一次提交保存</p>
 
-<p>git revert -no-commit head</p>
+<pre>
+git revert -no-commit head
+</pre>
 
-<p>2)复位,将当前head内容重置不会留下痕迹</p>
 
-<p>git reset head/git reset head<filename></p>
+<p>2)复位,将当前head内容重置,会留下痕迹</p>
+
+<pre>
+git reset head/git reset head <filename>
+</pre>
+
 
 <p>3)复位到head之前的版本,不会在版本库留下痕迹</p>
 
-<p>git reset &mdash;hard head^</p>
+<pre>
+git reset --hard head^
+</pre>
+
 
 <p>4)永久删除最后3个commit(即HEAD, HEAD^和HEAD~2)</p>
 
-<p>git reset &mdash;hard head~3</p>
+<pre>
+git reset --hard head~3
+</pre>
+
 
 <h3>1.2.3分支</h3>
 
+<p>1)列出本地分支</p>
+
+<pre>
+git branch
+</pre>
+
+
+<p>2)列出所有分支</p>
+
+<pre>
+git branch -a
+</pre>
+
+
+<p>3)基于当前分支末梢创建新分支</p>
+
+<pre>
+git branch <branchname>
+</pre>
+
+
+<p>4)检出分支</p>
+
+<pre>
+git checkout <branchname>
+</pre>
+
+
+<p>5)基于当前分支的末梢创建新分支并检出分支</p>
+
+<pre>
+git checkout -b <branchname>
+</pre>
+
+
+<p>6)基于某次提交/分支/标签 创建新分支</p>
+
+<pre>
+git branch emputy bfe57de0      //用来查看某个历史断面很方便
+
+git branch emputy2 emputy       //基于分支创建分支
+</pre>
+
+
+<p>7)合并分支</p>
+
+<p>1.普通合并:把两条分支以上的历史轨迹合并，交汇到一起
+合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,
+可以直接使用git checkout head撤销所有尚未提交的修改.</p>
+
+<pre>
+git merage <branchname>
+</pre>
+
+
+<p>合并但并不提交</p>
+
+<pre>
+git merage --no--commit
+</pre>
+
+
+<p>2.压合合并:将一条分支上的若干个提交条目合成一个提交条目，提交到另一个分支末梢。</p>
+
+<p>压合合并并提交</p>
+
+<pre>
+git merge --squash <branchname>
+</pre>
+
+
+<p>压合合并并不提交</p>
+
+<pre>
+git merge --squash --no-commit <branchname>
+</pre>
+
+
+<p>3.拣选合并:拣选另一条分支上的某个提交条目的改动带到当前分支上。
+挑选某次提交合并但不提交</p>
+
+<pre>
+git cherry-pick --no-commit 5b62b6
+</pre>
+
+
+<p>8)重命名分支</p>
+
+<pre>
+git branch -m <branchname><newname> 不会覆盖已存在同名分支
+
+git branch -M <branchname><newname> 会覆盖已存在的同名分支
+</pre>
+
+
+<p>9)删除分支</p>
+
+<pre>
+git branch -d new2  如果分支没有被合并会删除失败
+
+git branch -D new2  如果分支没有被合并也会被删除
+</pre>
+
+
 <h3>1.2.4解决冲突</h3>
+
+<p>1)冲突很少时,直接编辑冲突文件提交即可</p>
 
 <h3>1.2.5标签</h3>
 
+<p>1)创建标签</p>
+
+<p>1.为当前分支最近一次提交创建标签</p>
+
+<pre>
+git tag 1.0 //标签无法重新命名
+</pre>
+
+
+<p>2.为其他分支最近一次提交创建标签</p>
+
+<pre>
+git tag tagName branchName
+</pre>
+
+
+<p>3.为某次历史提交创建标签
+git tag 1.1 4e6861d5
+2)显示标签列表</p>
+
+<pre>
+git tag
+</pre>
+
+
+<p>3)检出标签</p>
+
+<pre>
+git checkout 1.0    //查看标签断面很重要,但是不能提交
+</pre>
+
+
+<p>4)由标签创建分支</p>
+
+<pre>
+git branch b1.1 1.1
+git checkout -b b1.1 1.1
+</pre>
+
+
+<p>5)删除标签</p>
+
+<pre>
+git tag -d 1.1
+</pre>
+
+
 <h3>1.2.6查看状态</h3>
 
+<p>1)当前状态</p>
+
+<pre>
+git status
+</pre>
+
+
+<p>2)历史记录</p>
+
+<pre>
+git log
+
+gitk    //查看当前分支的历史记录
+
+gitk <branchname>    //查看某分支历史记录
+
+gitk --all  //查看所有分支
+
+git branch -v   //每个分之最后的提交
+</pre>
+
+
 <h3>1.2.7其他</h3>
+
+<p>1)git导出项目,更多用法请参照git help archive</p>
+
+<pre>
+git archive [options] <tree-ish> [<path>…]
+
+git archive --format zip -o filename.zip HEAD
+
+git archive --format zip -o filename.zip source
+</pre>
+
+
+<p>一其中tree-ish可以是:</p>
+
+<pre>
+HEAD
+Tags
+Branch names
+Branch names with remotes, like origin/somebranch
+</pre>
+
 
 <h1>2.远程操作</h1>
 
 <h2>2.1初始化</h2>
 
+<p>1)克隆版本库</p>
+
+<pre>
+git clone <url>
+</pre>
+
+
+<p>2)别名</p>
+
+<pre>
+git remote add <别名> <远程版本库的URL>   //添加远程版本库的别名
+
+git remote rm <别名>       //删除远程库的别名和相关分支
+</pre>
+
+
 <h2>2.2日常操作</h2>
 
-<h2>2.3github</h2>
+<p>1)分支</p>
+
+<pre>
+git branch -r   //列出远程分支
+
+git remote prune origin     //删除远程库中已经不存在的分支
+</pre>
+
+
+<p>2)从远程获取</p>
+
+<p>1.获取远程版本库但是并不合并</p>
+
+<pre>
+git fetch <远程版本库>  //获取但不合并
+
+git fetch origin    //origin是远程库的别名
+
+git fetch d:\git\source     //本地版本库
+</pre>
+
+
+<p>2.获取远程版本库并且和当前分支合并</p>
+
+<pre>
+git pull origin 
+
+git pull d:\git\source master
+</pre>
+
+
+<p>3)推入远程库</p>
+
+<pre>
+git push origin master  //推入远程库
+</pre>
+
+
+<h1>参考文献:</h1>
+
+<p>1.本文内容来自:weibo.com/crespoxiao的微博配图</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[20131124]近期学习计划]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/20131124-jin-qi-xue-xi-ji-hua/"/>
+    <updated>2013-12-03T11:12:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/20131124-jin-qi-xue-xi-ji-hua</id>
+    <content type="html"><![CDATA[<p>最近由于微博上好友分享的几篇越狱相关的好文章,让我步入了越狱的世界,THEOS和IOSOpenDev环境也都搭建好了,并且也调试了几个相关的demo,但是无奈手中没有越狱设备,所以调试程序也极不方便,况且越狱开发目前来看前景也不好,除了能从其他方面更加理解iphone 的sdk,在程序编写方面并不是帮助很大,但是吧,学习一门技术不能这么短视是吧?所以吧,我现在准备开始复习数据结构和算法相关的内容,由于精力的分散加上自己的懒惰,之前准备学习几次都失败了,所以现在决定再一次系统的学习下.</p>
+
+<p>这里开一片日志,用来记录学习中的点滴.</p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[常用unix命令]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/"/>
-    <updated>2013-11-15T16:59:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling</id>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/chang-yong-unixming-ling/"/>
+    <updated>2013-12-03T11:11:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/chang-yong-unixming-ling</id>
     <content type="html"><![CDATA[<h3>1.列出文件</h3>
 
 <p>ls 参数 目录名</p>
@@ -159,30 +1082,35 @@
 
 <h3>3.建立新目录</h3>
 
-<p>mkdir 目录名
-mkdir /User/用户名/Desktop/backup</p>
+<p>mkdir 目录名</p>
+
+<p>mkdir /User/用户名/Desktop/backup</p>
 
 <h3>4.拷贝文件</h3>
 
-<p>cp 参数 源文件 目标文件
-把驱动目录下的所有文件备份到桌面backup
-cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
+<p>cp 参数 源文件 目标文件</p>
+
+<p>把驱动目录下的所有文件备份到桌面backup</p>
+
+<p>cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
 
 <h3>5.删除文件</h3>
 
-<p>rm 参数 文件
-rm -rf /System/Library/Extensions.kextcache
-参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
+<p>rm 参数 文件</p>
+
+<p>rm -rf /System/Library/Extensions.kextcache</p>
+
+<p>参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
 
 <h3>6.移动文件</h3>
 
-<p>mv 文件
-例：想把AppleHDA.Kext 移到桌面
-mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
+<p>mv 文件 例：想把AppleHDA.Kext 移到桌面</p>
+
+<p>mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
 
 <h3>7.文本编辑</h3>
 
-<p>nano 文件名<br/>
+<p>nano 文件名
 vim 文件名</p>
 
 <h3>8.删除一个目录</h3>
@@ -204,15 +1132,148 @@ vim 文件名</p>
 <h3>12.重复上次的命令</h3>
 
 <p>!!</p>
+
+<h3>13.更改密码</h3>
+
+<p>passwd</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[今天开始搭建完成了github博客]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/"/>
-    <updated>2013-11-15T16:17:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke</id>
-    <content type="html"><![CDATA[<p>今天完成了github的博客搭建,现在记录下载大家过程中遇到的困难.</p>
+    <title type="html"><![CDATA[又是一个github博客]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke/"/>
+    <updated>2013-12-03T11:10:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke</id>
+    <content type="html"><![CDATA[<p>在github上拥有一个博客地址,本人觉得是一件挺酷的事情,于是乎翻遍了网上大部分的教程,在花费了一天半的时间后,终于搭建完成了,其中遇到了很多的坑,幸亏在时间的软磨硬泡下,一一被我解决了(主要是对ruby环境的不熟悉造成的).</p>
+
+<h1>1.搭建ruby环境</h1>
+
+<p>搭建rvm环境和相关的设置</p>
+
+<p>rvm是一个命令行工具，可以提供一个便捷的多版本ruby环境的管理和切换,下面的代码是用来安装rvm的.</p>
+
+<pre>
+bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+</pre>
+
+
+<p>然后需要设置环境变量:</p>
+
+<pre>
+echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile
+source ~/.bash_profile
+
+# If using Zsh do this instead
+echo '[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm' >> ~/.zshrc
+source ~/.zshrc
+</pre>
+
+
+<p>最终需要安装ruby环境(不知道为何安装1.9.2会报奇怪的错,换成1.9.3就好了):</p>
+
+<pre>
+rvm install 1.9.3 && rvm use 1.9.3
+rvm rubygems latest
+</pre>
+
+
+<h1>2.安装Octopress</h1>
+
+<p>克隆代码到当前目录下,并且进入octopress目录:</p>
+
+<pre>
+git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+</pre>
+
+
+<p>安装相关的依赖库:</p>
+
+<pre>
+gem install bundler
+bundle install
+</pre>
+
+
+<p>最后安装Octopress</p>
+
+<pre>
+rake install
+</pre>
+
+
+<h1>3.简单设置你的博客</h1>
+
+<p>1)修改文件_config.yml,里面基本上是一些博客名称,作者姓名等等之类的设置信息.</p>
+
+<p>2)修改source文件夹下一些html中twitter,google等政府屏蔽网站的相关资源,会造成页面加载缓慢,具体判断建议使用chrome,查看每项资源的加载时间,将无法获取的资源保存到本地,或者换为墙内的加载地址.</p>
+
+<h1>4.设置github账号</h1>
+
+<p>在github上创建一个名为 账号名.github.com 的代码仓库。</p>
+
+<h1>5.写博客</h1>
+
+<p>写博客的主要命令为：</p>
+
+<pre>
+rake new_post[‘article name’] 生成博文框架，然后修改生成的文件即可
+rake generate 生成静态文件
+rake preview 在http://localhost:4000 访问博文内容
+rake deploy 将生成的博文推送到你的github上
+同时我也建议把所有的源码也推送到github进行保存,代码一般为:
+git add .
+git commit -m "add source files"
+git push origin source
+</pre>
+
+
+<h1>6.关于markdown</h1>
+
+<p>Markdown 是一种轻量级标记语言，创始人为约翰·格鲁伯（John Gruber）和亚伦·斯沃茨（Aaron Swartz）。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”</p>
+
+<p>我们在github上面存放的博客其实是通过ruby下的一个框架,将我们使用markdown语法编写的博文 转换为html网页.在这里赞赏下网友们的智慧.</p>
+
+<p>而markdown的教程网上有很多,你可以先点击<a href="http://zh.wikipedia.org/wiki/Markdown">这里</a>进行了解.</p>
+
+<h1>7.美化我们的博客</h1>
+
+<p>如果你觉得我们安装好的博客挺丑的,而且评论功能也很难用,还有那个定制栏能不能放点别的什么,那我们就需要动手改造了,在这里我仅仅介绍下安装主题的方法.</p>
+
+<p>我使用的主题是<a href="https://github.com/gehaxelt/CSS-WhiteLake">whitelake</a>:</p>
+
+<pre>
+cd octopress
+git clone https://github.com/gehaxelt/CSS-WhiteLake.git .themes/whitelake
+rake install['whitelake']
+rake generate
+rake preview
+</pre>
+
+
+<p>别的模块定制方法也许你应该看看<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">这个</a>.</p>
+
+<h1>参考文献:</h1>
+
+<p>1.首先感谢唐巧的博客,本文的大部分内容都是来自他的一篇<a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">博文</a>,作为iOS工程师我也建议你关注他们的微博,并且仔细研读他的每篇博文,真是收获颇丰.</p>
+
+<p>2.<a href="http://ishalou.com/blog/2012/10/15/how-to-use-octopress/">http://ishalou.com/blog/2012/10/15/how-to-use-octopress/</a></p>
+
+<p>3.<a href="http://hahaya.github.io/2013/06/26/build-blog-on-github.html">http://hahaya.github.io/2013/06/26/build-blog-on-github.html</a></p>
+
+<p>4.<a href="http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html">http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html</a></p>
+
+<p>5.<a href="http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/">http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/</a></p>
+
+<p>以下是美化博客:</p>
+
+<p>6.<a href="http://yanping.me/cn/blog/2012/01/07/theming-and-customization/">http://yanping.me/cn/blog/2012/01/07/theming-and-customization/</a></p>
+
+<p>7.<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/</a></p>
+
+<p>8.<a href="http://xuhehuan.com/886.html">http://xuhehuan.com/886.html</a></p>
+
+<p>9.<a href="http://lucifr.com/2012/02/05/slash-theme-for-octopress/">http://lucifr.com/2012/02/05/slash-theme-for-octopress/</a></p>
 ]]></content>
   </entry>
   
