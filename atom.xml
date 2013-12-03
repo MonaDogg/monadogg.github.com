@@ -4,11 +4,7 @@
   <title><![CDATA[MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-<<<<<<< HEAD
-  <updated>2013-12-03T14:17:36+08:00</updated>
-=======
-  <updated>2013-11-26T15:20:47+08:00</updated>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
+  <updated>2013-12-03T14:26:07+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -18,17 +14,10 @@
 
   
   <entry>
-<<<<<<< HEAD
     <title type="html"><![CDATA[[git权威指南]读书笔记]]></title>
     <link href="http://MonaDogg.github.io/blog/2013/12/03/gitquan-wei-zhi-nan-du-shu-bi-ji/"/>
     <updated>2013-12-03T14:13:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/gitquan-wei-zhi-nan-du-shu-bi-ji</id>
-=======
-    <title type="html"><![CDATA[<git权威指南>读书笔记]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/26/gitquan-wei-zhi-nan-du-shu-bi-ji/"/>
-    <updated>2013-11-26T15:18:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/26/gitquan-wei-zhi-nan-du-shu-bi-ji</id>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
     <content type="html"><![CDATA[<h1>第四章 git初始化</h1>
 
 <h2>1设置git别名可以使用更加简洁的命令</h2>
@@ -99,13 +88,8 @@ git commit -m "initialized"
 配置文件采用的是INI文件格式,git config可以用于读取和更改INI配置文件中的内容,命令格式为:</p>
 
 <pre>
-<<<<<<< HEAD
 git config <section>.<key>  //读取
 git config <section>.<key> <value>  //设置
-=======
-git config  <section>.<key> //读取
-git config  <section>.<key> <value> //设置
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 git config core.bare
 git config a.b something
@@ -267,7 +251,6 @@ git status //所有的改动都不见了
 </pre>
 
 
-<<<<<<< HEAD
 <p>HEAD和master可以相互替换,一次提交包含了三个SHAI哈希值标识的对象id,分别是:本次提交的唯一标识,本地提交对应的目录树,本次提交的父提交.</p>
 
 <p>git branch  可以显示当前的分支</p>
@@ -346,72 +329,34 @@ git reset --hard HEAD^
 
 
 <p>p127</p>
-=======
-<p>p110页</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[AKTabBarController笔记]]></title>
-<<<<<<< HEAD
     <link href="http://MonaDogg.github.io/blog/2013/12/03/aktabbarcontrollerbi-ji/"/>
     <updated>2013-12-03T11:13:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/aktabbarcontrollerbi-ji</id>
     <content type="html"><![CDATA[<p>因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了AKTabBarController,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下:</p>
-=======
-    <link href="http://MonaDogg.github.io/blog/2013/11/25/learn-form-aktabbarcontroller/"/>
-    <updated>2013-11-25T17:02:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/25/learn-form-aktabbarcontroller</id>
-    <content type="html"><![CDATA[<p>因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了<a href="https://github.com/alikaragoz/AKTabBarController">AKTabBarController</a>,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下:</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>1.AKTabbarController 是用来控制所有所有view的展示关系(例如tabbar,contentview什么时候展示,展示何种样式),并且初始化AKTabbarView,并将其展示在view上.此处还实现了代理方法,根据点击展示不同的view到contentview上.</p>
 
 <p>2.AKTabbarView包含,AKTabbar以及contentview,用来展示tabbar的不同形态和contentview的不同形态.其供controller调用,用于展示不同的效果,例如tab被选中,或者contentview被推送,但是其并不直到发生了什么,只是按照要求展示内容.</p>
 
-<<<<<<< HEAD
 <p>3.AKTabbar是tabbar的整体,包含多个AKTab及其分割线等东西.用于展示tabbar的整体,通过设置其属性tabs(一个AKTab的数组),调用 setNeedsLayout,来间接调用layoutSubviews计算各个tab的frame,通过调用setNeedsDisplay间接点用drawRect将所有tab和分割线等东西绘制再屏幕上.此处还为每个tab添加了action,并且定义了delegate,让tab被点击的时候调用代理方法.</p>
 
 <p>4.AKTab是每个具体的tab样式和行为,根据属性进行绘制tab上的内容,将背景和内容分为两个方法进行绘制.</p>
 
 <p>5.使用category设置vc,nvc等vc在tabbar上的titile和image,这里用的很巧妙.
 但是这些设置有些太多,太细已经超过我的预期,所以我准备编写另一个适合自己的可定制的tabbar.</p>
-=======
-<p>3.AKTabbar是tabbar的整体,包含多个AKTab及其分割线等东西.用于展示tabbar的整体,通过设置其属性tabs(一个AKTab的数组),调用
-setNeedsLayout,来间接调用layoutSubviews计算各个tab的frame,通过调用setNeedsDisplay间接点用drawRect将所有tab和分割线等东西绘制再屏幕上.此处还为每个tab添加了action,并且定义了delegate,让tab被点击的时候调用代理方法.</p>
-
-<p>4.AKTab是每个具体的tab样式和行为,根据属性进行绘制tab上的内容,将背景和内容分为两个方法进行绘制.</p>
-
-<p>5.使用category设置vc,nvc等vc在tabbar上的titile和image,这里用的很巧妙.</p>
-
-<p>但是这些设置有些太多,太细已经超过我的预期,所以我准备编写另一个适合自己的可定制的tabbar.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[[20131124]近期学习计划]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/11/24/jin-qi-xue-xi-ji-hua/"/>
-    <updated>2013-11-24T20:32:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/24/jin-qi-xue-xi-ji-hua</id>
-    <content type="html"><![CDATA[<p>最近由于微博上好友分享的几篇越狱相关的好文章,让我步入了越狱的世界,THEOS和IOSOpenDev环境也都搭建好了,并且也调试了几个相关的demo,但是无奈手中没有越狱设备,所以调试程序也极不方便,况且越狱开发目前来看前景也不好,除了能从其他方面更加理解iphone 的sdk,在程序编写方面并不是帮助很大,但是吧,学习一门技术不能这么短视是吧?所以吧,我现在准备开始复习数据结构和算法相关的内容,由于精力的分散加上自己的懒惰,之前准备学习几次都失败了,所以现在决定再一次系统的学习下.</p>
-
-<p>这里开一片日志,用来记录学习中的点滴.</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[越狱开发知乎精彩回答]]></title>
-<<<<<<< HEAD
     <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da/"/>
     <updated>2013-12-03T11:12:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da</id>
-=======
-    <link href="http://MonaDogg.github.io/blog/2013/11/19/jailbreakdoc01/"/>
-    <updated>2013-11-19T09:37:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/19/jailbreakdoc01</id>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
     <content type="html"><![CDATA[<p>最近笔者研究越狱开发,现总结了一些资料知乎上他人对越狱开发学习流程的精彩回答.</p>
 
 <p>1.suu，iOS Researcher</p>
@@ -441,44 +386,24 @@ http://github.com/al1enSuu/Slide2Dismiss
 4.如果您是想成为一名iOS Hacker的话，最近有本书挺火的: http://www.amazon.com/iOS-Hackers-Handbook-Charlie-Miller/ 我没空看不知道咋样，但作者很神。另外现在iOS越狱界也有了自己的大会，可以看看“越狱梦之队”的演讲和文档: http://absinthejailbreak.com/dream-team-presentation-at-hitbsecconf-videos/ 。如果您还是没有满足的话，可以看看从硬件入手的逆向工程和调试，分享一个我收藏的宝贝: http://wenku.baidu.com/view/dae22c30eefdc8d376ee32c9.html
 
 5.另外说iOS代码是封闭/闭源的其实不全对，苹果算是开源界的一面大旗了，比如WebKit。iOS的组成部分也一样是开源的，可以在官网 http://opensource.apple.com/ 看到，最新的iOS 5.1.1在这: http://opensource.apple.com/release/ios-511/ 。但是如您所见，这里并没有iOS操作系统的代码，而是一些库和编译器、调试器...其中JavaScriptCore和WebCore很有用，这两者是WebKit的基础，可以说WebKit是iOS最重要的组成之一，截止iOS 5 (6我还没下呢=___=)，所有多于一行文字的控件其实都是WebKit标准的(不可思议吧?!)。很多iOS的Hack都是从这里开始的。说到WebKit,之前Comex大神的Spirit越狱(那个"Slide to Jailbreak")就是利用Safari->WebKit->PDF Engine->TIFF字体的漏洞实现了代码注入！所以每一个系统组件都可能是iOS逆向/Hack的突破口！
-<<<<<<< HEAD
 </pre>
 
 
 <h1>参考资料:</h1>
 
 <p>1.<a href="http://www.zhihu.com/question/20954912">http://www.zhihu.com/question/20954912</a>
-=======
-
-</pre>
-
-
-<p>参考资料:
-1.<a href="http://www.zhihu.com/question/20954912">http://www.zhihu.com/question/20954912</a>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 2.<a href="http://www.zhihu.com/question/20317296/answer/14735312">http://www.zhihu.com/question/20317296/answer/14735312</a></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[越狱开发相关笔记]]></title>
-<<<<<<< HEAD
     <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji/"/>
     <updated>2013-12-03T11:12:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji</id>
     <content type="html"><![CDATA[<h2>1安装iOS sdk</h2>
 
 <p>Step1:安装iOS SDK.</p>
-=======
-    <link href="http://MonaDogg.github.io/blog/2013/11/18/jailbreaknote01/"/>
-    <updated>2013-11-18T13:06:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/18/jailbreaknote01</id>
-    <content type="html"><![CDATA[<h1>1准备工具</h1>
-
-<h2>1安装iOS sdk</h2>
-
-<p>Step1:安装<a href="http://developer.apple.com/devcenter/ios/index.action">iOS SDK</a>.</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <h2>2下载theos</h2>
 
@@ -501,15 +426,8 @@ echo $THEOS
 
 <h2>3下载ldid</h2>
 
-<<<<<<< HEAD
 <p>ldid的功能是给app签名
 下载并解压到桌面上: <a href="http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip">http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip</a></p>
-=======
-<p>ldid的功能是给app签名</p>
-
-<p>下载并解压到桌面上:
-<a href="http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip">http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip</a></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 chmod +x ~/Desktop/ldid
@@ -522,7 +440,6 @@ mv ~/Desktop/ldid $THEOS/bin/ldid
 
 <h2>4安装MacPorts和dpkg</h2>
 
-<<<<<<< HEAD
 <p>1.先安装Macports,选择合适的系统版本,有可能会卡在最后一分钟，需要重启后断网安装即可。</p>
 
 <p>2.dpkg的作用是将你的app打包为debian paceage.
@@ -535,27 +452,6 @@ $THEOS/bin/nic.pl
 就可以开始创建。</p>
 
 <p>下面是一个创建jailbroken 应用程序的例子：</p>
-=======
-<p>1.先安装<a href="http://www.macports.org/install.php">Macports</a>,选择合适的系统版本,有可能会卡在最后一分钟，需要重启后断网安装即可。</p>
-
-<p>2.dpkg的作用是将你的app打包为debian paceage.</p>
-
-<pre>
-sudo port install dpkg
-</pre>
-
-
-<h2>5创建一个新的项目</h2>
-
-<p>theos使用一个叫做nic(new instance tool)的工具来创建新的工程。执行下面的命令：</p>
-
-<pre>
-$THEOS/bin/nic.pl
-</pre>
-
-
-<p>就可以开始创建。下面是一个创建jailbroken 应用程序的例子：</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 author$ $THEOS/bin/nic.pl
@@ -589,14 +485,8 @@ Done.
 
 <p>5.Resources：包含info.plist文件等</p>
 
-<<<<<<< HEAD
 <p>6.RootViewController.h/mm :根vc
 其中Makefile的内容为:</p>
-=======
-<p>6.RootViewController.h/mm :根vc</p>
-
-<p>其中Makefile的内容为:</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 include theos/makefiles/common.mk
@@ -606,10 +496,6 @@ firstDemo_FILES = main.m firstDemoApplication.mm RootViewController.mm
 firstDemo_FRAMEWORKS = UIKit CoreGraphics
 
 include $(THEOS_MAKE_PATH)/application.mk
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -626,11 +512,7 @@ export THEOS_DEVICE_IP=xxx.xxx.xxx.xxx
 
 <h2>8构建工程</h2>
 
-<<<<<<< HEAD
 <p>1.make</p>
-=======
-<p><strong>1.make</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 $ make
@@ -644,12 +526,8 @@ Making all for application firstdemo…
 </pre>
 
 
-<<<<<<< HEAD
 <p>
 2.make package</p>
-=======
-<p><strong>2.make package</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 make package
@@ -661,12 +539,7 @@ dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/D
 </pre>
 
 
-<<<<<<< HEAD
 <p>3.make install 执行次操作之前确保iPhone安装了OpenSSH,并且在同一局域网.</p>
-=======
-<p><strong>3.make install</strong>
-执行次操作之前确保iPhone安装了OpenSSH,并且在同一局域网.</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 $ make package install
@@ -687,22 +560,12 @@ root@ip’s password:
 
 <p>本文介绍如果hook ios中任意类的方法的例子.</p>
 
-<<<<<<< HEAD
 <p>1.下载libsubstrate.dylib到/opt/theos/lib.</p>
 
 <p>2.class-dump相关头文件到/opt/theos/include目录下</p>
 
 <p>3.创建tweak项目
 执行 $THEOS/bin/nic.pl,选择5</p>
-=======
-<p><strong>1.下载<a href="http://www.mediafire.com/?2upm53uzzj0488u">libsubstrate.dylib</a>到/opt/theos/lib.</strong></p>
-
-<p><strong>2.class-dump相关头文件到/opt/theos/include目录下</strong></p>
-
-<p><strong>3.创建tweak项目</strong></p>
-
-<p>执行 $THEOS/bin/nic.pl,选择5</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 author$ $THEOS/bin/nic.pl
@@ -724,20 +587,11 @@ Done.
 </pre>
 
 
-<<<<<<< HEAD
 <p>4.改写Tweak.xm文件
 一旦你创建了项目，你会发现Theos生成了一个叫做Tweak.xm的文件，这是个特殊的文件，hook的相关代码就将写在这个文件。</p>
 
 <pre>
 #import 
-=======
-<p><strong>4.改写Tweak.xm文件</strong></p>
-
-<p>一旦你创建了项目，你会发现Theos生成了一个叫做Tweak.xm的文件，这是个特殊的文件，hook的相关代码就将写在这个文件。</p>
-
-<pre>
-#import <SpringBoard/SpringBoard.h>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 //引入相关的dump出的头文件
 
 %hook SpringBoard
@@ -759,7 +613,6 @@ otherButtonTitles:nil]
 
 %end
 //代码结束
-<<<<<<< HEAD
 </pre>
 
 
@@ -770,22 +623,6 @@ otherButtonTitles:nil]
 <p>6.make, make package, make install</p>
 
 <h1>参考资料</h1>
-=======
-
-</pre>
-
-
-<p><strong>5.更改makefile文件,加入相关的类库</strong></p>
-
-<pre>
-WelcomeWagon_FRAMEWORKS = UIKit
-</pre>
-
-
-<p><strong>6.make, make package, make install</strong></p>
-
-<p><strong>参考资料</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>1.<a href="http://wufawei.com/2013/08/iOS-jailbroken-programming-1/">http://wufawei.com/2013/08/iOS-jailbroken-programming-1/</a></p>
 ]]></content>
@@ -793,17 +630,10 @@ WelcomeWagon_FRAMEWORKS = UIKit
   
   <entry>
     <title type="html"><![CDATA[git常用命令]]></title>
-<<<<<<< HEAD
     <link href="http://MonaDogg.github.io/blog/2013/12/03/gitchang-yong-ming-ling/"/>
     <updated>2013-12-03T11:12:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/gitchang-yong-ming-ling</id>
     <content type="html"><![CDATA[<p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">这里</a>开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
-=======
-    <link href="http://MonaDogg.github.io/blog/2013/11/16/gitchang-yong-ming-ling/"/>
-    <updated>2013-11-16T22:35:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/16/gitchang-yong-ming-ling</id>
-    <content type="html"><![CDATA[<p>如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为&lt;Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从文章末尾的推荐阅读的资料开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <h1>1.本地操作</h1>
 
@@ -813,15 +643,9 @@ WelcomeWagon_FRAMEWORKS = UIKit
 
 <pre>
 git config --global user.name "xxx"
-<<<<<<< HEAD
 
 git config --global user.email "xxx@qq.com"
 
-=======
-
-git config --global user.email "xxx@qq.com"
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 git config --global color.ui "always"
 </pre>
 
@@ -857,30 +681,16 @@ git init 只会在根目录下建立一个名为.git文件夹
 git add somefile.tet
 </pre>
 
-<<<<<<< HEAD
-=======
-<pre>
-git add somefile.tet
-</pre>
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>2.添加所有txt文件</p>
 
 <pre>
 git add *.txt
 </pre>
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 
-<<<<<<< HEAD
 <p>3.添加所有文件</p>
 
-=======
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 <pre>
 git add . 包含子目录但是不包含空目录
 </pre>
@@ -890,10 +700,7 @@ git add . 包含子目录但是不包含空目录
 
 <p>1.提交</p>
 
-<pre>
-git commit -m "add all files"
-</pre>
-
+<p>git commit -m &ldquo;add all files&rdquo;</p>
 
 <h2>1.2日常操作</h2>
 
@@ -905,30 +712,16 @@ git commit -m "add all files"
 git commit -m "some message" -a
 </pre>
 
-<<<<<<< HEAD
-=======
-<pre>
-git commit -m "some message" -a
-</pre>
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>2.提交单个文件</p>
 
 <pre>
 git commit -m "some message" readMe.txt
 </pre>
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 
-<<<<<<< HEAD
 <p>3.增补提交</p>
 
-=======
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 <pre>
 git commit -C head -a -amend 
 </pre>
@@ -973,11 +766,7 @@ git revert -no-commit head
 <p>2)复位,将当前head内容重置,会留下痕迹</p>
 
 <pre>
-<<<<<<< HEAD
 git reset head/git reset head <filename>
-=======
-git reset head/git reset head &lt;filename>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1014,33 +803,21 @@ git branch -a
 <p>3)基于当前分支末梢创建新分支</p>
 
 <pre>
-<<<<<<< HEAD
 git branch <branchname>
-=======
-git branch &lt;branchname>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
 <p>4)检出分支</p>
 
 <pre>
-<<<<<<< HEAD
 git checkout <branchname>
-=======
-git checkout &lt;branchname>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
 <p>5)基于当前分支的末梢创建新分支并检出分支</p>
 
 <pre>
-<<<<<<< HEAD
 git checkout -b <branchname>
-=======
-git checkout -b &lt;branchname>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1055,21 +832,12 @@ git branch emputy2 emputy       //基于分支创建分支
 
 <p>7)合并分支</p>
 
-<<<<<<< HEAD
 <p>1.普通合并:把两条分支以上的历史轨迹合并，交汇到一起
 合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,
 可以直接使用git checkout head撤销所有尚未提交的修改.</p>
 
 <pre>
 git merage <branchname>
-=======
-<p><strong>1.普通合并</strong>:把两条分支以上的历史轨迹合并，交汇到一起</p>
-
-<p>合并并提交,如果发生冲突就不会自动提交,如果冲突很多,不想立即解决他们,可以直接使用git checkout head撤销所有尚未提交的修改.</p>
-
-<pre>
-git merage &lt;branchname>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1080,42 +848,24 @@ git merage --no--commit
 </pre>
 
 
-<<<<<<< HEAD
 <p>2.压合合并:将一条分支上的若干个提交条目合成一个提交条目，提交到另一个分支末梢。</p>
-=======
-<p><strong>2.压合合并</strong>:将一条分支上的若干个提交条目合成一个提交条目，提交到另一个分支末梢。</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>压合合并并提交</p>
 
 <pre>
-<<<<<<< HEAD
 git merge --squash <branchname>
-=======
-git merge --squash &lt;branchname>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
 <p>压合合并并不提交</p>
 
 <pre>
-<<<<<<< HEAD
 git merge --squash --no-commit <branchname>
 </pre>
 
 
 <p>3.拣选合并:拣选另一条分支上的某个提交条目的改动带到当前分支上。
 挑选某次提交合并但不提交</p>
-=======
-git merge --squash --no-commit &lt;branchname>
-</pre>
-
-
-<p><strong>3.拣选合并</strong>:拣选另一条分支上的某个提交条目的改动带到当前分支上。</p>
-
-<p>挑选某次提交合并但不提交</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 git cherry-pick --no-commit 5b62b6
@@ -1125,15 +875,9 @@ git cherry-pick --no-commit 5b62b6
 <p>8)重命名分支</p>
 
 <pre>
-<<<<<<< HEAD
 git branch -m <branchname><newname> 不会覆盖已存在同名分支
 
 git branch -M <branchname><newname> 会覆盖已存在的同名分支
-=======
-git branch -m &lt;branchname>&lt;newname> 不会覆盖已存在同名分支
-
-git branch -M &lt;branchname>&lt;newname> 会覆盖已存在的同名分支
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1154,42 +898,23 @@ git branch -D new2  如果分支没有被合并也会被删除
 
 <p>1)创建标签</p>
 
-<<<<<<< HEAD
 <p>1.为当前分支最近一次提交创建标签</p>
-=======
-<p><strong>1.为当前分支最近一次提交创建标签</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 git tag 1.0 //标签无法重新命名
 </pre>
 
 
-<<<<<<< HEAD
 <p>2.为其他分支最近一次提交创建标签</p>
-=======
-<p><strong>2.为其他分支最近一次提交创建标签</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 git tag tagName branchName
 </pre>
 
 
-<<<<<<< HEAD
 <p>3.为某次历史提交创建标签
 git tag 1.1 4e6861d5
 2)显示标签列表</p>
-=======
-<p><strong>3.为某次历史提交创建标签</strong></p>
-
-<pre>
-git tag 1.1 4e6861d5
-</pre>
-
-
-<p>2)显示标签列表</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 git tag
@@ -1230,27 +955,15 @@ git status
 <p>2)历史记录</p>
 
 <pre>
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 git log
 
 gitk    //查看当前分支的历史记录
 
-<<<<<<< HEAD
 gitk <branchname>    //查看某分支历史记录
-=======
-gitk &lt;branchname>    //查看某分支历史记录
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 gitk --all  //查看所有分支
 
 git branch -v   //每个分之最后的提交
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1259,28 +972,15 @@ git branch -v   //每个分之最后的提交
 <p>1)git导出项目,更多用法请参照git help archive</p>
 
 <pre>
-<<<<<<< HEAD
 git archive [options] <tree-ish> [<path>…]
-=======
-
-git archive [options] &lt;tree-ish> [&lt;path>…]
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 git archive --format zip -o filename.zip HEAD
 
 git archive --format zip -o filename.zip source
-<<<<<<< HEAD
 </pre>
 
 
 <p>一其中tree-ish可以是:</p>
-=======
-
-</pre>
-
-
-<p><strong>一其中tree-ish可以是:</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 HEAD
@@ -1297,26 +997,16 @@ Branch names with remotes, like origin/somebranch
 <p>1)克隆版本库</p>
 
 <pre>
-<<<<<<< HEAD
 git clone <url>
-=======
-git clone &lt;url>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
 <p>2)别名</p>
 
 <pre>
-<<<<<<< HEAD
 git remote add <别名> <远程版本库的URL>   //添加远程版本库的别名
 
 git remote rm <别名>       //删除远程库的别名和相关分支
-=======
-git remote add &lt;别名> &lt;远程版本库的URL>   //添加远程版本库的别名
-
-git remote rm &lt;别名>       //删除远程库的别名和相关分支
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 </pre>
 
 
@@ -1333,17 +1023,10 @@ git remote prune origin     //删除远程库中已经不存在的分支
 
 <p>2)从远程获取</p>
 
-<<<<<<< HEAD
 <p>1.获取远程版本库但是并不合并</p>
 
 <pre>
 git fetch <远程版本库>  //获取但不合并
-=======
-<p><strong>1.获取远程版本库但是并不合并</strong></p>
-
-<pre>
-git fetch &lt;远程版本库>  //获取但不合并
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 git fetch origin    //origin是远程库的别名
 
@@ -1351,11 +1034,7 @@ git fetch d:\git\source     //本地版本库
 </pre>
 
 
-<<<<<<< HEAD
 <p>2.获取远程版本库并且和当前分支合并</p>
-=======
-<p><strong>2.获取远程版本库并且和当前分支合并</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <pre>
 git pull origin 
@@ -1367,15 +1046,10 @@ git pull d:\git\source master
 <p>3)推入远程库</p>
 
 <pre>
-<<<<<<< HEAD
-=======
-
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 git push origin master  //推入远程库
 </pre>
 
 
-<<<<<<< HEAD
 <h1>参考文献:</h1>
 
 <p>1.本文内容来自:weibo.com/crespoxiao的微博配图</p>
@@ -1390,11 +1064,6 @@ git push origin master  //推入远程库
     <content type="html"><![CDATA[<p>最近由于微博上好友分享的几篇越狱相关的好文章,让我步入了越狱的世界,THEOS和IOSOpenDev环境也都搭建好了,并且也调试了几个相关的demo,但是无奈手中没有越狱设备,所以调试程序也极不方便,况且越狱开发目前来看前景也不好,除了能从其他方面更加理解iphone 的sdk,在程序编写方面并不是帮助很大,但是吧,学习一门技术不能这么短视是吧?所以吧,我现在准备开始复习数据结构和算法相关的内容,由于精力的分散加上自己的懒惰,之前准备学习几次都失败了,所以现在决定再一次系统的学习下.</p>
 
 <p>这里开一片日志,用来记录学习中的点滴.</p>
-=======
-<p><strong>参考文献:</strong></p>
-
-<p>1.本文内容来自:weibo.com/crespoxiao的微博配图</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 ]]></content>
   </entry>
   
@@ -1472,15 +1141,9 @@ vim 文件名</p>
   
   <entry>
     <title type="html"><![CDATA[又是一个github博客]]></title>
-<<<<<<< HEAD
     <link href="http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke/"/>
     <updated>2013-12-03T11:10:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke</id>
-=======
-    <link href="http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke/"/>
-    <updated>2013-11-15T16:17:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/11/15/jin-tian-kai-shi-da-jian-wan-cheng-liao-githubbo-ke</id>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
     <content type="html"><![CDATA[<p>在github上拥有一个博客地址,本人觉得是一件挺酷的事情,于是乎翻遍了网上大部分的教程,在花费了一天半的时间后,终于搭建完成了,其中遇到了很多的坑,幸亏在时间的软磨硬泡下,一一被我解决了(主要是对ruby环境的不熟悉造成的).</p>
 
 <h1>1.搭建ruby环境</h1>
@@ -1558,16 +1221,7 @@ rake new_post[‘article name’] 生成博文框架，然后修改生成的文�
 rake generate 生成静态文件
 rake preview 在http://localhost:4000 访问博文内容
 rake deploy 将生成的博文推送到你的github上
-<<<<<<< HEAD
 同时我也建议把所有的源码也推送到github进行保存,代码一般为:
-=======
-</pre>
-
-
-<p>同时我也建议把所有的源码也推送到github进行保存,代码一般为:</p>
-
-<pre>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 git add .
 git commit -m "add source files"
 git push origin source
@@ -1578,12 +1232,7 @@ git push origin source
 
 <p>Markdown 是一种轻量级标记语言，创始人为约翰·格鲁伯（John Gruber）和亚伦·斯沃茨（Aaron Swartz）。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”</p>
 
-<<<<<<< HEAD
 <p>我们在github上面存放的博客其实是通过ruby下的一个框架,将我们使用markdown语法编写的博文 转换为html网页.在这里赞赏下网友们的智慧.</p>
-=======
-<p>我们在github上面存放的博客其实是通过ruby下的一个框架,将我们使用markdown语法编写的博文
-转换为html网页.在这里赞赏下网友们的智慧.</p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>而markdown的教程网上有很多,你可以先点击<a href="http://zh.wikipedia.org/wiki/Markdown">这里</a>进行了解.</p>
 
@@ -1604,11 +1253,7 @@ rake preview
 
 <p>别的模块定制方法也许你应该看看<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">这个</a>.</p>
 
-<<<<<<< HEAD
 <h1>参考文献:</h1>
-=======
-<p><strong>参考文献:</strong></p>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe
 
 <p>1.首先感谢唐巧的博客,本文的大部分内容都是来自他的一篇<a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">博文</a>,作为iOS工程师我也建议你关注他们的微博,并且仔细研读他的每篇博文,真是收获颇丰.</p>
 
