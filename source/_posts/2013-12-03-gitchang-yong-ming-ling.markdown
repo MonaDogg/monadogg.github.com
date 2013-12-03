@@ -3,7 +3,7 @@ layout: post
 title: "git常用命令"
 date: 2013-12-03 11:12
 comments: true
-categories: OS
+categories: os
 ---
 如果读者想成git高手,本文也许并不适合你,我在这里推荐一本书为<Git权威指南>,这本书会介绍git的方方面面,如果读者是一位并不清楚git基础知识的读者,那么建议读者先从[这里](http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000)开始学习git.本文主要记载日常使用git中常用的命令,并尽量讲清楚使用该命令的使用场景.
 #1.本地操作

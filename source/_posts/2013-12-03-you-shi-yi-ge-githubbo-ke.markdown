@@ -3,7 +3,7 @@ layout: post
 title: "又是一个github博客"
 date: 2013-12-03 11:10
 comments: true
-categories: OS
+categories: os
 ---
 
 在github上拥有一个博客地址,本人觉得是一件挺酷的事情,于是乎翻遍了网上大部分的教程,在花费了一天半的时间后,终于搭建完成了,其中遇到了很多的坑,幸亏在时间的软磨硬泡下,一一被我解决了(主要是对ruby环境的不熟悉造成的).

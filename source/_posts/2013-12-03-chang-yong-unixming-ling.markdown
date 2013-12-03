@@ -3,7 +3,7 @@ layout: post
 title: "常用unix命令"
 date: 2013-12-03 11:11
 comments: true
-categories: OS
+categories: os
 ---
 ###1.列出文件
 
