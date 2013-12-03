@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: os | MonaDogg]]></title>
+  <title><![CDATA[Category: OS | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/os/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-12-03T14:30:49+08:00</updated>
+  <updated>2013-12-03T18:27:25+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -329,282 +329,6 @@ git reset --hard HEAD^
 
 
 <p>p127</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[越狱开发知乎精彩回答]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da/"/>
-    <updated>2013-12-03T11:12:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-zhi-hu-jing-cai-hui-da</id>
-    <content type="html"><![CDATA[<p>最近笔者研究越狱开发,现总结了一些资料知乎上他人对越狱开发学习流程的精彩回答.</p>
-
-<p>1.suu，iOS Researcher</p>
-
-<pre>
-①去Cydia下载Theos Tutorials，并在谷歌上了解theos相关信息。
-②Mac上安装iOSOpenDev，并了解相关信息。
-入门教程最多Hello World，剩下的去Github上找源码吧，比如killbackgrounds
-
-我也上传了一个:
-http://github.com/al1enSuu/Slide2Dismiss
-</pre>
-
-
-<p>2.季逸超，Peak-Labs创始人/CEO,猛犸浏览器、Rasgue…</p>
-
-<pre>
-有幸被邀请回答，不过不知道您要了解的'系统机制'有多深入? ;-)
-按照意图和深度的话，大概有这么几种途径与资源：
-
-1.为了学习框架，提升开发水平，可以看看私有API列表。iOS (Cocoa Touch)的各私有API都可以通过runtime查看获得，您可以自己写个method browser。如果觉得麻烦的话可以到Github看现成的，我收藏了俩: https://github.com/kennytm/iphone-private-frameworks 和 https://github.com/nst/iOS-Runtime-Headers ，但还是推荐自己来实时获取，因为iOS在更新，API也在更新。在App Store产品中使用私有API是违反苹果规定的，所以能不用这些API而实现一些功能是iOS工程师水平的体现。
-
-2.对iOS工程师而言，如果只是开发的话(1)也就差不多了。如果您十分有爱，想了解API以下的东西的话，依然可以利用Obj-C的runtime。可以在这里看到 http://opensource.apple.com/source/objc4/objc4-493.11/runtime/ ，尤其是objc-runtime.m，这里提供了很多学习用的"工具"。比如经典的method_exchangeImplementations()，您可以用它研究很多黑箱过程的来龙去脉。值得一提的是，这种技巧(method swizzling)是合法的,可以在App Store 中使用! 苹果曾给使用了相关技巧的开发者发过邮件，表示出于安全性和稳定性最好不再使用，但没有禁止。
-
-3.如果是对系统本身感兴趣的话，不妨越狱看看。iOS和Mac OS X类似，基于Darwin，是一种UNIX系统。越狱后你就有了root权，可以安装个Terminal，装gcc都没问题的哈哈~ 接下来就像您研究Linux那样摆弄就好了。对于开发者来说，有了root权也就可以写一些system tweak或全局的代码，自然也可以用来深入了解系统、原生app等。这方面我很久没折腾了，所以不敢瞎说。
-
-4.如果您是想成为一名iOS Hacker的话，最近有本书挺火的: http://www.amazon.com/iOS-Hackers-Handbook-Charlie-Miller/ 我没空看不知道咋样，但作者很神。另外现在iOS越狱界也有了自己的大会，可以看看“越狱梦之队”的演讲和文档: http://absinthejailbreak.com/dream-team-presentation-at-hitbsecconf-videos/ 。如果您还是没有满足的话，可以看看从硬件入手的逆向工程和调试，分享一个我收藏的宝贝: http://wenku.baidu.com/view/dae22c30eefdc8d376ee32c9.html
-
-5.另外说iOS代码是封闭/闭源的其实不全对，苹果算是开源界的一面大旗了，比如WebKit。iOS的组成部分也一样是开源的，可以在官网 http://opensource.apple.com/ 看到，最新的iOS 5.1.1在这: http://opensource.apple.com/release/ios-511/ 。但是如您所见，这里并没有iOS操作系统的代码，而是一些库和编译器、调试器...其中JavaScriptCore和WebCore很有用，这两者是WebKit的基础，可以说WebKit是iOS最重要的组成之一，截止iOS 5 (6我还没下呢=___=)，所有多于一行文字的控件其实都是WebKit标准的(不可思议吧?!)。很多iOS的Hack都是从这里开始的。说到WebKit,之前Comex大神的Spirit越狱(那个"Slide to Jailbreak")就是利用Safari->WebKit->PDF Engine->TIFF字体的漏洞实现了代码注入！所以每一个系统组件都可能是iOS逆向/Hack的突破口！
-</pre>
-
-
-<h1>参考资料:</h1>
-
-<p>1.<a href="http://www.zhihu.com/question/20954912">http://www.zhihu.com/question/20954912</a>
-2.<a href="http://www.zhihu.com/question/20317296/answer/14735312">http://www.zhihu.com/question/20317296/answer/14735312</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[越狱开发相关笔记]]></title>
-    <link href="http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji/"/>
-    <updated>2013-12-03T11:12:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2013/12/03/yue-yu-kai-fa-xiang-guan-bi-ji</id>
-    <content type="html"><![CDATA[<h2>1安装iOS sdk</h2>
-
-<p>Step1:安装iOS SDK.</p>
-
-<h2>2下载theos</h2>
-
-<p>可以简单理解theos为越狱开发的环境</p>
-
-<pre>
-export THEOS=/opt/theos
-//设置环境变量
-svn co http://svn.howett.net/svn/theos/trunk $THEOS
-//svn下载相关内容到位置
-</pre>
-
-
-<p>可以使用下列语句打印看看:</p>
-
-<pre>
-echo $THEOS
-</pre>
-
-
-<h2>3下载ldid</h2>
-
-<p>ldid的功能是给app签名
-下载并解压到桌面上: <a href="http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip">http://cloud.github.com/downloads/rpetrich/ldid/ldid.zip</a></p>
-
-<pre>
-chmod +x ~/Desktop/ldid
-//设置ldid可以执行的权限
-
-mv ~/Desktop/ldid $THEOS/bin/ldid
-//将ldid移动到指定的位置
-</pre>
-
-
-<h2>4安装MacPorts和dpkg</h2>
-
-<p>1.先安装Macports,选择合适的系统版本,有可能会卡在最后一分钟，需要重启后断网安装即可。</p>
-
-<p>2.dpkg的作用是将你的app打包为debian paceage.
-sudo port install dpkg</p>
-
-<h2>5创建一个新的项目</h2>
-
-<p>theos使用一个叫做nic(new instance tool)的工具来创建新的工程。执行下面的命令：
-$THEOS/bin/nic.pl
-就可以开始创建。</p>
-
-<p>下面是一个创建jailbroken 应用程序的例子：</p>
-
-<pre>
-author$ $THEOS/bin/nic.pl
-NIC 1.0 - New Instance Creator
-——————————
-  [1.] iphone/application
-  [2.] iphone/library
-  [3.] iphone/preference_bundle
-  [4.] iphone/tool
-  [5.] iphone/tweak
-Choose a Template (required): 1
-Project Name (required): firstdemo
-Package Name [com.yourcompany.firstdemo]: 
-Author/Maintainer Name [Author Name]: 
-Instantiating iphone/application in firstdemo/…
-Done.
-</pre>
-
-
-<p>这样就会在当前目录下创建一个名为fistdemo的文件夹</p>
-
-<h2>6生成文件说明</h2>
-
-<p>1.control: 包含applicaton/tweak的信息，当你从Cydia安装时，你可以看到这些信息，包括名字，作者，版本，等等。</p>
-
-<p>2.main.m，程序启动的入口.</p>
-
-<p>3.firstDemoApplication:app的代理文件类</p>
-
-<p>4.Makefile：包含必要的编译命令</p>
-
-<p>5.Resources：包含info.plist文件等</p>
-
-<p>6.RootViewController.h/mm :根vc
-其中Makefile的内容为:</p>
-
-<pre>
-include theos/makefiles/common.mk
-
-APPLICATION_NAME = firstDemo
-firstDemo_FILES = main.m firstDemoApplication.mm RootViewController.mm
-firstDemo_FRAMEWORKS = UIKit CoreGraphics
-
-include $(THEOS_MAKE_PATH)/application.mk
-</pre>
-
-
-<h2>7重新设置环境变量</h2>
-
-<p>设置下列环境变量:环境位置,sdk版本,设备ip地址.</p>
-
-<pre>
-export THEOS=/opt/theos/
-export SDKVERSION=7.0
-export THEOS_DEVICE_IP=xxx.xxx.xxx.xxx
-</pre>
-
-
-<h2>8构建工程</h2>
-
-<p>1.make</p>
-
-<pre>
-$ make
-Making all for application firstdemo…
- Compiling main.m…
- Compiling firstdemoApplication.mm…
- Compiling RootViewController.mm…
- Linking application firstdemo…
- Stripping firstdemo…
- Signing firstdemo…
-</pre>
-
-
-<p>
-2.make package</p>
-
-<pre>
-make package
-Making all for application firstdemo…
-make[2]: Nothing to be done for ‘internal-application-compile’.
-Making stage for application firstdemo…
- Copying resource directories into the application wrapper…
-dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
-</pre>
-
-
-<p>3.make install 执行次操作之前确保iPhone安装了OpenSSH,并且在同一局域网.</p>
-
-<pre>
-$ make package install
-Making all for application firstdemo…
-make[2]: Nothing to be done for `internal-application-compile’.
-Making stage for application firstdemo…
- Copying resource directories into the application wrapper…
-dpkg-deb: building package ‘com.yourcompany.firstdemo’ in ‘/Users/author/Desktop/firstdemo/com.yourcompany.firstdemo_0.0.1-1_iphoneos-arm.deb’.
-...
-root@ip’s password: 
-...
-</pre>
-
-
-<p>这个过程会提示你输入几次iphone或者ipad的密码。默认是:alpine.</p>
-
-<h2>9.构建一个Tweak</h2>
-
-<p>本文介绍如果hook ios中任意类的方法的例子.</p>
-
-<p>1.下载libsubstrate.dylib到/opt/theos/lib.</p>
-
-<p>2.class-dump相关头文件到/opt/theos/include目录下</p>
-
-<p>3.创建tweak项目
-执行 $THEOS/bin/nic.pl,选择5</p>
-
-<pre>
-author$ $THEOS/bin/nic.pl
-NIC 1.0 - New Instance Creator
-——————————
-  [1.] iphone/application
-  [2.] iphone/library
-  [3.] iphone/preference_bundle
-  [4.] iphone/tool
-  [5.] iphone/tweak
-
-Choose a Template (required): 5
-Project Name (required): WelcomeWagon 
-Package Name [com.yourcompany.welcomewagon]: 
-Author/Maintainer Name [Brandon Trebitowski]: 
-MobileSubstrate Bundle filter [com.apple.springboard]: 
-Instantiating iphone/tweak in welcomewagon/…
-Done.
-</pre>
-
-
-<p>4.改写Tweak.xm文件
-一旦你创建了项目，你会发现Theos生成了一个叫做Tweak.xm的文件，这是个特殊的文件，hook的相关代码就将写在这个文件。</p>
-
-<pre>
-#import 
-//引入相关的dump出的头文件
-
-%hook SpringBoard
-//hook的类名
-
--(void)applicationDidFinishLaunching:(id)application {
-%orig;
-//执行原方法
-
-UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Welcome" 
-message:@"Welcome to your iPhone Brandon!" 
-delegate:nil 
-cancelButtonTitle:@"Thanks" 
-otherButtonTitles:nil]
-[alert show];
-[alert release];
-}
-//新增的hook代码
-
-%end
-//代码结束
-</pre>
-
-
-<p>5.更改makefile文件,加入相关的类库</p>
-
-<p>WelcomeWagon_FRAMEWORKS = UIKit</p>
-
-<p>6.make, make package, make install</p>
-
-<h1>参考资料</h1>
-
-<p>1.<a href="http://wufawei.com/2013/08/iOS-jailbroken-programming-1/">http://wufawei.com/2013/08/iOS-jailbroken-programming-1/</a></p>
 ]]></content>
   </entry>
   
@@ -1044,6 +768,216 @@ git push origin master  //推入远程库
     <content type="html"><![CDATA[<p>最近由于微博上好友分享的几篇越狱相关的好文章,让我步入了越狱的世界,THEOS和IOSOpenDev环境也都搭建好了,并且也调试了几个相关的demo,但是无奈手中没有越狱设备,所以调试程序也极不方便,况且越狱开发目前来看前景也不好,除了能从其他方面更加理解iphone 的sdk,在程序编写方面并不是帮助很大,但是吧,学习一门技术不能这么短视是吧?所以吧,我现在准备开始复习数据结构和算法相关的内容,由于精力的分散加上自己的懒惰,之前准备学习几次都失败了,所以现在决定再一次系统的学习下.</p>
 
 <p>这里开一片日志,用来记录学习中的点滴.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[常用unix命令]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/chang-yong-unixming-ling/"/>
+    <updated>2013-12-03T11:11:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/chang-yong-unixming-ling</id>
+    <content type="html"><![CDATA[<h3>1.列出文件</h3>
+
+<p>ls 参数 目录名</p>
+
+<h3>2.转换目录</h3>
+
+<p>cd</p>
+
+<h3>3.建立新目录</h3>
+
+<p>mkdir 目录名</p>
+
+<p>mkdir /User/用户名/Desktop/backup</p>
+
+<h3>4.拷贝文件</h3>
+
+<p>cp 参数 源文件 目标文件</p>
+
+<p>把驱动目录下的所有文件备份到桌面backup</p>
+
+<p>cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
+
+<h3>5.删除文件</h3>
+
+<p>rm 参数 文件</p>
+
+<p>rm -rf /System/Library/Extensions.kextcache</p>
+
+<p>参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
+
+<h3>6.移动文件</h3>
+
+<p>mv 文件 例：想把AppleHDA.Kext 移到桌面</p>
+
+<p>mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
+
+<h3>7.文本编辑</h3>
+
+<p>nano 文件名
+vim 文件名</p>
+
+<h3>8.删除一个目录</h3>
+
+<p>rmdir dirname</p>
+
+<h3>9.移动或重命名一个目录</h3>
+
+<p>mvdir dir1 dir2</p>
+
+<h3>10.显示当前目录的路径名</h3>
+
+<p>pwd</p>
+
+<h3>11.生成一个新文件</h3>
+
+<p>touch readMe.txt</p>
+
+<h3>12.重复上次的命令</h3>
+
+<p>!!</p>
+
+<h3>13.更改密码</h3>
+
+<p>passwd</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[又是一个github博客]]></title>
+    <link href="http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke/"/>
+    <updated>2013-12-03T11:10:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2013/12/03/you-shi-yi-ge-githubbo-ke</id>
+    <content type="html"><![CDATA[<p>在github上拥有一个博客地址,本人觉得是一件挺酷的事情,于是乎翻遍了网上大部分的教程,在花费了一天半的时间后,终于搭建完成了,其中遇到了很多的坑,幸亏在时间的软磨硬泡下,一一被我解决了(主要是对ruby环境的不熟悉造成的).</p>
+
+<h1>1.搭建ruby环境</h1>
+
+<p>搭建rvm环境和相关的设置</p>
+
+<p>rvm是一个命令行工具，可以提供一个便捷的多版本ruby环境的管理和切换,下面的代码是用来安装rvm的.</p>
+
+<pre>
+bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+</pre>
+
+
+<p>然后需要设置环境变量:</p>
+
+<pre>
+echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function' >> ~/.bash_profile
+source ~/.bash_profile
+
+# If using Zsh do this instead
+echo '[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm' >> ~/.zshrc
+source ~/.zshrc
+</pre>
+
+
+<p>最终需要安装ruby环境(不知道为何安装1.9.2会报奇怪的错,换成1.9.3就好了):</p>
+
+<pre>
+rvm install 1.9.3 && rvm use 1.9.3
+rvm rubygems latest
+</pre>
+
+
+<h1>2.安装Octopress</h1>
+
+<p>克隆代码到当前目录下,并且进入octopress目录:</p>
+
+<pre>
+git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+</pre>
+
+
+<p>安装相关的依赖库:</p>
+
+<pre>
+gem install bundler
+bundle install
+</pre>
+
+
+<p>最后安装Octopress</p>
+
+<pre>
+rake install
+</pre>
+
+
+<h1>3.简单设置你的博客</h1>
+
+<p>1)修改文件_config.yml,里面基本上是一些博客名称,作者姓名等等之类的设置信息.</p>
+
+<p>2)修改source文件夹下一些html中twitter,google等政府屏蔽网站的相关资源,会造成页面加载缓慢,具体判断建议使用chrome,查看每项资源的加载时间,将无法获取的资源保存到本地,或者换为墙内的加载地址.</p>
+
+<h1>4.设置github账号</h1>
+
+<p>在github上创建一个名为 账号名.github.com 的代码仓库。</p>
+
+<h1>5.写博客</h1>
+
+<p>写博客的主要命令为：</p>
+
+<pre>
+rake new_post[‘article name’] 生成博文框架，然后修改生成的文件即可
+rake generate 生成静态文件
+rake preview 在http://localhost:4000 访问博文内容
+rake deploy 将生成的博文推送到你的github上
+同时我也建议把所有的源码也推送到github进行保存,代码一般为:
+git add .
+git commit -m "add source files"
+git push origin source
+</pre>
+
+
+<h1>6.关于markdown</h1>
+
+<p>Markdown 是一种轻量级标记语言，创始人为约翰·格鲁伯（John Gruber）和亚伦·斯沃茨（Aaron Swartz）。它允许人们“使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML(或者HTML)文档”</p>
+
+<p>我们在github上面存放的博客其实是通过ruby下的一个框架,将我们使用markdown语法编写的博文 转换为html网页.在这里赞赏下网友们的智慧.</p>
+
+<p>而markdown的教程网上有很多,你可以先点击<a href="http://zh.wikipedia.org/wiki/Markdown">这里</a>进行了解.</p>
+
+<h1>7.美化我们的博客</h1>
+
+<p>如果你觉得我们安装好的博客挺丑的,而且评论功能也很难用,还有那个定制栏能不能放点别的什么,那我们就需要动手改造了,在这里我仅仅介绍下安装主题的方法.</p>
+
+<p>我使用的主题是<a href="https://github.com/gehaxelt/CSS-WhiteLake">whitelake</a>:</p>
+
+<pre>
+cd octopress
+git clone https://github.com/gehaxelt/CSS-WhiteLake.git .themes/whitelake
+rake install['whitelake']
+rake generate
+rake preview
+</pre>
+
+
+<p>别的模块定制方法也许你应该看看<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">这个</a>.</p>
+
+<h1>参考文献:</h1>
+
+<p>1.首先感谢唐巧的博客,本文的大部分内容都是来自他的一篇<a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">博文</a>,作为iOS工程师我也建议你关注他们的微博,并且仔细研读他的每篇博文,真是收获颇丰.</p>
+
+<p>2.<a href="http://ishalou.com/blog/2012/10/15/how-to-use-octopress/">http://ishalou.com/blog/2012/10/15/how-to-use-octopress/</a></p>
+
+<p>3.<a href="http://hahaya.github.io/2013/06/26/build-blog-on-github.html">http://hahaya.github.io/2013/06/26/build-blog-on-github.html</a></p>
+
+<p>4.<a href="http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html">http://www.cnblogs.com/rubylouvre/archive/2012/06/10/2543706.html</a></p>
+
+<p>5.<a href="http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/">http://easypi.github.io/blog/2013/01/05/using-octopress-to-setup-blog-on-github/</a></p>
+
+<p>以下是美化博客:</p>
+
+<p>6.<a href="http://yanping.me/cn/blog/2012/01/07/theming-and-customization/">http://yanping.me/cn/blog/2012/01/07/theming-and-customization/</a></p>
+
+<p>7.<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/</a></p>
+
+<p>8.<a href="http://xuhehuan.com/886.html">http://xuhehuan.com/886.html</a></p>
+
+<p>9.<a href="http://lucifr.com/2012/02/05/slash-theme-for-octopress/">http://lucifr.com/2012/02/05/slash-theme-for-octopress/</a></p>
 ]]></content>
   </entry>
   
