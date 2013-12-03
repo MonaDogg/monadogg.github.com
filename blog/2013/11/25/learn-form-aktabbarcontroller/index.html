@@ -3,15 +3,15 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>常用unix命令 - MonaDogg</title>
+	<title>AKTabBarController笔记 - MonaDogg's blog</title>
 	<meta name="author" content="MonaDogg">
 
 	
-	<meta name="description" content="1.列出文件 ls 参数 目录名 2.转换目录 cd 3.建立新目录 mkdir 目录名 mkdir /User/用户名/Desktop/backup 4.拷贝文件 cp 参数 源文件 目标文件 把驱动目录下的所有文件备份到桌面backup cp -R /System/Library/ &hellip;">
+	<meta name="description" content="因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了AKTabBarController,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下: 1. &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-	<link href="/atom.xml" rel="alternate" title="MonaDogg" type="application/atom+xml">
+	<link href="/atom.xml" rel="alternate" title="MonaDogg's blog" type="application/atom+xml">
 	<link rel="canonical" href="">
 	<link href="/favicon.png" rel="shortcut icon">
 	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
@@ -22,38 +22,24 @@
 
 
 <body>
-	<header id="header" class="inner"><h1><a href="/">MonaDogg</a></h1>
+	<header id="header" class="inner"><h1><a href="/">MonaDogg's blog</a></h1>
 <nav id="main-nav"><ul class="main">
-<<<<<<< HEAD:blog/2013/12/03/chang-yong-unixming-ling/index.html
-	<li><a href="/blog/categories/iOS">iOS</a></li>
-	<li><a href="/blog/categories/OS">OS</a></li>
-	<li><a href="/blog/categories/myLife">myLife</a></li>
-	<li><a href="/about_me">aboutMe</a></li>
-=======
 	<li><a href="/">Home</a></li>
 	<li><a href="/blog/categories/ios">iOS</a></li>
 	<li><a href="/blog/categories/os">OS</a></li>
 	<li><a href="/blog/categories/life">Life</a></li>
 	<li><a href="/about_me">About</a></li>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe:blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/index.html
 </ul>
 </nav>
 <nav id="mobile-nav">
 	<div class="alignleft menu">
 		<a class="button">Menu</a>
 		<div class="container"><ul class="main">
-<<<<<<< HEAD:blog/2013/12/03/chang-yong-unixming-ling/index.html
-	<li><a href="/blog/categories/iOS">iOS</a></li>
-	<li><a href="/blog/categories/OS">OS</a></li>
-	<li><a href="/blog/categories/myLife">myLife</a></li>
-	<li><a href="/about_me">aboutMe</a></li>
-=======
 	<li><a href="/">Home</a></li>
 	<li><a href="/blog/categories/ios">iOS</a></li>
 	<li><a href="/blog/categories/os">OS</a></li>
 	<li><a href="/blog/categories/life">Life</a></li>
 	<li><a href="/about_me">About</a></li>
->>>>>>> 95aa07cd408ca0f317aab693f7d468c97795c4fe:blog/2013/11/15/chi-xu-geng-xin-maczhong-duan-chang-yong-ming-ling/index.html
 </ul>
 </div>
 	</div>
@@ -94,71 +80,21 @@
 		
 	
 	<div id="content" class="inner"><article class="post">
-	<h2 class="title">常用unix命令</h2>
-	<div class="entry-content"><h3>1.列出文件</h3>
+	<h2 class="title">AKTabBarController笔记</h2>
+	<div class="entry-content"><p>因为项目的需要定义tabbar,无奈iOS默认的tabbar难以达到我们的要求,于是乎我再github上发现了<a href="https://github.com/alikaragoz/AKTabBarController">AKTabBarController</a>,其可以定制的样式用庞大来形容也不为过,经过半天的远源码研究,觉得这个小项目设计的十分友好,所以我将一些心得体会书写如下:</p>
 
-<p>ls 参数 目录名</p>
+<p>1.AKTabbarController 是用来控制所有所有view的展示关系(例如tabbar,contentview什么时候展示,展示何种样式),并且初始化AKTabbarView,并将其展示在view上.此处还实现了代理方法,根据点击展示不同的view到contentview上.</p>
 
-<h3>2.转换目录</h3>
+<p>2.AKTabbarView包含,AKTabbar以及contentview,用来展示tabbar的不同形态和contentview的不同形态.其供controller调用,用于展示不同的效果,例如tab被选中,或者contentview被推送,但是其并不直到发生了什么,只是按照要求展示内容.</p>
 
-<p>cd</p>
+<p>3.AKTabbar是tabbar的整体,包含多个AKTab及其分割线等东西.用于展示tabbar的整体,通过设置其属性tabs(一个AKTab的数组),调用
+setNeedsLayout,来间接调用layoutSubviews计算各个tab的frame,通过调用setNeedsDisplay间接点用drawRect将所有tab和分割线等东西绘制再屏幕上.此处还为每个tab添加了action,并且定义了delegate,让tab被点击的时候调用代理方法.</p>
 
-<h3>3.建立新目录</h3>
+<p>4.AKTab是每个具体的tab样式和行为,根据属性进行绘制tab上的内容,将背景和内容分为两个方法进行绘制.</p>
 
-<p>mkdir 目录名</p>
+<p>5.使用category设置vc,nvc等vc在tabbar上的titile和image,这里用的很巧妙.</p>
 
-<p>mkdir /User/用户名/Desktop/backup</p>
-
-<h3>4.拷贝文件</h3>
-
-<p>cp 参数 源文件 目标文件</p>
-
-<p>把驱动目录下的所有文件备份到桌面backup</p>
-
-<p>cp -R /System/Library/Extensions/* /User/用户名/Desktop/backup</p>
-
-<h3>5.删除文件</h3>
-
-<p>rm 参数 文件</p>
-
-<p>rm -rf /System/Library/Extensions.kextcache</p>
-
-<p>参数－rf 表示递归和强制，千万要小心使用，如果执行了 rm -rf / 你的系统就全没了</p>
-
-<h3>6.移动文件</h3>
-
-<p>mv 文件 例：想把AppleHDA.Kext 移到桌面</p>
-
-<p>mv /System/Library/Extensions/AppleHDA.kext /User/用户名/Desktop</p>
-
-<h3>7.文本编辑</h3>
-
-<p>nano 文件名
-vim 文件名</p>
-
-<h3>8.删除一个目录</h3>
-
-<p>rmdir dirname</p>
-
-<h3>9.移动或重命名一个目录</h3>
-
-<p>mvdir dir1 dir2</p>
-
-<h3>10.显示当前目录的路径名</h3>
-
-<p>pwd</p>
-
-<h3>11.生成一个新文件</h3>
-
-<p>touch readMe.txt</p>
-
-<h3>12.重复上次的命令</h3>
-
-<p>!!</p>
-
-<h3>13.更改密码</h3>
-
-<p>passwd</p>
+<p>但是这些设置有些太多,太细已经超过我的预期,所以我准备编写另一个适合自己的可定制的tabbar.</p>
 </div>
 
 
@@ -175,11 +111,11 @@ vim 文件名</p>
   
 
 
-<time datetime="2013-12-03T11:11:00+08:00" pubdate data-updated="true">Dec 3<span>rd</span>, 2013</time></div>
+<time datetime="2013-11-25T17:02:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2013</time></div>
 	<div class="tags">
 
 
-	<a class='category' href='/blog/categories/os/'>os</a>
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
 
 
 </div>
