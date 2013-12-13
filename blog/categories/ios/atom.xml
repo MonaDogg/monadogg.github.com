@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-12-13T14:16:54+08:00</updated>
+  <updated>2013-12-13T14:30:19+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -14,11 +14,13 @@
 
   
   <entry>
-    <title type="html"><![CDATA[first_idep_app]]></title>
+    <title type="html"><![CDATA[第一个]]></title>
     <link href="http://MonaDogg.github.io/blog/2013/12/13/first-idep-app/"/>
     <updated>2013-12-13T10:36:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/13/first-idep-app</id>
-    <content type="html"><![CDATA[<p>今天开通了企业级idp账号,这是第一个app,点击
+    <content type="html"><![CDATA[<p>今天公司开通了企业级idp账号,稍后会记录下来详细的过程.</p>
+
+<p>这是公司的一个正在测试版本的app,如果有兴趣点击
 <a href="itms-services://?action=download-manifest&amp;url=http://monadogg.github.io/ipa/app.plist">这里</a>安装</p>
 ]]></content>
   </entry>
