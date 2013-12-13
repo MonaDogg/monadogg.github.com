@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: OS | MonaDogg]]></title>
+  <title><![CDATA[Category: os | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/os/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2013-12-03T18:32:23+08:00</updated>
+  <updated>2013-12-13T10:29:01+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
