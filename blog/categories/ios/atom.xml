@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2014-01-26T14:10:03+08:00</updated>
+  <updated>2014-02-11T15:25:52+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -19,6 +19,8 @@
     <updated>2013-12-13T10:36:00+08:00</updated>
     <id>http://MonaDogg.github.io/blog/2013/12/13/first-idep-app</id>
     <content type="html"><![CDATA[<p>点击<a href="itms-services://?action=download-manifest&amp;url=http://monadogg.github.io/ipa/newZuzhili.plist">这里</a>安装组织力.</p>
+
+<p>点击<a href="itms-services://?action=download-manifest&amp;url=http://www.zuzhili.com/app/app.plist">这里2</a>安装组织力.</p>
 ]]></content>
   </entry>
   
