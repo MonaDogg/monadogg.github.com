@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2014-02-23T22:37:16+08:00</updated>
+  <updated>2014-02-25T11:42:53+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -51,29 +51,25 @@ stderr:标准错误</p>
 
 <h2>3.c语言常用库</h2>
 
-<pre>
-#include <stdlib.h>
+<pre><code>#include &lt;stdlib.h&gt;
 //stdlib 头文件即standard library标准库头文件
 //本例中用了内存申请和释放:malloc()和free()
 
-#include <string.h>
+#include &lt;string.h&gt;
 //C语言里面关于字符数组的函数定义的头文件
 //本例中用了memset()重置内存区域
-</pre>
-
+</code></pre>
 
 <h2>4.memset的用法</h2>
 
-<pre>
-//设置缓冲区到制定的位置
+<pre><code>//设置缓冲区到制定的位置
 void *memset(
    void *dest,      //开始的内存地址
    int c,               //设置值
    size_t count     //设置的长度
 );
 memset(tempList, 0, sizeof(NewList));
-</pre>
-
+</code></pre>
 
 <p>设置tempList开始的内存地址,长度为NewList类型的长度,值为0</p>
 
@@ -81,23 +77,20 @@ memset(tempList, 0, sizeof(NewList));
 
 <p>1)申请内存</p>
 
-<pre>
-if ((new_element = (ListElmt *)malloc(sizeof(ListElmt))) == NULL)
+<pre><code>if ((new_element = (ListElmt *)malloc(sizeof(ListElmt))) == NULL)
       return -1;
-</pre>
-
+</code></pre>
 
 <p>2)释放内存</p>
 
-<pre>
-free(willDeleteListElement);
-</pre>
-
+<pre><code>free(willDeleteListElement);
+</code></pre>
 
 <h2>6.以下为链表的实现文件</h2>
 
-<pre>
-//
+<p>linkList.h</p>
+
+<pre><code>//
 //  linkList.h
 //  clist
 //
@@ -139,18 +132,148 @@ int linkListInsert(LinkList *linkList,LinkListElement *frontListElement,void *da
 //销毁
 void linkListDestroy(LinkList *linkList);
 
-#define LINKLIST_SIZE(linkList) (linkList->size)
-#define LINKLIST_HEAD_ELEMENT(linkList) (linkList->headListElement)
-#define LINKLIST_TAIL_ELEMENT(linkList) (linkList->tailListElement)
-#define LINKLIST_DATA(linklistElement) (linklistElement->data)
-#define LINKLIST_NEXT(linklistElement) (linklistElement->nextElement)
+#define LINKLIST_SIZE(linkList) (linkList-&gt;size)
+#define LINKLIST_HEAD_ELEMENT(linkList) (linkList-&gt;headListElement)
+#define LINKLIST_TAIL_ELEMENT(linkList) (linkList-&gt;tailListElement)
+#define LINKLIST_DATA(linklistElement) (linklistElement-&gt;data)
+#define LINKLIST_NEXT(linklistElement) (linklistElement-&gt;nextElement)
 #define LINKLIST_IS_HEAD_ELEMENT(linkList,linklistElement)(linklistElement == LINKLIST_HEAD_ELEMENT(linkList) ? 1 : 0 )
 #define LINKLIST_IS_TAIL_ELEMENT(linkList,linklistElement)(linklistElement == LINKLIST_TAIL_ELEMENT(linkList) ? 1 : 0 )
 
 #endif
+</code></pre>
 
-</pre>
+<p>linkList.m</p>
 
+<pre><code>//
+//  linkList.c
+//  clist
+//
+//  Created by lee on 14-2-25.
+//  Copyright (c) 2014年 lee. All rights reserved.
+//
+
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include "linkList.h"
+
+
+void linkListInit(LinkList *linkList,void (* destroy)(void *data))
+{
+    linkList-&gt;headListElement = NULL;
+    linkList-&gt;tailListElement = NULL;
+    linkList-&gt;size = 0;
+    linkList-&gt;destroy = destroy;
+    return;
+}
+
+
+//考虑是否从头删除,并且考虑链表新的头尾元素
+//非从头删除,需要考虑新的尾元素
+
+int linkListDelete(LinkList *linkList,LinkListElement *frontListElement,void **data)
+{
+
+
+    if (LINKLIST_SIZE(linkList) == 0 || frontListElement == LINKLIST_TAIL_ELEMENT(linkList)) {
+        return -1;
+    }
+
+    LinkListElement *deleteElement;
+
+#pragma -mark 没有考虑frontListElement = NULL的情况
+//    LinkListElement *deleteElement = frontListElement-&gt;nextElement;
+//    *data = deleteElement-&gt;data;
+
+    if (frontListElement == NULL) {
+
+        deleteElement = LINKLIST_HEAD_ELEMENT(linkList);
+        *data = deleteElement-&gt;data;
+
+        //包含为NULL的情况
+        linkList-&gt;headListElement = deleteElement-&gt;nextElement;
+        if (LINKLIST_HEAD_ELEMENT(linkList) -&gt;nextElement == NULL) {
+            linkList-&gt;tailListElement = LINKLIST_HEAD_ELEMENT(linkList);
+        }
+
+    }else{
+
+        deleteElement = frontListElement-&gt;nextElement;
+        *data = deleteElement-&gt;data;
+
+        frontListElement-&gt;nextElement = deleteElement-&gt;nextElement;
+        if (frontListElement-&gt;nextElement == NULL) {
+            linkList-&gt;tailListElement = frontListElement;
+        }
+    }
+
+    free(deleteElement);
+    linkList-&gt;size --;
+    return 0;
+}
+
+
+
+
+
+//从头插入,判断当前列表是否有元素,进而判断链表的头尾元素
+//非从头插入,需要考虑是否插入元素是否为尾元素
+
+int linkListInsert(LinkList *linkList,LinkListElement *frontListElement,void *data)
+{
+    LinkListElement *insertElement;
+    if((insertElement = (LinkListElement *)malloc(sizeof(LinkListElement))) == NULL)
+        return -1;
+    insertElement-&gt;data = data;
+
+    if (frontListElement == NULL) {
+        //如果没有元素,或者没有元素
+        if (LINKLIST_SIZE(linkList) == 0) {
+            linkList-&gt;tailListElement = insertElement;
+        }else{
+            insertElement-&gt;nextElement = linkList-&gt;headListElement;
+        }
+        linkList-&gt;headListElement = insertElement;
+
+
+    }else{
+#pragma -mark 当插入元素是尾元素的情况
+        if (frontListElement-&gt;nextElement == NULL) {
+            linkList-&gt;tailListElement = insertElement;
+        }
+
+        insertElement-&gt;nextElement =  frontListElement-&gt;nextElement;
+        frontListElement-&gt;nextElement = insertElement;
+    }
+
+    linkList-&gt;size ++;
+
+    return 0;
+}
+
+
+
+
+
+
+//需要遍历释放list中的各个元素的data,并且需要判断destroy是否存在
+
+void linkListDestroy(LinkList *linkList)
+{
+    void *data = NULL;
+
+    while (LINKLIST_SIZE(linkList) &gt; 0) {
+
+#pragma -mark 不要忘记destroy为NULL的情况
+        if(linkListDelete(linkList, NULL, (void **)data) == 0 &amp;&amp; linkList-&gt;destroy != NULL ){
+            linkList-&gt;destroy(data);
+        }
+    }
+
+    memset(linkList,0,sizeof(LinkList));
+}
+</code></pre>
 ]]></content>
   </entry>
   
