@@ -1,0 +1,845 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>CoreAnimation随手记 - MonaDogg</title>
+	<meta name="author" content="MonaDogg">
+
+	
+	<meta name="description" content="0.关于核心动画 CA会将打大部分的实际绘图工作交给绘图硬件,由绘图硬件来加速绘制.apple极力推荐你使用CA来构建iOS app的动画,因为这种自动绘制所产生的高帧率和光滑的动画,没有加重cpu的负荷,也没有令你的app运行缓慢 layer对象是用于管理和控制你内容的地方,在大多数app中, &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="MonaDogg" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="/javascripts/jquery-1.7.2.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">MonaDogg</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:MonaDogg.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:MonaDogg.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">CoreAnimation随手记</h2>
+	<div class="entry-content"><h1>0.关于核心动画</h1>
+
+<p>CA会将打大部分的实际绘图工作交给绘图硬件,由绘图硬件来加速绘制.apple极力推荐你使用CA来构建iOS app的动画,因为这种自动绘制所产生的高帧率和光滑的动画,没有加重cpu的负荷,也没有令你的app运行缓慢</p>
+
+<p>layer对象是用于管理和控制你内容的地方,在大多数app中,layer被用作于管理你试图内容的方法.layer对象会将你的内容转换为位图数据(bitmap),其能够被图形硬件更容易的控制.</p>
+
+<p>layer对象很像view对象也包含bound,positon,opacity,transform以及其他的可视属性,常常当你更改这些属性的时候,会引起隐式的动画.</p>
+
+<p>和view相似,layer也是具有层级结构的,它的层级结构影响显示的内容,你可以插入单个图层到层级中,用于拓展你app的显示.</p>
+
+<p>action对象能够更改你layer定义的默认行为,隐式的动画是通过action对象实现的,你能够分配给你的aciton对象到layer的一个属性(无论是你增加的属性还是原有的属性),当这个属性更改的时候会触发aciton对象,从而产生动画.</p>
+
+<h1>1.核心动画的基本概念</h1>
+
+<p>layer并不是view的替代品,其是为了更好的展示,以及支持其内容动画的技术.layer提供了基本的绘制和动画,其是2d平面组织在3d空间的技术,和view的不同之处是,其并没有定义自己的外观,仅仅是管理周边位图的状态信息,在你的app中,最主要的layer常常是被看作是一个数据模型对象,就因为他是用来管理数据的,这个概念十分重要,因为它会影响动画的行为.</p>
+
+<p>你app中的大多数layer并不做任何绘制的工作,仅仅是控制你app提供的内容,并将其缓存为位图数据.真正进行动画的是图形硬件,它使用bitmap和状态信息进行绘制,而CA只是制作和传递位图数据和状态信息.</p>
+
+<p>layer绘制和view绘制是显著不同的,view绘制是通过调用其drawRect:方法进行重绘,这样的绘制是消耗巨大的,因为是使用cpu的主线程绘制.
+但是CA是通过操作硬件中缓存的bitmap达到类似或者相同的结果,从而避免了高昂的代价.</p>
+
+<p>更改图层的属性,能够引起适当的动画,具体的细节查看&#8221;Animatable Properties&#8221;章节,其主要会引起动画的行为:移动,缩放,旋转,透明度,圆角和背景颜色.</p>
+
+<p>你只需要制定动画开始和结束的点,然后CA会在空闲的时候来做这个动画,并且你可以指定默认的时间信息和动画参数,CA还可以设置合适的默认值,如果你没有设置的话.</p>
+
+<p>layer对象定义了自己的几何系统,layer和view也有很多不同的地方,例如锚点,以及一些几何相关的属性.</p>
+
+<p>layer使用两种坐标系统:
+基本点坐标系统和单元坐标系统</p>
+
+<p>基本点坐标系统:当指定的值被直接映射到屏幕坐标中,或者必须被指定和其他图层有关系.例如position属性.</p>
+
+<p>单元坐标系统:当值不能够被绑定到屏幕坐标中,因为其和其他的值是有关的,例如anchorPoint属性.我们将很少使用frame属性,因为其的值是从position和bounds衍生而来的.iOS中默认是从坐标系的左上角开始的,而OS X中默认是从左下角开始的.</p>
+
+<p>anchorPoint的默认值是(0.5,0.5).</p>
+
+<p>anchorPoint就相当于白纸上的图钉，它主要的作用就是用来作为变换的支点，旋转就是一种变换，类似的还有平移、缩放。anchorPoint的更改不会造成position的更改.anchor point是你旋转的支持点.当你更改anchor point旋转也会不同.</p>
+
+<p>position就是anchorPoint在superLayer中的位置,但是更改不会影响anchorPoint</p>
+
+<p>1、position是layer中的anchorPoint在superLayer中的位置坐标。
+2、互不影响原则：单独修改position与anchorPoint中任何一个属性都不影响另一个属性,但是会影响Frame中origin的属性.</p>
+
+<p>3、frame、position与anchorPoint有以下关系：</p>
+
+<pre><code>frame.origin.x = position.x - anchorPoint.x * bounds.size.width；  
+frame.origin.y = position.y - anchorPoint.y * bounds.size.height；
+</code></pre>
+
+<p>frame.origin由position和anchorPoint共同决定</p>
+
+<p>(不够深入)
+transfor属性将会影响当前的layer和其包含的sublayers,当你想要更改你自己的layer的时候使用这个属性
+sublayerTransfor仅仅会影响sublayers,通常是增加一个透明的可视效果到情景内容上.</p>
+
+<p>图层树反映出不同的动画状态:</p>
+
+<p>模型树(model layer tree或者layer tree):大多数情况下它打交道,它中的对象是模型对象,并且保存了任何动画的目标值.当你更改layer的属性的时候,实际上使用的是其中的对象.</p>
+
+<p>显示树(presentation tree ):永远都不要更改此树中的对象,一般是用于读取当前动画的值,可能用于创建一个新的动画.</p>
+
+<p>渲染树(render tree):在此树上执行真正的动画,不能够直接的操作该树.</p>
+
+<p>通过访问模型树的对象的presentationLayer属性,能够得到其在presentation tree相对应的对象,你可以通过这个对象获取动画过程中的值.</p>
+
+<p>你只能在动画的执行过程中访问显示树的对象,当动画在进行中的时候,其和模型树的显示是不一样的,模型树总是呈现出动画的最终状态.</p>
+
+<p>view仅仅是layer的细粒度包装,所以很多方法都可以直接设置到layer上,但是这样会产生不可以预料的结果.除了你view相对应的layer,你也可以创建独立的layer对象,并将其嵌入到你app中对象中.</p>
+
+<p>你可以加载一次图片,然后让多个独立的layer对象以其关联,每一个图层都引用这张源图片,来替代创建这个图片的副本,从而节约内存空间.</p>
+
+<h1>2.构建图层对象</h1>
+
+<p>一般情况下,我们默认创建CALayer类的实例,只当你需要提升性能或者支持一种特殊类型的内容才需要创建其他类型的layer对象.我们可以通过重写view的layerClass方法,返回不同类型的layer对象,达到使用其他layer对象的目的,默认是CALayer对象,大部分情况下你不会改变.</p>
+
+<pre><code>+ (Class) layerClass {
+    return [CAEAGLLayer class];
+}
+</code></pre>
+
+<p>不同的layer类提供了不同的试用场合:</p>
+
+<p>CAEmitterLayer:Used to implement a Core Animation–based particle emitter system. The emitter layer object controls the generation of the particles and their origin.</p>
+
+<p>CAGradientLayer:Used to draw a color gradient that fills the shape of the layer (within the bounds of any rounded corners).</p>
+
+<p>CAEAGLLayer/CAOpenGLLayer:Used to set up the backing store and context needed to draw using OpenGL ES (iOS) or OpenGL (OS X).</p>
+
+<p>CAReplicatorLayer:Used when you want to make copies of one or more sublayers automatically. The replicator makes the copies for you and uses the properties you specify to alter the appearance or attributes of the copies.</p>
+
+<p>CAScrollLayer:Used to manage a large scrollable area composed of multiple sublayers.</p>
+
+<p>CAShapeLayer:Used to draw a cubic Bezier spline. Shape layers are advantageous for drawing path-based shapes because they always result in a crisp path, as opposed to a path you draw into a layer’s backing store, which would not look as good when scaled. However, the crisp results do involve rendering the shape on the main thread and caching the results.</p>
+
+<p>CATextLayer:Used to render a plain or attributed string of text.</p>
+
+<p>CATiledLayer:Used to manage a large image that can be divided into smaller tiles and rendered individually with support for zooming in and out of the content.</p>
+
+<p>CATransformLayer:Used to render a true 3D layer hierarchy, rather than the flattened layer hierarchy implemented by other layer classes.</p>
+
+<p>我们一般通过三种方式提供layer的内容(位图):
+1.直接指定一个image对象到layer对象的contents属性.(这是最好的办法,一般很少改变)
+2.指定代理对象绘制layer的内容
+3.定义了layer的子类,并且重写相关的绘制方法,自己提供内容</p>
+
+<p>仅仅当你自己创建一个layer对象的时候,你才要但是为其提供内容.如果你使用的是layer-backed类型的view,你需不要但是layer的内容.当你使用一张图片做为layer的内容的时候,你可以将多个需要这张图片的layer都指向同一张图片,通过这种方式,你可以节约你app的内存空间.注意这里的图片必须是CGImageRef类型的.需要注意的是同一张图片在普通屏幕和视网膜屏幕,是不会自动设置,在视网膜屏幕下需要设置图片的contentsScale属性.一般图片设置为1,同时也是默认值,视网膜屏幕的图片需要设置该属性为2.</p>
+
+<p>如果你layer的内容需要动态的改变,你可以使用delegate提供和更新你需要的内容,如果你的代理实现了displayLayer:方法,这个方法需要创建一个位图和指定layer的contents属性.如果你的代理实现了drawLayer:inContext:方法,CA创建了位图,并且创建了graphics context 用于绘制位图, 然后需要调用你的代理方法去填充位图,你的代理方法必须要做的就是在提供的graphics context中进行绘制.</p>
+
+<p>你的代理必须实现displayLayer: 或者 drawLayer:inContext:,如果同时实现了那么只调用displayLayer:方法.下面是在不同的情况下加载不同图片的代码片段:</p>
+
+<pre><code>- (void)displayLayer:(CALayer *)theLayer {
+    // Check the value of some state property
+    if (self.displayYesImage) {
+        // Display the Yes image
+        theLayer.contents = [someHelperObject loadStateYesImage];
+    }
+    else {
+        // Display the No image
+        theLayer.contents = [someHelperObject loadStateNoImage];
+    } }
+</code></pre>
+
+<p>如果没有事先准备好的图片,那么可以调用drawLayer:inContext:绘制内容</p>
+
+<pre><code>- (void)drawLayer:(CALayer *)theLayer inContext:(CGContextRef)theContext {
+    CGMutablePathRef thePath = CGPathCreateMutable();
+         CGPathMoveToPoint(thePath,NULL,15.0f,15.f);
+         CGPathAddCurveToPoint(thePath,
+                               NULL,
+                               15.f,250.0f,
+                               295.0f,250.0f,
+                               295.0f,15.0f);
+         CGContextBeginPath(theContext);
+         CGContextAddPath(theContext, thePath);
+         CGContextSetLineWidth(theContext, 5);
+         CGContextStrokePath(theContext);
+         // Release the path
+         CFRelease(thePath);
+     }
+</code></pre>
+
+<p>对于一个layer-backed的view来说,他会自动设置他的代理,并且实现他的代理方法,而我们需要做的是紧紧实现自己view的drawRect:方法.</p>
+
+<p>如果你需要实现一个自定义的layer,你可以重写绘制方法,你可以使用下面两种方法中的一种来为你的layer提供内容:
+1)重写display方法,然后直接的设置contents属性
+2)重写drawInContext:方法,然后使用其提供的graphics context来进行绘制.</p>
+
+<p>display方法是主要的方式用于更新你layer的内容,所以在这个方法中放入你完整的控制处理,重写这个方法同时意味着,你有责任创建CGImageRef类型的对象,并且只配给content属性,如果你只是想绘制内容或者是希望你的layer管理绘制的操作,你可以重写drawInContext:方法.</p>
+
+<p>(注:Tweaking指的是小的更改来提高整个系统.)</p>
+
+<p>当你为contents属性指定一张图片的时候,contentsGravity属性定义了图片是如何适配当前bounds的.默认情况下,如果图片或大,或小,layer对象将会拉伸图片以适应当前的bounds.</p>
+
+<p>你指定到contentsGravity属性分为以下两种类型的值:
+1)position_based gravity类型,并不拉伸你的图片,只是将你的图片防止在九宫格的某个位置.
+2)scaling-based gravity类型, 有可能拉伸图片, 可以令图片适应bounds, 也可以令bounds适应图片.</p>
+
+<p>layer还拥有自己的背景和边框,其主要分三层,底层是背景层,中间层是内容层,最上层是边框层.如果你需要将layer的背景颜色设置为一个非透明的颜色,可以设置opaque属性为YES,可以提升性能.如果你拥有一个圆角的话,记得不要设置layer为不透明的(opaque)属性.layer支持设置角落半径,因为其包含一个透明的遮罩,所以角落半径不能影响layer的contents属性的image,除非你设置了masksToBounds属性为YES,但是layer的背景颜色和border却可以根据角度半径而改变.</p>
+
+<p>Layers还支持内置的阴影,他包含了多个属性来控制阴影,你可以控制阴影的颜色,相对的位置,不透明度和形状.需要设置显示阴影和阴影的位移,而且其是在layer的坐标系统中,并且OS X和 iOS还不同,需要注意区分.当你设置了masksToBounds属性,并且需要显示背影,背影会被裁剪,当你设置了任何透明的属性,可能会增加奇怪的效果,此时的解决方案是用两个layer代替一个,用一个layer1正常显示,用来拥有同等尺寸的layer的阴影,专门显示layer1的阴影.</p>
+
+<p>CAAnimation和CALarer拓展了KVC,你可以添加数据到一个layer,并且关联一个由你定义的key,你甚至可以为你定制的属性关联action,当你更改这个属性的时候,一个事先定义的动画被执行</p>
+
+<h1>3.使图层的内容产生动画</h1>
+
+<p>隐式的动画使用默认的时间和动画属性去执行一个动画.
+显式的动画需要你明确的使用动画对象去配置动画属性.
+所以隐式的动画是简单的方式实现动画,并不需要编写很多代码.</p>
+
+<p>触发隐式动画的唯一步骤就是更新你layer对象的能够产生动画的属性.如下所示:</p>
+
+<pre><code>theLayer.opacity = 0.0;
+</code></pre>
+
+<p>你可以使用显式的动画创建同样的效果,例如:</p>
+
+<pre><code>CABasicAnimation* fadeAnim = [CABasicAnimation animationWithKeyPath:@"opacity"];
+fadeAnim.fromValue = [NSNumber numberWithFloat:1.0];
+fadeAnim.toValue = [NSNumber numberWithFloat:0.0];
+fadeAnim.duration = 1.0;
+[theLayer addAnimation:fadeAnim forKey:@"opacity"];
+// Change the actual data value in the layer to the final value.
+// 更改这个动画属性会再次触发隐式的动画,文章的后面会讲解如何更改隐式的动画
+theLayer.opacity = 0.0;
+</code></pre>
+
+<p>使用显式的动画的时候,需要指定动画的初始值,如果没有指定的话,那么当前值就被当作是初始值,如果你已经更新layer的属性为最终值,可能造成你意想不到的结果.与隐式的动画不同的是,显示动画并不会更改layer的属性值,而仅仅是进行动画,你需要手动的更新你动画的属性值.
+显式动画和隐式动画必须在当前的运行循环结束后执行.你可以同一时刻执行两种动画,例如位移和更改透明度同时执行,并且你还可以让一个动画在特定的时间执行.</p>
+
+<p>使用Keyframe Animation更改layer的属性 ,可以设定一组目标值 ,并且这些值可以是线性或者非线性的.</p>
+
+<p>例如下面的例子演示了,为layer对象的每一帧动画指定的postion.完整的代码例子,请参阅文章末尾的项目源码.</p>
+
+<pre><code>// create a CGPath that implements two arcs (a bounce)
+ CGMutablePathRef thePath = CGPathCreateMutable();
+ CGPathMoveToPoint(thePath,NULL,74.0,74.0);
+ CGPathAddCurveToPoint(thePath,NULL,74.0,500.0,
+                                    320.0,500.0,
+                                    320.0,74.0);
+ CGPathAddCurveToPoint(thePath,NULL,320.0,500.0,
+                                    566.0,500.0,
+                                    566.0,74.0);
+ CAKeyframeAnimation * theAnimation;
+ // Create the animation object, specifying the position property as the key path.
+ theAnimation=[CAKeyframeAnimation animationWithKeyPath:@"position"];
+ theAnimation.path=thePath;
+ theAnimation.duration=5.0;
+ // Add the animation to the layer.
+ [theLayer addAnimation:theAnimation forKey:@"position"];
+</code></pre>
+
+<p>往往关键帧的值是一组对象,你需要将基本类型包装为对象类型,需要遵循以下的规则:</p>
+
+<pre><code>CGRect-&gt;NSValue
+CATransform3D-&gt;NSValue
+在borderColor属性中:CGColorRef-&gt;id
+CGFloat-&gt;NSNumber
+在contents属性中:CGImageRef
+</code></pre>
+
+<p>于此同时你还需要指定关键帧的时间,你可以形象的理解为动画片的原理,是由一张一张图片构建而成,keyTimes的值是一个数组,其中的值都是小于等于1的浮点型,这个数组必须以0.0开始, 例如其中有4帧的动画,keyTimes数组中的元素为:应该是NSNumber类型
+[0.0,0.25,0.5,0.75,1.0];其中相邻的两个时间点的元素是该珍动画的执行时间,一般以0.0开始1.0结束.</p>
+
+<p>有时你还需要设置calculationMode属性来使用不同的动画计算法则:</p>
+
+<pre><code>1)线性和立体:设置为kCAAnimationLinear和CAAnimationCubic
+
+2)同步的动画设置为:始终如一的速度不受keyTime和timingFuncitons属性的影响
+kCAAnimationPaced
+kCAAnimationCublicPaced
+
+3)分离的动画设置为:
+kCAAnimationDiscrete,这时候按照keyImes属性指定的时间,但是忽略timingFunctions属性.
+
+4)keyTimes属性指定了没一帧动画需要的时间,只有当calculationMode设置为kCAAnimationLinear, kCAAnimationDiscrete, 或者 kCAAnimationCubic
+才会起作用.
+
+5)timingFunction属性制定了时间曲线,为每个关键帧的片段指定时间.
+
+6)如果你想自己指定时间,需要使用kCAAnimationLinear或者kCAAnimationCubic模式,并在keyTimes和timingFunctions属性中指定.如果你没有指定timing funcitons,那么整个动画是线性的.
+</code></pre>
+
+<p>停止一个正在运行的动画:</p>
+
+<pre><code>1)通过调用removeAnimationForKey:方法,这个key就是你addAnimation:forKey:指定的key.
+2)移除所有的动画:removeAllAnimations
+</code></pre>
+
+<p>如果动画在显示的时候突然被停止,CA会使用当前值重绘layer,但是一般当前值是动画的最终值,所以动画可能会产生突然的跳转,你可以通过presentation tree获取动画被打断时候值 ,然后设置到layer tree,就会避免这种情况.</p>
+
+<p>当你需要多个动画一起作用的时候,你需要使用CAAnimationGroup对象,下面的例子演示了同时执行同等长度的两个动画:</p>
+
+<pre><code>  // Animation 1
+  CAKeyframeAnimation* widthAnim = [CAKeyframeAnimation animationWithKeyPath:@"borderWidth"];
+  NSArray* widthValues = [NSArray arrayWithObjects:@1.0, @10.0, @5.0, @30.0, @0.5,
+  @15.0, @2.0, @50.0, @0.0, nil];
+  widthAnim.values = widthValues;
+  widthAnim.calculationMode = kCAAnimationPaced;
+  // Animation 2
+  CAKeyframeAnimation* colorAnim = [CAKeyframeAnimation
+  animationWithKeyPath:@"borderColor"];
+  NSArray* colorValues = [NSArray arrayWithObjects:(id)[UIColor greenColor].CGColor, (id)[UIColor redColor].CGColor, (id)[UIColor blueColor].CGColor, nil];
+  colorAnim.values = colorValues;
+  colorAnim.calculationMode = kCAAnimationPaced;
+  // Animation group
+  CAAnimationGroup* group = [CAAnimationGroup animation];
+  group.animations = [NSArray arrayWithObjects:colorAnim, widthAnim, nil];
+  group.duration = 5.0;
+  [myLayer addAnimation:group forKey:@"BorderChanges"];
+</code></pre>
+
+<p>这里有一个更高级的方式去让一组动画一起工作,这就是使用transaction对象,使用transaction对象能够提供更多的灵活性,可以提供嵌套的动画,并且为每个不同的动画指定不同的参数.</p>
+
+<p>有的时候你需要检测动画的结束:</p>
+
+<pre><code>1&gt;当你使用transaction对象的时候,设置setCompletionBlock:方法,当所有事务中所有动画执行完成后会调用.
+2&gt;设置CAAnimation的代理对象,并且实现其代理方法监测.
+</code></pre>
+
+<p>但是当你想要在一个动画A结束后开始动画B,你不要使用动画的通知(block或者delefate),而是使用beginTime属性来取代.</p>
+
+<p>如果一个layer属于layer-backed view的,那么被推荐的做法是使用在UIKit中定义的view_based 动画接口,你也可以使用CA接口,但是按照下面的方法来设置动画.
+当你为一个view-based设置动画的时候,需要在view的block中设置动画,而block外边的动画设置会被忽略的.下面的例子中制定了两个动画:</p>
+
+<pre><code>1)隐式的动画按照默认的时间执行
+2)CABaseAnimation按照指定的时间执行
+3)block外边的时间设置被忽略.
+</code></pre>
+
+<p>示例代码如下所示:</p>
+
+<pre><code>[UIView animateWithDuration:1.0 animations:^{
+   // Change the opacity implicitly.
+   myView.layer.opacity = 0.0;
+// Change the position explicitly.
+CABasicAnimation* theAnim = [CABasicAnimation animationWithKeyPath:@"position"];
+   theAnim.fromValue = [NSValue valueWithCGPoint:myView.layer.position];
+   theAnim.toValue = [NSValue valueWithCGPoint:myNewPosition];
+   theAnim.duration = 3.0;
+   [myView.layer addAnimation:theAnim forKey:@"AnimateFrame"];
+}];
+</code></pre>
+
+<h1>4.建立图层的层级结构</h1>
+
+<p>大多数情况下,最好的方法使用layer是控制其对应的view对象,当你使用layer能够提供更好的性能或者实现一个使用view难以实现的功能的时候,你需要构建view的层级结构.</p>
+
+<p>layer对象拥有一系列的方法来更改来进行layer的添加,插入和移出操作,你只能将其用到你自己创建的layer上,对于layer-backed view,你并不能使用这些方法来更改layer的顺序,但是其能够扮演你layer父亲的角色.</p>
+
+<p>你可以设置sublayer的位置和大小,通过bound属性和positon属性,用frame属性也是可以的,其默认值都是0.layer的宽度和高度都最好设置为整形.speed属性默认值是1,会影响layer的动画速度,如果设置为2,那么会运行两次,每次是原来时间的一半,如果sublayer也设置了这个属性为2,那么subview就会运行4次,他们之间是一个乘法关系.大多数layer的更改是可以预料到的,例如你旋转一个layer,你所有的子layer都会被旋转,你更改一个layer的位置,所有的子layer都会变化.</p>
+
+<p>layer级别的显示只有当你使用单个layer构造的layer层级结构才有有作用,如果使用的是view_backed layer通过改变view来改变layer.</p>
+
+<p>在iOS中你可以手动的处理布局,通过实现superlayer的代理对象的layoutSublayersOfLayer:方法.如果你实现了一个自定义的layer的子类,你的子类可以重写layoutSublayers方法,而且使用这些方法去处理任何layer相关的任务,你仅仅需要重写这些方法在你需要完成你sublayer在你的自定义layer类内部的布局的时候.</p>
+
+<p>与view不同的是,superlayer不会自动裁剪你sublayer展示在superlayer矩形区域外的内容,你需要自己设置maksToBounds属性为YES.</p>
+
+<p>当你需要在两个layer坐标系统中转换坐标的时候,其提供了一组方法:</p>
+
+<pre><code>1.convertPoint:fromLayer:
+2.convertPoint:toLayer:
+3.convertRect:fromLayer:
+4.convertRect:toLayer:
+</code></pre>
+
+<p>与此同时还定义了同步时间的方法:
+convertTime:fromLayer: 和 convertTime:toLayer:
+每一个layer定义了属于自己的本地时间空间,并且在系统闲置的时候,同步动画的开始和结束时间.
+但是当你更改了一组layer的时候,这些layer的时间空间就被改变了.所以你可以使用上述的方法来确保两个layer的时间是同步的.</p>
+
+<h1>5.高级动画技巧</h1>
+
+<h2>CATransition</h2>
+
+<p>这里有很多的方法去控制你的基本属性动画和keyframe动画,当你的app需要执行多个动画在一起,从而使用更多的高级行为,同步
+那些动画的时间或者将他们连在一起.你可以使用其他类型的动画创建一个可视的过渡效果,或者其他的有趣的动画效果.</p>
+
+<p>在显示一个layer的时候,隐藏一个layer,这种情况下使用Transition Animations十分合适,
+CATransition可以创建一个动画的过度效果,下面是一个在两个view间产生过渡效果的例子:</p>
+
+<pre><code>  CATransition* transition = [CATransition animation];
+  transition.startProgress = 0;
+  transition.endProgress = 1.0;
+  transition.type = kCATransitionPush;
+  transition.subtype = kCATransitionFromRight;
+    transition.duration = 1.0;
+    // Add the transition animation to both layers
+    [myView1.layer addAnimation:transition forKey:@"transition"];
+    [myView2.layer addAnimation:transition forKey:@"transition"];
+    // Finally, change the visibility of the layers.
+    myView1.hidden = YES;
+    myView2.hidden = NO;
+</code></pre>
+
+<p>有时候你还需要明确的控制时间,这时候你需要通过CAMediaTiming协议来明确精确的控制时间.</p>
+
+<p>CAAnimation类包含了这个协议,所以你可以指定时间信息到你动画对象.</p>
+
+<p>CALayer也包含了这个协议,你可以配置
+时间相关的属性在隐式的动画里,通过这些隐式的动画对象,你可以包装这些动画,让其使用你设定的时间值.</p>
+
+<p>每一个layer都有自己的本地时间,但是由于图层间的时间十分相近,所以不容易被用户察觉,但是图层的本地时间能够被其父图层或者是自己的时间参数更改,例如更改layer的speed属性.</p>
+
+<p>为了确定给合适的layer准确的额时间,所以其提供了两个方法用于时间转换,你可以用于:
+1.将一个固定的时间值转换到一个layer上.
+2.将一个layer的本地时间用于另一个layer.</p>
+
+<p>CACurrentMediaTime()f方法可以获取计算机当前时钟的时间,下面的例子演示了具体的用法:</p>
+
+<pre><code>CFTimeInterval localLayerTime = [myLayer convertTime:CACurrentMediaTime()
+fromLayer:nil];
+</code></pre>
+
+<p>当在你的layer的本地时间内,你拥有了一个时间值,你就可以更改时间相关的属性了,例如beginTime属性.
+延迟一个动画的开始时间的时候,需要设置fillMode属性为kCAFillModeBackwards,不然有可能造成动画跳跃式的显示.
+autoreverses属性的设置导致动画执行在一个特定的时间里面并且返回动画的开始值.你可以配合repeatCount属性结束的时候在其结束值.
+timeOffset属性用于在执行某些动画在稍后的时间里.</p>
+
+<p>当你需要停止一个动画的时候,首先将该layer的speed设置为0,其次是设置layer的timeOffset的时间为当前的时间,
+当你需要恢复一个动画的时候,首先设置layer的speed为1.0,其次设置layer的timeOffset为0,最后获取该layer的当前时间 减去 其暂停的时间 就是layer的开始时间.</p>
+
+<p>具体的代码片段如下所示:</p>
+
+<pre><code>-(void)pauseLayer:(CALayer*)layer {
+     CFTimeInterval pausedTime = [layer convertTime:CACurrentMediaTime()
+  fromLayer:nil];
+     layer.speed = 0.0;
+     layer.timeOffset = pausedTime;
+  }
+  -(void)resumeLayer:(CALayer*)layer {
+     CFTimeInterval pausedTime = [layer timeOffset];
+     layer.speed = 1.0;
+          layer.timeOffset = 0.0;
+          layer.beginTime = 0.0;
+          CFTimeInterval timeSincePause = [layer convertTime:CACurrentMediaTime()
+       fromLayer:nil] - pausedTime;
+          layer.beginTime = timeSincePause;
+   }
+</code></pre>
+
+<p>关于当前的时间(pausedTIme)timeoffset和begintime:</p>
+
+<p>pausedTIme:是该动画的总共时间.例如100,这个数字是递减的
+timeoffset:动画的起点
+beginTime:是指其父级对象的时间线上的某个时间,默认是0,所以代码中设置的开始时间已经执行过的时间.</p>
+
+<h2>Transaction</h2>
+
+<p>明确的事务(Transaction)令你更改动画的参数
+任何你对一个layer的更改必须是事务的一部分,CATransaction类管理动画的分组和创建,以及他们在恰当的时间执行,你没有必要去创建自己的事务,CA为你的显式和隐式的动画默认创建了事务,当然你也可以显式的创建一个事务,来更加细粒度的控制动画.</p>
+
+<p>当你创建和管理事务的时候,需要使用CATransaction类的方法,一个新的事务在begin方法后开始,在commit方法后结束,在这张两个方法之中,你可以做一些你想对事务的更改:</p>
+
+<pre><code>[CATransaction begin];
+theLayer.zPosition=200.0;
+theLayer.opacity=0.0;
+[CATransaction commit];
+</code></pre>
+
+<p>创建一个显示的transaction动画的主要原因是,你需要改变duraction,timing function,或者其他的参数,当你transaction中的一组动画完成的时候,你还可以指定一个完成的block,另外你还可以更改动画所必须的参数,使用setValues:forKey:方法更改transaction字典中必要的key.</p>
+
+<pre><code>[CATransaction begin];
+[CATransaction setValue:[NSNumber numberWithFloat:10.0f]
+                  forKey:kCATransactionAnimationDuration];
+ // Perform the animations
+ [CATransaction commit];
+</code></pre>
+
+<p>当你想要为不同组的动画提供不同的参数的时候,你可以嵌套使用transaction来进行构建.在一个transaction中构建另一个transaction,你需要再次调用beigin方法,与其对应的是,你还需要调用commit方法.只要当你最外层的transaction动画被commit了,整个CA才开始执行动画.下面是一个嵌套事务的例子:</p>
+
+<pre><code>[CATransaction begin]; // Outer transaction
+// Change the animation duration to two seconds
+[CATransaction setValue:[NSNumber numberWithFloat:2.0f]
+                forKey:kCATransactionAnimationDuration];
+// Move the layer to a new position
+theLayer.position = CGPointMake(0.0,0.0);
+[CATransaction begin]; // Inner transaction
+// Change the animation duration to five seconds
+[CATransaction setValue:[NSNumber numberWithFloat:5.0f]
+                 forKey:kCATransactionAnimationDuration];
+// Change the zPosition and opacity
+theLayer.zPosition=200.0;
+theLayer.opacity=0.0;
+[CATransaction commit]; // Inner transaction
+[CATransaction commit]; // Outer transaction
+</code></pre>
+
+<h1>6.更改图层的默认行为</h1>
+
+<h2>CAAction</h2>
+
+<p>CA实现他的隐式动画通过使用action对象,一个action对象是遵循CAAction协议的,其定义了一些执行在layer上的相关的行为,所有的CAAnimation对象都实现了这个协议,当一个layer的属性更改的时候,这些对象能够被执行.
+动画属性是一类action,你几乎能够通过定义这些action实现你想要的任何效果:</p>
+
+<pre><code>1)定义你的action对象
+2)让他们和你app的layer对象相关联
+</code></pre>
+
+<p>自定义action对象需要遵循了CAAction协议,通过实现CAAction协议的runActionForKey:object:arguments:方法,在这个方法里增加可视的信息去执行,你可以在这方法里面添加动画对象到layer上或者是用这个方法去执行其他的任务.</p>
+
+<p>当你定义好了一个action对象,你必须指定是如何触发的,这个action为触发定义了一个key,你可以通过以下方式来触发:</p>
+
+<pre><code>1.layer的属性值发生了改变,他能够设置为layer的任何属性(并不仅仅和动画相关的),标记到这个action的key就是该属性的名字.
+2.这个layer变得可视或者被添加到layer层级中,这个action被定义的key需要命名为kCAOnOrderIn.
+3.一个layer将要从layer的层级结构中移出,key需要定义为KCAOnOrderOut.
+4.这个图层被包含在一个transition动画中,key需要被定义为kCATransiton.
+</code></pre>
+
+<p>Action对象必须要被添加到一个layer上,才可以产生作用,CA通过以下的顺序查找action对象:</p>
+
+<p>1.如果layer有代理并且实现了actionForLayer:forKey:方法,你必须实现了下述中的其中一条:</p>
+
+<pre><code>1)返回对应key的action对象
+2)返回nil,搜索会继续向下进行
+3)返回NSNull对象,搜索终止.
+</code></pre>
+
+<p>2.查找layer的actions字典.
+3.查找layer的style字典.
+4.调用defaultActionForKey:方法
+5.如果CA定义了该key的隐式的action,那么执行.</p>
+
+<p>当layer发现了action对象,就会调用这个对象的runActionForKey:object:arguments:方法,去执行这个action,如果这个action已经定义一个CAAnimation类存在key,你可以使用该方法默认的实现.</p>
+
+<p>如果你定义了你自己的自定义对象,并且遵循CAAction协议,你必须在那个方法中使用你的对象的实现.</p>
+
+<p>你的action对象在什么地方装配,取决于你想要怎样的更改你的layer:</p>
+
+<pre><code>1.如果这个action对象仅仅出现在特殊的情况下,或者layer已经在代理中使用过了,需要通过实现actionForLayer:forKey:方法.
+2.layer对象并不经常使用代理的话,添加这个action到你layer的actions字典中.
+3.如果是你自己定义的属性在layer对象中的话,把action添加到style字段中.
+4.如果这个action是layer的默认行为,那么子类化layer,并且重写defaultActionForKey:方法.
+</code></pre>
+
+<p>这里演示了如果监测contents属性的默认动画,并且更改其实现的方法.</p>
+
+<pre><code>- (id&lt;CAAction&gt;)actionForLayer:(CALayer *)theLayer
+                        forKey:(NSString *)theKey {
+    CATransition *theAnimation=nil;
+    if ([theKey isEqualToString:@"contents"]) {
+        theAnimation = [[CATransition alloc] init];
+        theAnimation.duration = 1.0;
+        theAnimation.timingFunction = [CAMediaTimingFunction
+functionWithName:kCAMediaTimingFunctionEaseIn];
+        theAnimation.type = kCATransitionPush;
+        theAnimation.subtype = kCATransitionFromRight;
+    }
+    return theAnimation;
+}
+</code></pre>
+
+<p>每当你改变一个layer的属性,CA通常创建了隐式的transaction对象去展示这些改变,你可通过设置kCATransactionDisableActions为true来使得默认动画失效,下面是让移除动画失效的方法:</p>
+
+<pre><code>  [CATransaction begin];
+  [CATransaction setValue:(id)kCFBooleanTrue
+                   forKey:kCATransactionDisableActions];
+  [aLayer removeFromSuperlayer];
+  [CATransaction commit];
+</code></pre>
+
+<h1>7.提升图层性能</h1>
+
+<p>CA是一种很棒的方式去提高帧率,但是并不能保证性能.尤其是在OS X中,下面是使你的动画更加有效率的几种方式:</p>
+
+<pre><code>1.当必要的时候使用透明的layer.
+2.为CAShapeLayer使用简单的路径.
+3.为显示相同的layer明确设置同一个的内容.
+4.总是为layer的size 属性设置为整形值.
+5.在需要的时候使用异步的图层
+6.设置shadowPath属性,当你为你的layer添加一个背影的时候.
+</code></pre>
+
+<h1>8.图层风格属性动画</h1>
+
+<h2>几何属性</h2>
+
+<p>几何属性定义了layer相对于其父layer是如何显示的,其主要包含下面的属性:</p>
+
+<pre><code>bounds
+position
+frame
+anchorPoint
+cornetRadius
+transform
+zPosition
+</code></pre>
+
+<h2>背景属性</h2>
+
+<pre><code>backgroundColor
+</code></pre>
+
+<h2>图层的内容</h2>
+
+<pre><code>contents
+contentsGravity
+masksToBounds
+</code></pre>
+
+<h2>子图层的内容</h2>
+
+<pre><code>sublayers
+masksToBounds
+sublayerTransform
+</code></pre>
+
+<h2>边框属性</h2>
+
+<pre><code>borderColor
+borderWidth
+</code></pre>
+
+<h2>阴影属性</h2>
+
+<pre><code>shadowColor
+shadowOffset
+shadowOpacity
+shadowRadius
+shadowPath
+</code></pre>
+
+<h2>透明度属性</h2>
+
+<pre><code>opacity
+</code></pre>
+
+<h2>遮罩属性</h2>
+
+<p>你能够通过该属性模糊你layer的一部分内容,或者所有的内容.</p>
+
+<pre><code>mask
+</code></pre>
+
+<h1>9.能够产生动画的属性</h1>
+
+<p>当你更改下列这些属性的时候,将会引起默认的动画:</p>
+
+<pre><code>anchorPoint
+backgroundColor
+backgroundFilters
+borderColor
+borderWidth
+bounds
+compositingFilter
+contents
+contentsRect
+cornerRadius
+doubleSided
+filters
+frame
+hidden
+mask
+masksToBounds
+opacity
+position
+shadowColor
+shadowOffset
+shadowOpacity
+shadowPath
+shadowRadius
+sublayers
+sublayerTransform
+transform
+zPosition
+</code></pre>
+
+<h1>10.KVC的拓展</h1>
+
+<p>CA拓展了NSKeyValueCoding协议,适用于CAAnimation和CALayer类,这样的拓展为一些key增加了默认的行为,
+支持了CGPoint,CGRect,CGSize和CATransform3D类型.</p>
+
+<p>对于CAAnimation和CALayer类,你可以为其任意的属性设置值,包含那些你自己定义的属性,例如:</p>
+
+<pre><code>[theLayer setValue:[NSNumber numberWithInteger:50] forKey:@"someKey"];
+</code></pre>
+
+<p>你可以通过下面的方法获取到你设置的值:</p>
+
+<pre><code>someKeyValue=[theLayer valueForKey:@"someKey"];
+</code></pre>
+
+<p>你还可以为那些没有设置默认值的key指定一个默认值,通过子类化当前类,并且重写defaultValueForKey:方法,无论是自己定义的属性还是自己添加的属性,你都是可以更改的.</p>
+
+<pre><code>+ (id)defaultValueForKey:(NSString *)key
+{
+    if ([key isEqualToString:@"masksToBounds"])
+         return [NSNumber numberWithBool:YES];
+    return [super defaultValueForKey:key];
+}
+</code></pre>
+
+<p>你可以把一些基本类型包装成对象类型,只需要遵循下面的约定:</p>
+
+<pre><code>CGPoint-&gt;NSValue
+CGSize-&gt;NSValue
+CGRect-&gt;NSValue
+CATransform3D-&gt;NSValue
+</code></pre>
+
+<p>对结构体数据访问的支持,在CAAnimation 和 CALayer中,你可以通过使用setValue:forKeyPath: 和 valueForKeyPath: 两个方法对其结构体属性的数据进行访问和设置,其包含以下这些属性:</p>
+
+<pre><code>rotation.x
+rotation.y
+rotation.z
+rotation
+scale.x
+scale.y
+scale.z
+scale
+translation.x
+translation.y
+translation.z
+translation
+</code></pre>
+
+<p>使用方法,如下面的例子所示:</p>
+
+<pre><code>[myLayer setValue:[NSNumber numberWithFloat:10.0]
+forKeyPath:@"transform.translation.x"];
+</code></pre>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-19T16:41:00+08:00" pubdate data-updated="true">Jan 19<span>th</span>, 2014</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		
+		
+	</div>
+	
+</div>
+
+
+
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_xiaoyou"></a>
+	<a href="http://www.jiathis.com/share?uid=1865940" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=1354413288083326" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1865940"></script>
+<!-- UY END -->
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2014
+
+    MonaDogg
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: iOS | MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2014-03-07T06:17:40+08:00</updated>
+  <updated>2014-05-04T13:11:59+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -14,1139 +14,658 @@
 
   
   <entry>
-    <title type="html"><![CDATA[《java并发编程实战》读书笔记]]></title>
-    <link href="http://MonaDogg.github.io/blog/2014/03/07/java-multithreading/"/>
-    <updated>2014-03-07T06:12:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2014/03/07/java-multithreading</id>
-    <content type="html"><![CDATA[<h1>第一章.简介</h1>
+    <title type="html"><![CDATA[GCD]]></title>
+    <link href="http://MonaDogg.github.io/blog/2014/03/10/GCD/"/>
+    <updated>2014-03-10T16:41:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2014/03/10/GCD</id>
+    <content type="html"><![CDATA[<h1>Grand Central Dispatch(GCD)</h1>
 
-<p>如果想要充分发挥多处理器系统的强大计算能力,最简单的方式就是使用线程.</p>
+<p>从iOS4开始实现</p>
 
-<p>在不同进程之间可以通过一些粗粒度的通信机制来交换数据,包括:套接字,信号处理器,共享内存,信号量以及文件等.</p>
+<p>GCD是异步执行任务的技术之一,一般将应用程序中记述的线程管理用的代码在系统级的实现.开发者只需要定义想执行的任务并追加到适当的Dispatch Quere中,GCD就能生成必要的线程并计划执行任务.由于线程管理是作为系统的一部分来实现的,因此可以统一管理,也可以执行任务,这样就比以前的线程更有效率.</p>
 
-<p>一种高效的运行方式是通过粗粒度的时间分片使这些用户和程序能共享计算机的资源.</p>
+<p>下面的代码是在后台线程中执行长时间处理,处理结束的时候,主线程处理该结果的源代码.</p>
 
-<p>线程会共享进程范围内的资源,例如内存句柄和文件句柄,但每个线程都有各自的程序计数器,栈以及局部变量等.</p>
+<pre><code>dispatch_async(queue,^{
+    &lt;!-- 长时间处理 --&gt;
+    &lt;!-- 例如画像识别 --&gt;
+    &lt;!-- 例如数据库访问 --&gt;
 
-<p>如果没有明确的协同机制,那么线程将彼此独立执行,由于同一个进程中的所有线程都将共享进程的内存地址空间,因此这些线程都能够访问相同的变量并在同一个堆上分配对象,这就需要
-实现一种比在进程间共享数据粒度更细的数据共享机制,如果没有明确的同步机制来协同对共享数据的访问,那么当一个线程正在使用某个变量的时候,另一个线程可以同时访问这个变量
-,这将造成不可预测的结果.</p>
-
-<p>这就好比在等待水烧开的同时看报纸,而不是等到水烧开之后再开始看报纸.</p>
-
-<p>线程安全性可能是非常复杂的,没有充足同步的情况下,多个线程中的执行顺序是不可预测的,甚至会产生奇怪的结果.</p>
-
-<p>安全性问题:永远不发生糟糕的事情,不要顺序错误的执行.
-活跃性问题:某件正确的事情最终会发生,当某个操作无法执行下去,就会产生活跃性问题,例如死锁.
-性能问题:在多线程程序中,当线程调度器临时挂起活跃线程并转而运行另一个线程时,就会频繁的出现上下文切换操作,这种操作会带来极大的开销,当线程共享数据的时候,必须使用同步
-机制,这些机制往往造成编译器优化,使的内存缓存区中的数据无效.</p>
-
-<p>swing的一些组件并不是线程安全的,swing程序通过将所有对GUI组件的访问局限在事件线程中以实现线程的安全性,如果某个应用程序希望在事件线程之外控制GUI,那么必须
-将控制GUI的代码放在事件线程中运行.</p>
-
-<h1>第二章.线程安全性</h1>
-
-<p>要编写线程安全的代码,其核心在于要对状态访问操作进行管理,特别是对共享的和可变的状态的访问.</p>
-
-<p>从非正式的意义上来说,对象的状态是指存储在状态变量(例如实例或者静态域)中的数据,对象的状态可能包含其他依赖对象的域,例如HashMap.</p>
-
-<p>&ldquo;共享"意味着变量可以由多个线程同时访问,而"可变"则意味着变量的值在其生命周期内可以发生变化.</p>
-
-<p>一个对象是否需要是线程安全的,取决于它是否被多个线程访问,这指的是在程序中访问对象的方式,而不是对象要实现的功能,要使得对象是线程安全的,需要采用同步机制来协同可变状态的
-访问.</p>
-
-<p>当多个线程访问某个状态变量并且其中有一个线程执行写入操作的时候,必须采用同步机制协同这些线程对变量的访问.(关键字:synchronized),但同步这个术语还包含volatile类型的
-变量,显式锁(explicit lock)以及原子变量.</p>
-
-<p>如果有多个线程访问同一个可变的状态变量的时,没有使用合适的同步,那么程序就会出现错误,有三种方法可以修复这种问题:</p>
-
-<pre><code>1)不在线程之间共享该状态变量
-2)将状态变量修改为不可变的变量
-3)在访问状态变量的时候使用同步
+    dispatch_async(dispatch_get_main_queue(),^{
+        &lt;!-- 只有在主线程中执行的任务 --&gt;
+        &lt;!-- 例如用户的界面刷新 --&gt;
+    });
+});
 </code></pre>
 
-<p>在编写并发应用程序的时候,一种正确的编程方法是,首先让代码正确的运行,然后再提高代码的速度.</p>
+<p>在GCD之前,cocoa框架提供了NSObject类的performSelectorInBackground:withObject和performSelectorOnMainThread实例方法等多线程技术,但是代码实现起来很累赘,例如:</p>
 
-<p>当多个线程访问某个类的时候,这个类始终都能保持为正确的行为,那么称这个类为线程安全的.</p>
+<pre><code>-(void)launchThreadByNSObject_performSelectorInBackground_withObject{
+    &lt;!-- 执行后台处理 --&gt;
+    [self performSelectorInBackground:@selector(doWork) withObject:nil];
+}
 
-<p>如果在线程安全类中封装了必要的同步机制,那么客户端无需进一步的采取同步措施.</p>
+-(void)doWork{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+    &lt;!-- 长时间的处理,例如图像识别,数据库访问 --&gt;
+    &lt;!-- 长时间处理结束之后,主线程调用其处理结果 --&gt;
+    [self performSelectorOnMainThread:@selector(doneWork) withObject:nil waitUntilDone:NO];
+    [pool drain];
+}
 
-<p>无状态的对象一定是线程安全的,(例如servlet,既不包含任何域,也不包含任何对其它类中遇的引用).</p>
-
-<p>原子性:原子操作是不可分割的，在执行完毕不会被任何其它任务或事件中断, 能够在单条指令中完成的操作都可以认为是" 原子操作".</p>
-
-<p>&ldquo;读取-修改-写入"操作序列,其结果依赖于之前的状态.</p>
-
-<p>竞态条件(race condition):在并发变编程中,这种由于不恰当的执行时序而出现不正确的结果,称为竞态条件.</p>
-
-<p>最常见的竞态类型是"先检查后执行"操作,通过一个可能失效的观测结果来决定下一步的操作.例如:构建单例的时候,容易产生竞态条件.</p>
-
-<p>另外一种竞态条件是"读取-修改-写入"这种操作.</p>
-
-<p>要避免竞态条件问题,就必须在某个线程修改该变量的时,通过某种方式阻止其他线程使用这个变量,从而确保其他线程只能在修改操作完成之前或之后读取和修改状态,而不是在修改状态
-过程中.</p>
-
-<p>在实际情况中,应尽可能的使用现有的线程安全对象来管理类的状态,与非线程安全对象相比,判断线程安全的对象可能的状态及其状态转换情况要更加容易,从而更容易维护和验证线程
-安全性.</p>
-
-<p>要保持状态的一致性,就需要在单个原子操作中更新所有相关的状态变量.</p>
-
-<p>内置锁:同步代码块(synchronized block),线程在进入同步代码块之前会自动获得锁,并且在退出代码块的时候,自动释放锁.从而让这一组语句作为一个不可分割的单元被执行.但是这种方法却过于极端
-可能会造成效率低下.</p>
-
-<p>重入:内置锁是可以重入的,某个线程获取一个他已有的锁,这个请求就会成功,重入的一种实现方法是,每个锁关联一个获取计数值和一个所有者线程,当计数值为0的时候,这个锁就会被
-认为没有任何线程持有,当线程请求一个未被持有的锁时候,jvm记下锁的持有者,并且将获取的计数值为1,如果同一个线程获取就会递增,当线程退出代码快的时候,就会-1,当计数值
-为0的时候,这个锁将被释放.</p>
-
-<p>一种常见的加锁约定是,将所有的可变状态都封装在对象的内部,并通过对象的内置锁对所有访问可变状态的代码路径进行同步,使得该对象上不会发生并发访问.</p>
-
-<p>同步代码快应该尽可能的缩小代码范围</p>
-
-<p>当使用锁的时候,你应该清楚代码块中实现的功能,以及在执行该代码快时候是否需要很长的时间,无论是执行计算密集的操作,还是在执行某个可能阻塞的操作,如果持有锁的时间过长
-那么就会带来活跃性或者性能的问题.</p>
-
-<h1>第三章:对象的共享</h1>
-
-<p>重排序:在没有同步的情况下,编译器,处理器以及运行时候都可能对操作执行的顺序,进行一些意想不到的调整,在缺乏足够同步的多线程程序中,要相对内存操作的执行顺序进行判断,几乎
-无法得到正确的结论.</p>
-
-<p>只要有数据在多个线程之间共享,就使用正确的同步.</p>
-
-<p>为什么在访问同个共享且可变的变量时要求所有线程在同一个锁上同步,就是为了确保某个线程写入该变量的值,对于其他线程来说都是可见的,否则,如果一个线程在未持有正确锁的
-情况下读取这个变量,那么读到的可能是一个失效值.</p>
-
-<p>加锁的意义不仅仅局限于互斥行为,还包含内存的可见性,为了确保所有线程都能看到共享变量的最新值,所有执行读操作或者写操作的线程都必须在同一个锁上同步.</p>
-
-<p>volatile变量,用来确保将变量的更新操作通知到其他线程,读取volatile变量的时候总是会返回最新写入的值,因此volatile变量是一种比sychronized关键字更轻量级的同步机制.
-仅当volatile变量能够简化代码实现以及对同步策略的验证时,才应该使用它们,应该确保它们自身的状态可见性,和他们引用的状态可见性,以及标识一些重要的程序生命周期
-事件的发生,例如:</p>
-
-<pre><code>    volatile boolean asleep;
-    ....
-        while(!asleep)
-            countSomeSheep();
+-(void)doneWork{
+    &lt;!-- 仅有主线程可以执行的处理,例如用户界面的刷新 --&gt;
+}
 </code></pre>
 
-<p>加锁机制可以保证可见性和原子性,而volatile仅能够保证可见性.</p>
+<p>gcd是真正提供了多个cpu核并行执行多个线程的操作.
+&ldquo;主线程"用来描绘用户界面,处理触摸屏幕的事件等.</p>
 
-<p>当且仅当满足以下所有条件时,才应该使用volatile变量:
-当变量的写入操作不依赖变量的当前值,或者你确保只有单个线程更新变量的值.
-该变量不会与其他状态变量一起纳入不变性条件中.
-在访问变量时不需要加锁.</p>
+<h2>GCD的API</h2>
 
-<p>当某个对象封闭在一个线程中的时候,这种用法将自动实现线程安全性,即使被封闭的对象本身不是线程安全的.</p>
+<p>开发者要做的只是定义想执行的任务并追加到适当的Dispatch Queue中.</p>
 
-<p>在volatile变量上存在一种特殊的线程封闭,只要你能确保只有单个线程对共享的volatile变量执行写入操作,那么就可以安全地在这些共享的volatile变量上执行"读取-修改-写入"的操作,在这种情况下,
-相当于将修改操作封闭在单个线程中以防止发生竞态条件,并且volatile变量的可见性保证还确保了其他线程可以看到最新的值.</p>
+<p>1)Serial Dispatch Queue连续的执行,等待现在执行中处理结束.每次处理一个任务.</p>
 
-<p>不可变对象一定是线程安全的.</p>
+<p>2)Concurrent Dispatch Queue并发的执行,不等待现在执行中的处理结束,具体创建几个线程,由系统决定,执行顺序会根据处理内容和系统状态发生变化,它不同于执行
+顺序固定的Serial Dispatch Queue,在不想干煸执行处理顺序,或者不想并行执行多个处理时使用Serial Dispatch Queue.</p>
 
-<p>当满足下面的条件时候,对象才是不可变的:</p>
+<h2>dispatch_queue_create</h2>
 
-<pre><code>对象创建之后,其状态就不可以修改了.
-对象的所有域都是final类型.
-对象是正确创建的(建议使用工厂方法构建对象,具体来说只有析构函数返回时,this引用才应该从线程公开,析构函数可以将this指针保存到某个地方,只要其他线程不会再构造函数完成之前使用它.
+<p>下面是创建一个Serial Dispatch Queue的方法:</p>
+
+<pre><code>dispatch_queue_t mySerialDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",NULL);
 </code></pre>
 
-<p>如何线程都可以在不需要额外同步的情况下安全的访问不可变对象,即使在发布这些对象时没有使用同步.</p>
+<p>虽然Serial Dispatch Queue每次只能执行一个任务,但是通过dispatch_queue_create创建多个Serial Dispatch Queue,依然可以并发执行.每个Serial Dispatch Queue都会创建一个线程,会消耗大量的内存,引起大量的上下文切换,降低系统的响应性能.</p>
 
-<p>可变对象必须通过安全的方式来发布,这通常意味着在发布和使用该对象的线程时都必须使用同步.</p>
+<p>避免多个线程更新相同资源导致数据竞争时,使用Serial Dispatch Queue.</p>
 
-<pre><code>要安全地发布一个对象,对象的引用以及对象的状态必须同时最其他线程可见,一个正确的构造的对象可以通过以下方式来安全的发布:
+<p>创建Serial Dispatch Queue的时候,第一个参数是Dispatch Queue的名字,第二个参数设置为NULL,例如下面所示:</p>
 
-在静态初始化函数中初始化一个对象的引用,
-将对象的引用保存在volatile类型,或者是AtomicReferance对象中,
-将对象的引用保存到某个正确构造对象的final类型域中,
-将对象的引用保存到一个由锁保护的域中.
+<pre><code>dispatch_queue_t mySerialDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",NULL);
 </code></pre>
 
-<p>对于可变对象,不仅在发布对象的时候需要使用同步,并且在每次对象访问的时候,同样需要使用同步来确保后续操作的可见性
-对象的发布需求取决于他的可变性:</p>
+<p>创建Concurrent Dispatch Queue的时候,第一个参数是Dispatch Queue的名字,第二个参数设置为DISPATCH_QUEUE_CONCURRENT,例如下面所示:</p>
 
-<pre><code>不可变对象可以通过任意机制来发布
-事实不可变对象必须通过安全的方式来发布
-可变对象必须通过安全的方式来发布,并且必须是线程安全的或者由某个锁保护起来.
+<pre><code>dispatch_queue_t myConcurrentDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",DISPATCH_QUEUE_CONCURRENT);
 </code></pre>
 
-<p>在并发程序中使用和共享某个对象的时,可以使用一些实用的策略,包括:</p>
+<p>通过dispath_queue_create创建的Dispatch Queue必须在结束的时候,手动释放,相对应的也包含相应的retain方法:</p>
 
-<pre><code>线程封闭:线程封闭的对象只能有一个线程拥有,对象被封闭在该线程中,并且只有这个线程修改.
-只读共享:在没有额外同步的情况下,共享的只读对象可以由多个对象并发访问,但任何线程都不能修改它,共享的只读对象包括不可变对象,和事实不可变对象.
-线程安全共享:线程安全的对象在其内部实现同步,因此多个线程可以通过对象的公有接口来访问而不需要进一步的同步.
-保护对象:被保护的对象只能通过持有特定的锁来访问,保护对象包括封装在其他线程安全对象中的对象,以及已发布的并且由某个特定锁保护的对象.
+<pre><code>dispatch_release(mySerialDispatchQueue);
+dispatch_retain(mySerialDispatchQueue);
 </code></pre>
+
+<p>例如:</p>
+
+<pre><code>dispatch_queue_t myConcurrentDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",DISPATCH_QUEUE_CONCURRENT);
+dispath_async(queue,^{NSLog(@"block on myConcurrentDispatchQueue");});
+dispatch_release(myConcurrentDispatchQueue);
+</code></pre>
+
+<p>在创建dispatch_queue后,立即调用dispatch_release并不会产生问题,是因为在block追加到Dispath Queue后,
+自动的调用了dispatch_retain方法,在block执行完成后,自动释放.</p>
+
+<p>凡是带有GCD的API中含有"create"的API生成对象的时候,在不需要的时候,需要立即调用dispatch_release方法进行释放.
+通过函数或者方法获取Dispath_queue以及其他命名含有create的api生成的对象时,有必要通过dispatch_retain方法持有,并在不需要的时候dispatch_release.</p>
+
+<p>???如何返回???</p>
+
+<h3>Main Dispatch Queue/Global Dispatch Queue</h3>
+
+<p>这两个是不需要创建的Dispath Queue.
+Main Dispatch Queue是在主线程中执行的Dispath Queue,因为主线程只有一个,所以是Serial Dispatch Queue,其和NSObject的performSelectorOnMainThread方法作用相同,</p>
+
+<p>Global Dispatch Queue是所有应用程序都能使用的Concurrent Dispatch Queue,没有必要自己生成Concurrent Dispatch Queue,只需要获取Global Dispatch Queue即可.</p>
+
+<p>另外其还具有四个优先级,分别为高优先级,默认优先级,低优先级和后台优先级.
+各种Dispath Queue获取方法如下:</p>
+
+<pre><code>&lt;!-- 获取MAIN DISPATCH QUEUE --&gt;
+dispatch_queue_t mainDispatchQueue = dispatch_get_main_queue();
+
+&lt;!-- 获取高优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
+
+&lt;!-- 获取默认优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+
+&lt;!-- 获取低优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,0);
+
+&lt;!-- 获取后台优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0);
+</code></pre>
+
+<p>对MAIN DISPATCH QUEUE和GLOBAL DISPATH QUEUE执行dispatch_release和dispatch_retain方法没有任何效果.</p>
+
+<p>下面的例子为在MAIN DISPATCH QUEUE和GLOBAL DISPATCH QUEUE同时作用的代码实例:</p>
+
+<pre><code>dispath_async(dispath_get_global_queue(DISPATH_QUEUE_PRIORITY_DEFAULT,0),^{
+    &lt;!-- 可以并行处理的任务 --&gt;
+  dispath_async(dispatch_get_main_queue(),^{
+    &lt;!-- 主线程中的任务 --&gt;
+  });
+});
+</code></pre>
+
+<h3>dispatch_set_target_queue</h3>
+
+<p>dispatch_queue_create函数生成的Dispatch Queue不管是Serial还是Concurrent的dispatch queue,都是与默认有限的Global Dispatch Queue相同执行优先级的线程.而变更Dispatch Queue要使用dispatch_set_target_queue函数,例如:</p>
+
+<pre><code>dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.alex.mySerialDispatchQueue",NULL);
+dispatch_queue_t globalDispatchQueueBackground = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0);
+dispatch_set_target_queue(mySerialDispatchQueue,globalDispatchQueueBackground);
+</code></pre>
+
+<p>将需要变更优先级的queue作为函数的第一个参数,指定需要相同优先级的queue作为第二个参数.</p>
+
+<h3>dispatch_after</h3>
+
+<p>想要在指定的时间之后执行,需要使用dispatch_after
+dispatch_after并不是在指定的时间后执行处理,而只是在指定的时间后追加到Dispatch Queue中.</p>
+
+<pre><code>dispatch_tme_t time = dispatch_time(DISPATCH_TIME_NOW,3ull * NSEC_PER_SEC);
+dispatch_after(time,dispatch_get_main_queue(),^{
+    NSLog(@"wait for 3 seconds");
+});
+</code></pre>
+
+<p>dispatch_time函数从第一个参数开始,到第二个参数指定的毫微秒单位时候后的时间.</p>
+
+<p>NSEC_PER_SEC:秒为单位的数值
+NESC_PRE_MSEC:毫秒为单位的数值</p>
+
+<p>可以很轻松的将NSDate时间转换为dispatch_time_t类型:</p>
+
+<pre><code>dispatch_time_t getDispatchTimeByDate(NSDate *date){
+    NSTimeInterval interval;
+    double second,subsecond;
+    struct timespec time;
+    dispatch_time_t milestone;
+
+    interval = [date timeIntervalSince1970];
+    subsecond = modf(interval,&amp;second);
+    time.tv_sec = second;
+    time.tv_nsec = subsecond * NSEC_PER_SEC;
+    milestone = dispatch_walltime(&amp;time,0);
+
+    return milestone;
+}
+</code></pre>
+
+<h3>Dispatch Group</h3>
+
+<p>当追加到多个Dispatch Queue中多个处理全部结束的时候想要执行结束处理,当你使用Serial Dispatch Queue的时候,只需要将任务追加到最后,但是当你使用
+Concurrent Dispatch Queue中的时候,源代码变的很复杂.这时候用Dispatch Group就十分合适.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_group_t group = dispatch_group_create();
+&lt;!-- 含有create创建的函数,需要在使用后使用release --&gt;
+
+dispatch_group_async(group,queue,^{NSLog(@"blk0";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk1";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk2";)});
+
+dispatch_group_notify(group,dispatch_get_main_queue(),^{NSLog(@"work is done!")});
+dispatch_relelase(group);
+</code></pre>
+
+<p>代码中的其他任务执行顺序不变,但是notify任务一定是最后执行的.</p>
+
+<p>dispatch_group_notify可以监测到所人吴的执行结束,一旦结束了,就把最后的处理添加到指定的Dispatch Queue中.
+dispatch_group_async函数和dispatch_async作用相同.</p>
+
+<p>diaptch_queue_wait函数近等待全部处理执行结束.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_group_t group = dispatch_group_create();
+&lt;!-- 含有create创建的函数,需要在使用后使用release --&gt;
+
+dispatch_group_async(group,queue,^{NSLog(@"blk0";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk1";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk2";)});
+
+dispatch_group_wait(group,DISPATCH_TIME_FOREVER);
+dispatch_relelase(group);
+</code></pre>
+
+<p>dispatch_group_wait第二个参数是等待的时间,DISPATCH_TIME_FOREVER是永远等待的意思,只要group的处理没有结束,我们就会一直等待.这个方法返回的情况一般有两种,一种是组内的所有任务都结束了,另外一种是等待的时间到了,一般会在其后面进行group的release操作.</p>
+
+<h3>dispatch_barrier_async</h3>
+
+<p>写入处理确实不可以和其他的写入处理以及包含读取处理的其他某些处理并行执行,但是如果读取处理仅仅和读取处理并行执行,那么多个并行处理就不会发生问题.
+也就是说为了搞笑的进行访问,读取处理追加到Concurrent Dispatch Queue中,写入处理在没有读取处理没有执行的状态下,追加到Serial Dispach Queue.(在写入处理之前,读取处理不可执行).
+值得注意的是需要同dispatch_queue_create生成的Concurrent Dispatch Queue一起工作.
+这时候使用dispatch_barrier_async就十分合适:</p>
+
+<p>所有blk0_for_reading都是并行处理的,直到执行到blk_for_writing此时变成串行处理.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create("com.monadogg.queue",DISPATCH_QUEUE_CONCURRENT);
+
+dispatch_async(queue,blk0_for_reading);
+dispatch_async(queue,blk1_for_reading);
+dispatch_async(queue,blk2_for_reading);
+dispatch_barrier_async(queue,blk_for_writing);
+dispatch_async(queue,blk3_for_reading);
+dispatch_async(queue,blk4_for_reading);
+dispatch_async(queue,blk5_for_reading);
+
+dispatch_release(queue);
+</code></pre>
+
+<h3>dispatch_sync / dispatch_async</h3>
+
+<p>dispatch_async表示"非同步"的追加到指定的Dispatch Queue中,立刻返回,不做任何等待.
+dispatch_sync意味着同步的,也就是在追加的Block执行结束之前,dispatch_sync一直会在这里等待,一直等待block执行结束.</p>
+
+<h3>dispatch_apply</h3>
+
+<p>该函数按照指定的次数将指定的block追加到指定的Dsipatch Queue中,并等待全部处理执行结束.
+第一个参数是执行的次数,第二个参数是追加的queue,第三个参数是带有参数的block.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_apply(10,queue,^(size_t index){
+    NSLog(@"%zu",index);
+});
+NSLog(@"done");
+</code></pre>
+
+<p>如果希望NSLog(@&ldquo;done&rdquo;)异步执行,就将这段代码放在dispatch_async中即可,形如:</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_async(queue,{
+    dispatch_apply(10,queue,^(size_t index){
+        NSLog(@"%zu",index);
+    });
+    NSLog(@"done");
+});
+</code></pre>
+
+<h3>dispatch_suspend/dispatch_resume</h3>
+
+<p>挂起指定的dispatch queue:</p>
+
+<pre><code>dispatch_suspend(queue);
+</code></pre>
+
+<p>恢复指定的dispatch queue:</p>
+
+<pre><code>dispatch_resume(queue);
+</code></pre>
+
+<h3>Dispatch Semaphore</h3>
+
+<p>自从ios4.0/mac osx10.6引入了GCD之后，让我们在使用多线程的时候确实方便了很多，关于GCD的一些介绍和使用本站中已经转过一位资深开发者的几篇系列文章，非常彻底的介绍了GCD的用法和一些特性，有兴趣的朋友可以去翻阅。
+但当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用
+NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是
+dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。
+在GCD中有三个函数是semaphore的操作，分别是：</p>
+
+<pre><code>dispatch_semaphore_create          创建一个semaphore
+dispatch_semaphore_signal          发送一个信号
+dispatch_semaphore_wait              等待信号
+</code></pre>
+
+<p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制。</p>
+
+<pre><code>dispatch_group_t group = dispatch_group_create();
+dispatch_semaphore_t semaphore = dispatch_semaphore_create(10);
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+for (int i = 0; i &lt; 100; i++)
+{
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_group_async(group, queue, ^{
+        NSLog(@"%i",i);
+        sleep(2);
+        dispatch_semaphore_signal(semaphore);
+    });
+}
+dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+dispatch_release(group);
+dispatch_release(semaphore);
+</code></pre>
+
+<p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
+
+<h3>dispatch_once</h3>
+
+<p>dispatch_once函数是保证在应用程序执行中只执行一次指定处理的api,通过该函数即便是在多线程环境下执行,也可以保证百分之百安全.</p>
+
+<pre><code>static dispatch_one_t pred;
+dispatch_once(&amp;pred,^{
+    &lt;!-- 初始化 --&gt;
+});
+</code></pre>
+
+<p>其等价于:</p>
+
+<pre><code>static int initalized = NO;
+if(initalized == NO)
+{
+    &lt;!-- 初始化 --&gt;
+    initalized = YES;
+}
+</code></pre>
+
+<h3>Dispatch I/O</h3>
+
+<p>在读取大文件的时候,如果将文件分成合适的大小,并使用Global Dispatch Queue并列读取的话,应该比一般的读取速度快不少.
+通过DispatchI/O和Dispatch Data就可以这么做.</p>
+
+<p>注意网络请求中:线程是魔鬼,应该首先选用Cocoa提供的异步网络请求API.</p>
+
+<p>参考并感谢:
+老谭的博客:<a href="http://www.tanhao.me/">http://www.tanhao.me/</a></p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[(一)链表笔记]]></title>
-    <link href="http://MonaDogg.github.io/blog/2014/02/23/linklistnote/"/>
-    <updated>2014-02-23T22:26:00+08:00</updated>
-    <id>http://MonaDogg.github.io/blog/2014/02/23/linklistnote</id>
-    <content type="html"><![CDATA[<p>最近发现自己数据结构和算法十分薄弱,于是准备复习这方面的知识,选用的教材是&lt;算法精解-c语言描述>,在此,把复习中的笔记记录如下.</p>
+    <title type="html"><![CDATA[MRC与ARC]]></title>
+    <link href="http://MonaDogg.github.io/blog/2014/03/01/MRC_AND_ARC/"/>
+    <updated>2014-03-01T16:41:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2014/03/01/MRC_AND_ARC</id>
+    <content type="html"><![CDATA[<h2>MRC</h2>
 
-<p>其中涉及的知识点:</p>
+<p>dealloc实际上是调用了释放了你对象的内存空间,你永远不应该显示的调用dealloc方法(虽然这样是可行的),这个dealloc方法将有运行时进行调用.如果你使用了arc,并且需要继承dealloc方法,需要在该方法的末尾调用父类的dealloc方法.</p>
 
-<h2>1.格式化输出函数fprintf()中的stdout、stderr</h2>
+<p>copy</p>
 
-<p>printf将格式化写到标准输出，fprintf写至指定的流。</p>
+<p>retain</p>
 
-<p>stdin:标准输入
-stdout:标准输出
-stderr:标准错误</p>
+<p>等方法对内存的影响</p>
 
-<p>int fprintf(
-   FILE <em>stream,                    //为 FILE 结构的指针
-   const char </em>format [,
-   argument ]&hellip;
-);</p>
+<p>为什么字符串用copy?</p>
 
-<h2>2.宏定义的写法</h2>
+<h3>1.1什么是自动引用计数</h3>
 
-<p>宏定义默认都大写,不需要类型,没有{}只有()</p>
+<p>在LLVM编译器中设置ARC为有效的状态,就无需再次键入retain或者是release代码了.</p>
 
-<pre>
-//得到链表中的尾元素
-#define list_tail(list) ((list)->tail)
-
-//判断该元素是不是头元素
-#define list_is_head(list, element) ((element) == ((list)->head) ? 1 : 0)
-</pre>
-
-
-<h2>3.c语言常用库</h2>
-
-<pre><code>#include &lt;stdlib.h&gt;
-//stdlib 头文件即standard library标准库头文件
-//本例中用了内存申请和释放:malloc()和free()
-
-#include &lt;string.h&gt;
-//C语言里面关于字符数组的函数定义的头文件
-//本例中用了memset()重置内存区域
+<pre><code>1)使用xcode4.2以上的版本
+2)使用LLVM编译器3.0或以上的版本
+3)编译器中arc的设置为有效
 </code></pre>
 
-<h2>4.memset的用法</h2>
+<h3>1.2内存管理和引用计数</h3>
 
-<pre><code>//设置缓冲区到制定的位置
-void *memset(
-   void *dest,      //开始的内存地址
-   int c,               //设置值
-   size_t count     //设置的长度
-);
-memset(tempList, 0, sizeof(NewList));
+<p>办公室开灯和引用计数的故事</p>
+
+<p>开灯       &mdash;> 生成对象
+需要照明     &mdash;> 持有对象
+不需要照明 &mdash;>  释放对象
+关灯   &mdash;>  废弃对象</p>
+
+<h4>内存管理的思考方式</h4>
+
+<p>对象的操作和oc对应的方法:</p>
+
+<pre><code>生成并持有对象:alloc/new/copy/mutableCopy等等
+持有对象:retain
+释放对象:release
+废弃对象:dealloc
 </code></pre>
 
-<p>设置tempList开始的内存地址,长度为NewList类型的长度,值为0</p>
+<p>1)自己生成的对象,自己持有</p>
 
-<h2>5.如何申请内存和释放内存</h2>
+<p>使用alloc,new,copy,mutableCopy方法生成的对象只有自己持有.按照某些约定命名的方法,也能声称自己持有的对象.</p>
 
-<p>1)申请内存</p>
+<p>copy方法利用基于NSCopying方法的约定,由各类实现copyWithZone:方法生成并持有对象的副本,生成不可变更的对象.
+mutableCopy方法利用基于NSMutableCopying方法的约定,由各类实现mutableCopyWithZone:方法生成并持有对象的副本,生成可变更的对象.
+另外使用下面名称命名的时候,也意味着自己生成并持有对象:
+allocMyObject;newThatObject;copyThis;mutableCopyYourObject;</p>
 
-<pre><code>if ((new_element = (ListElmt *)malloc(sizeof(ListElmt))) == NULL)
-      return -1;
+<p>对于下面的方法,即便使用了alloc/new/copy/mutableCopy名称开头,也并不属于同一类方法,注意这里的驼峰明明:
+allocate;newwe;copying;mutableCopyed;</p>
+
+<p>2)非自己生成的对象,自己也能持有</p>
+
+<p>利用alloc/new/copy/mutableCopy方法以外的方法持有对象,例如使用NSMutableArray的array类方法赋值给变量obj的时候,obj并不持有该对象,调用retain方法就可以持有该对象.</p>
+
+<p>3)不再需要自己持有的对象时释放</p>
+
+<p>当一个对象不再需要的时候,就将其释放了,例如使用alloc/new/copy/mutableCopy/retain等方法持有的对象,一旦不再需要就需要调用release方法,将其释放.</p>
+
+<p>4)非自己持有的对象无法释放</p>
+
+<p>释放非自己持有的对象的时候,就会产生问题,例如为autorelease的对象调用release方法.</p>
+
+<h4>autorelease</h4>
+
+<p>c语言的作用域,若某些自动变量超过了其作用域,该自动变亮将要自动废弃.autorelease会像c语言的自动变亮那样对待对象实例.
+aotorelease的具体使用方法是:
+1)生成并持有NSAutoreleasePool对象
+2)调用已分配对象的aotorelease方法
+3)废弃NSAutoreleasePool对象</p>
+
+<pre><code>NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+id obj = [[NSObject alloc]init];
+[obj autorelease];
+[pool drain];
 </code></pre>
 
-<p>2)释放内存</p>
+<p>NSRunLoop每次循环过程中NSAutoreleasePool对象被生成或者废弃.</p>
 
-<pre><code>free(willDeleteListElement);
+<p>1)放入autoreleasepool并不会增加引用计数,如果一个对象添加到autorelease后,就不能再调用这个对象release的方法了.也就是说autorelease方法相当于一个延后操作的release方法,其并不会增加引用计数.
+2)使用autorelease方法,可以使的对象存在,但是并不持有该对象
+3)autorelease提供在对象超出指定的生存范围的时候能够自动并正确的释放
+4)添加到集合以后会增加引用计数,例如array,当集合元素销毁以后,该元素的引用计数会自己销毁.
+5)当你放入到autorelease pool中后,该对象就不会被你持有了.</p>
+
+<h2>ARC</h2>
+
+<p>在LLVM中编译器中设置ARC为有效状态,就无需再次键入retain或者是release代码.</p>
+
+<h3>1.1ARC规则</h3>
+
+<p>*acr下并不关心引用计数</p>
+
+<p>设置ARC有效的编译方法如下所示:</p>
+
+<pre><code>1)使用clang(LLVM编译器)3.0或者以上版本
+2)指定编译器的属性为"-fobjc-arc"
 </code></pre>
 
-<h2>6.以下为链表的实现文件</h2>
+<p>没有必要在arc模式下调用dealloc方法,并且也不能调用[super dealloc]方法,但是如果你在对象销毁的时候,需要做一些额外的操作,例如注销通知中心的对象,你可以在这里编写额外的代码.</p>
 
-<p>linkList.h</p>
+<p>循环引用容易发生内存泄漏,发生内存泄漏的原因是因为引用计数一直大于1.</p>
 
-<pre><code>//
-//  linkList.h
-//  clist
-//
-//  Created by lee on 14-2-23.
-//  Copyright (c) 2014年 lee. All rights reserved.
-//
+<h4>所有权修饰符</h4>
 
-#ifndef clist_linkList_h
-#define clist_linkList_h
+<p>1)<strong>strong
+</strong>strong是id类型和对象类型的默认所有权修饰符,所以下面两行代码是等价的:</p>
 
-//定义链表元素结构
-typedef struct LinkListElement_
+<pre><code>id obj = [[NSObject alloc]init];
+
+id __strong obj = [[NSObject alloc]init];
+</code></pre>
+
+<p>__strong修饰符表示对对象的"强引用",持有强引用的变量在超出作用域的时候被废弃,随着强饮用的失效,引用的对象会随之释放.所以下面的代码可以正常的执行:(自动帮你持有对象了,对象在没有强引用指向的时候废弃)</p>
+
+<pre><code>{
+id __strong obj = [NSMutableArray array];
+//因为__strong的作用,持有对象
+}
+超出作用域对象被自动释放
+
 {
-    void *data;
-    struct LinkListElement_ *nextElement;
-}LinkListElement;
-
-//定义链表结构
-typedef struct LinkList_
-{
-    LinkListElement *headListElement;
-    LinkListElement *tailListElement;
-    int size;
-    //如果data是自定义类型,那么需要初始化的时候设置destroy来释放内存
-    void (*destroy)(void *data);
-}LinkList;
-
-
-//初始化链表
-void linkListInit(LinkList *linkList,void (* destroy)(void *data));
-
-//删除,返回0为正常,其他为异常
-int linkListDelete(LinkList *linkList,LinkListElement *frontListElement,void **data);
-
-//插入
-int linkListInsert(LinkList *linkList,LinkListElement *frontListElement,void *data);
-//int linkListInsert(LinkList *linkList,LinkListElement *frontListElement,const void *data);
-
-//销毁
-void linkListDestroy(LinkList *linkList);
-
-#define LINKLIST_SIZE(linkList) (linkList-&gt;size)
-#define LINKLIST_HEAD_ELEMENT(linkList) (linkList-&gt;headListElement)
-#define LINKLIST_TAIL_ELEMENT(linkList) (linkList-&gt;tailListElement)
-#define LINKLIST_DATA(linklistElement) (linklistElement-&gt;data)
-#define LINKLIST_NEXT(linklistElement) (linklistElement-&gt;nextElement)
-#define LINKLIST_IS_HEAD_ELEMENT(linkList,linklistElement)(linklistElement == LINKLIST_HEAD_ELEMENT(linkList) ? 1 : 0 )
-#define LINKLIST_IS_TAIL_ELEMENT(linkList,linklistElement)(linklistElement == LINKLIST_TAIL_ELEMENT(linkList) ? 1 : 0 )
-
-#endif
+id __strong obj = [NSObject alloc]init];
+//因为__strong的作用,持有对象
+}
+超出作用域对象被自动释放
 </code></pre>
 
-<p>linkList.m</p>
+<p>注意成员变量和形参是__strong类型,在超出作用域后能够正常的释放.</p>
 
-<pre><code>//
-//  linkList.c
-//  clist
-//
-//  Created by lee on 14-2-25.
-//  Copyright (c) 2014年 lee. All rights reserved.
-//
+<p><strong>strong,</strong>weak,__autoreleasing可以保证这些变量的初始化都是nil.</p>
 
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
-#include "linkList.h"
+<p>arc下容易产生引用循环,有如下类定义:</p>
 
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
 
-void linkListInit(LinkList *linkList,void (* destroy)(void *data))
-{
-    linkList-&gt;headListElement = NULL;
-    linkList-&gt;tailListElement = NULL;
-    linkList-&gt;size = 0;
-    linkList-&gt;destroy = destroy;
-    return;
-}
+@interface TestObject : NSObject
 
+@property(nonatomic,strong) TestObject *myObj;
 
-//考虑是否从头删除,并且考虑链表新的头尾元素
-//非从头删除,需要考虑新的尾元素
-
-int linkListDelete(LinkList *linkList,LinkListElement *frontListElement,void **data)
-{
-
-
-    if (LINKLIST_SIZE(linkList) == 0 || frontListElement == LINKLIST_TAIL_ELEMENT(linkList)) {
-        return -1;
-    }
-
-    LinkListElement *deleteElement;
-
-#pragma -mark 没有考虑frontListElement = NULL的情况
-//    LinkListElement *deleteElement = frontListElement-&gt;nextElement;
-//    *data = deleteElement-&gt;data;
-
-    if (frontListElement == NULL) {
-
-        deleteElement = LINKLIST_HEAD_ELEMENT(linkList);
-        *data = deleteElement-&gt;data;
-
-        //包含为NULL的情况
-        linkList-&gt;headListElement = deleteElement-&gt;nextElement;
-        if (LINKLIST_HEAD_ELEMENT(linkList) -&gt;nextElement == NULL) {
-            linkList-&gt;tailListElement = LINKLIST_HEAD_ELEMENT(linkList);
-        }
-
-    }else{
-
-        deleteElement = frontListElement-&gt;nextElement;
-        *data = deleteElement-&gt;data;
-
-        frontListElement-&gt;nextElement = deleteElement-&gt;nextElement;
-        if (frontListElement-&gt;nextElement == NULL) {
-            linkList-&gt;tailListElement = frontListElement;
-        }
-    }
-
-    free(deleteElement);
-    linkList-&gt;size --;
-    return 0;
-}
-
-
-
-
-
-//从头插入,判断当前列表是否有元素,进而判断链表的头尾元素
-//非从头插入,需要考虑是否插入元素是否为尾元素
-
-int linkListInsert(LinkList *linkList,LinkListElement *frontListElement,void *data)
-{
-    LinkListElement *insertElement;
-    if((insertElement = (LinkListElement *)malloc(sizeof(LinkListElement))) == NULL)
-        return -1;
-    insertElement-&gt;data = data;
-
-    if (frontListElement == NULL) {
-        //如果没有元素,或者没有元素
-        if (LINKLIST_SIZE(linkList) == 0) {
-            linkList-&gt;tailListElement = insertElement;
-        }else{
-            insertElement-&gt;nextElement = linkList-&gt;headListElement;
-        }
-        linkList-&gt;headListElement = insertElement;
-
-
-    }else{
-#pragma -mark 当插入元素是尾元素的情况
-        if (frontListElement-&gt;nextElement == NULL) {
-            linkList-&gt;tailListElement = insertElement;
-        }
-
-        insertElement-&gt;nextElement =  frontListElement-&gt;nextElement;
-        frontListElement-&gt;nextElement = insertElement;
-    }
-
-    linkList-&gt;size ++;
-
-    return 0;
-}
-
-
-
-
-
-
-//需要遍历释放list中的各个元素的data,并且需要判断destroy是否存在
-
-void linkListDestroy(LinkList *linkList)
-{
-    void *data = NULL;
-
-    while (LINKLIST_SIZE(linkList) &gt; 0) {
-
-#pragma -mark 不要忘记destroy为NULL的情况
-        if(linkListDelete(linkList, NULL, (void **)data) == 0 &amp;&amp; linkList-&gt;destroy != NULL ){
-            linkList-&gt;destroy(data);
-        }
-    }
-
-    memset(linkList,0,sizeof(LinkList));
-}
+@end
 </code></pre>
 
-<p>双向链表:与链表的差距仅仅是多了一个前驱指针,在代码上的差别是,仅仅允许在链表为空的时候,才能从链表的头部插入指针.
-dlist.h</p>
+<p>情况1:</p>
 
-<pre><code>/*****************************************************************************
-*                                                                            *
-*  ------------------------------- dlist.h --------------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-#ifndef DLIST_H
-#define DLIST_H
-
-#include &lt;stdlib.h&gt;
-
-/*****************************************************************************
-*                                                                            *
-*  Define a structure for doubly-linked list elements.                       *
-*                                                                            *
-*****************************************************************************/
-
-typedef struct DListElmt_ {
-
-void               *data;
-struct DListElmt_  *prev;
-struct DListElmt_  *next;
-
-} DListElmt;
-
-/*****************************************************************************
-*                                                                            *
-*  Define a structure for doubly-linked lists.                               *
-*                                                                            *
-*****************************************************************************/
-
-typedef struct DList_ {
-
-int                size;
-
-int                (*match)(const void *key1, const void *key2);
-void               (*destroy)(void *data);
-
-DListElmt          *head;
-DListElmt          *tail;
-
-} DList;
-
-/*****************************************************************************
-*                                                                            *
-*  --------------------------- Public Interface ---------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-void dlist_init(DList *list, void (*destroy)(void *data));
-
-void dlist_destroy(DList *list);
-
-int dlist_ins_next(DList *list, DListElmt *element, const void *data);
-
-int dlist_ins_prev(DList *list, DListElmt *element, const void *data);
-
-int dlist_remove(DList *list, DListElmt *element, void **data);
-
-#define dlist_size(list) ((list)-&gt;size)
-
-#define dlist_head(list) ((list)-&gt;head)
-
-#define dlist_tail(list) ((list)-&gt;tail)
-
-#define dlist_is_head(element) ((element)-&gt;prev == NULL ? 1 : 0)
-
-#define dlist_is_tail(element) ((element)-&gt;next == NULL ? 1 : 0)
-
-#define dlist_data(element) ((element)-&gt;data)
-
-#define dlist_next(element) ((element)-&gt;next)
-
-#define dlist_prev(element) ((element)-&gt;prev)
-
-#endif
+<pre><code>TestObject *test1 = [TestObject new];    //对象T1
+TestObject *test2 = [TestObject new];    //对象T2
+test1.myObj = test2;
 </code></pre>
 
-<p>dlist.c</p>
-
-<pre><code>/*****************************************************************************
-*                                                                            *
-*  ------------------------------- dlist.c --------------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
-
-#include "dlist.h"
-
-/*****************************************************************************
-*                                                                            *
-*  ------------------------------ dlist_init ------------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-void dlist_init(DList *list, void (*destroy)(void *data)) {
-
-/*****************************************************************************
-*                                                                            *
-*  Initialize the list.                                                      *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size = 0;
-list-&gt;destroy = destroy;
-list-&gt;head = NULL;
-list-&gt;tail = NULL;
-
-return;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- dlist_destroy -----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-void dlist_destroy(DList *list) {
-
-void               *data;
-
-/*****************************************************************************
-*                                                                            *
-*  Remove each element.                                                      *
-*                                                                            *
-*****************************************************************************/
-
-while (dlist_size(list) &gt; 0) {
-
-   if (dlist_remove(list, dlist_tail(list), (void **)&amp;data) == 0 &amp;&amp; list-&gt;
-      destroy != NULL) {
-
-      /***********************************************************************
-      *                                                                      *
-      *  Call a user-defined function to free dynamically allocated data.    *
-      *                                                                      *
-      ***********************************************************************/
-
-      list-&gt;destroy(data);
-
-   }
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  No operations are allowed now, but clear the structure as a precaution.   *
-*                                                                            *
-*****************************************************************************/
-
-memset(list, 0, sizeof(DList));
-
-return;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- dlist_ins_next ----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-int dlist_ins_next(DList *list, DListElmt *element, const void *data) {
-
-DListElmt          *new_element;
-
-/*****************************************************************************
-*                                                                            *
-*  Do not allow a NULL element unless the list is empty.                     *
-*                                                                            *
-*****************************************************************************/
-
-
-if (element == NULL &amp;&amp; dlist_size(list) != 0)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Allocate storage for the element.                                         *
-*                                                                            *
-*****************************************************************************/
-
-if ((new_element = (DListElmt *)malloc(sizeof(DListElmt))) == NULL)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Insert the new element into the list.                                     *
-*                                                                            *
-*****************************************************************************/
-
-new_element-&gt;data = (void *)data;
-
-if (dlist_size(list) == 0) {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is empty.                               *
-   *                                                                         *
-   **************************************************************************/
-
-
-   //    当链表为空的时候,从头部插入元素
-
-   list-&gt;head = new_element;
-   list-&gt;head-&gt;prev = NULL;
-   list-&gt;head-&gt;next = NULL;
-   list-&gt;tail = new_element;
-
-   }
-
-else {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is not empty.                           *
-   *                                                                         *
-   **************************************************************************/
-
-   new_element-&gt;next = element-&gt;next;
-   new_element-&gt;prev = element;
-
-//判断尾元素
-   if (element-&gt;next == NULL)
-      list-&gt;tail = new_element;
-   else
-   //判断下一个元素的上元素
-      element-&gt;next-&gt;prev = new_element;
-
-   element-&gt;next = new_element;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  Adjust the size of the list to account for the inserted element.          *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size++;
-
-return 0;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- dlist_ins_prev ----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-
-int dlist_ins_prev(DList *list, DListElmt *element, const void *data) {
-
-DListElmt          *new_element;
-
-/*****************************************************************************
-*                                                                            *
-*  Do not allow a NULL element unless the list is empty.                     *
-*                                                                            *
-*****************************************************************************/
-//  只有链表没有元素的时候,才可以从头部插入
-
-
-if (element == NULL &amp;&amp; dlist_size(list) != 0)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Allocate storage to be managed by the abstract data type.                 *
-*                                                                            *
-*****************************************************************************/
-
-if ((new_element = (DListElmt *)malloc(sizeof(DListElmt))) == NULL)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Insert the new element into the list.                                     *
-*                                                                            *
-*****************************************************************************/
-
-new_element-&gt;data = (void *)data;
-
-if (dlist_size(list) == 0) {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is empty.                               *
-   *                                                                         *
-   **************************************************************************/
-
-   list-&gt;head = new_element;
-   list-&gt;head-&gt;prev = NULL;
-   list-&gt;head-&gt;next = NULL;
-   list-&gt;tail = new_element;
-
-   }
-
-
-else {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is not empty.                           *
-   *                                                                         *
-   **************************************************************************/
-
-   new_element-&gt;next = element; 
-   new_element-&gt;prev = element-&gt;prev;
-
-   if (element-&gt;prev == NULL)
-      list-&gt;head = new_element;
-   else
-      element-&gt;prev-&gt;next = new_element;
-
-   element-&gt;prev = new_element;
-
-}
-
-
-/*****************************************************************************
-*                                                                            *
-*  Adjust the size of the list to account for the new element.               *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size++;
-
-return 0;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ----------------------------- dlist_remove -----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-int dlist_remove(DList *list, DListElmt *element, void **data) {
-
-/*****************************************************************************
-*                                                                            *
-*  Do not allow a NULL element or removal from an empty list.                *
-*                                                                            *
-*****************************************************************************/
-
-if (element == NULL || dlist_size(list) == 0)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Remove the element from the list.                                         *
-*                                                                            *
-*****************************************************************************/
-
-*data = element-&gt;data;
-
-if (element == list-&gt;head) {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle removal from the head of the list.                              *
-   *                                                                         *
-   **************************************************************************/
-
-   list-&gt;head = element-&gt;next;
-
-   if (list-&gt;head == NULL)
-      list-&gt;tail = NULL;
-   else
-      element-&gt;next-&gt;prev = NULL;
-
-   }
-
-else {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle removal from other than the head of the list.                   *
-   *                                                                         *
-   **************************************************************************/
-
-   element-&gt;prev-&gt;next = element-&gt;next;
-
-   if (element-&gt;next == NULL)
-      list-&gt;tail = element-&gt;prev;
-   else
-      element-&gt;next-&gt;prev = element-&gt;prev;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  Free the storage allocated by the abstract data type.                     *
-*                                                                            *
-*****************************************************************************/
-
-free(element);
-
-/*****************************************************************************
-*                                                                            *
-*  Adjust the size of the list to account for the removed element.           *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size--;
-
-return 0;
-
-}
+<p>情况2:</p>
+
+<pre><code>TestObject *test1 = [TestObject new];
+TestObject *test2 = [TestObject new];
+test1.myObj = test2;
+test2.myObj = test1;   
 </code></pre>
 
-<p>循环链表:与链表的差距是没有尾指针,当链表中只有一个元素的时候,该元素的next指向自己.因为没有尾指针,所以实现起来也简单了不少.
-clist.h</p>
+<p>情况1:
+当函数超出作用域的时候,指向对象T1的强引用test1失效,导致T1对象的释放,
+随即test1.myObj也失效,导致指向对象T2的强引用-1,
+然后强饮用test2指针超出作用域后失效,导致对象T2释放,
+最终所有的对象均被释放</p>
 
-<pre><code>/*****************************************************************************
-*                                                                            *
-*  ------------------------------- clist.h --------------------------------  *
-*                                                                            *
-*****************************************************************************/
+<p>情况2:
+当函数超出作用域的时候,指向对象T1的强引用test1失效,导致T1对象的强引用-1,目前为1,
+指向对象T2的强引用test2失效,导致T2对象强引用-1,目前为1,
+最终对象T1和T2,都因为引用计数大于1而不能释放内存.</p>
 
-#ifndef CLIST_H
-#define CLIST_H
+<p>2)__weak</p>
 
-#include &lt;stdlib.h&gt;
+<p><strong>weak和</strong>stong指针正好相反,提供弱引用,弱引用并不能持有对象的实例.并且有如果弱引用指向的对象被废弃后,该弱引用将被自动设置为nil.
+通过判断<strong>weak修饰的变量是否为nil,则可以判断对象是否被释放,需要注意的是仅仅支持iOS5以上的应用程序,在iOS4以下的应用程序,可以使用</strong>unsafe__unretained修饰符来修饰.</p>
 
-/*****************************************************************************
-*                                                                            *
-*  Define a structure for circular list elements.                            *
-*                                                                            *
-*****************************************************************************/
+<p>3)__unsafa_unretained</p>
 
-typedef struct CListElmt_ {
+<p>是不安全的内存修饰符,其并不属于编译器内存管理的对象。与weak相同的地方是并不会持有对象，如果对象被释放了以后，并不会被设置为nil，从而可能访问了错误的内存。</p>
 
-void               *data;
-struct CListElmt_  *next;
+<p>4)<strong>autoreleasing
+使用了@autoreleasepool块来代替，当有</strong>autoreleasing修饰符修饰变量的时候,就相当于MRC下修饰的变量调用了autorelease方法.但是显示的使用__autoreleasing十分罕见,例如下面:</p>
 
-} CListElmt;
-
-/*****************************************************************************
-*                                                                            *
-*  Define a structure for circular lists.                                    *
-*                                                                            *
-*****************************************************************************/
-
-typedef struct CList_ {
-
-int                size;
-
-int                (*match)(const void *key1, const void *key2);
-void               (*destroy)(void *data);
-
-//仅仅有头指针,没有尾巴指针
-CListElmt          *head;
-
-} CList;
-
-/*****************************************************************************
-*                                                                            *
-*  --------------------------- Public Interface ---------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-void clist_init(CList *list, void (*destroy)(void *data));
-
-void clist_destroy(CList *list);
-
-int clist_ins_next(CList *list, CListElmt *element, const void *data);
-
-int clist_rem_next(CList *list, CListElmt *element, void **data);
-
-#define clist_size(list) ((list)-&gt;size)
-
-#define clist_head(list) ((list)-&gt;head)
-
-#define clist_data(element) ((element)-&gt;data)
-
-#define clist_next(element) ((element)-&gt;next)
-
-#endif
+<pre><code>@autoreleasepool{
+  //持有非自己生成的对象
+  id __strong obj = [NSMutableArray array];
+  //因为obj是强引用,所以持有对象
+  //因为该方法的类名array,所以将对象自动注册到autoreleasepool
+}
+//因为obj超出作用域,所以强引用失效
+//因为autoreleasepool块的结束,所以其中的所有对象被释放,因为没有对象的所有者都不存在,所以被废弃
 </code></pre>
 
-<p>clist.c</p>
+<p>在ARC下作为函数的返回值,会被自动的注册到自动释放池中:</p>
 
-<pre><code>/*****************************************************************************
-*                                                                            *
-*  ------------------------------- clist.c --------------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
-
-#include "clist.h"
-
-/*****************************************************************************
-*                                                                            *
-*  ------------------------------ clist_init ------------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-void clist_init(CList *list, void (*destroy)(void *data)) {
-
-/*****************************************************************************
-*                                                                            *
-*  Initialize the list.                                                      *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size = 0;
-list-&gt;destroy = destroy;
-list-&gt;head = NULL;
-
-return;
-
+<pre><code>+(id)array{
+  return [[NSMutableArray alloc]init];
 }
+//在ARC下作为函数的返回值,会被自动的注册到自动释放池中
 
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- clist_destroy -----------------------------  *
-*                                                                            *
-*****************************************************************************/
 
-void clist_destroy(CList *list) {
-
-void               *data;
-
-/*****************************************************************************
-*                                                                            *
-*  Remove each element.                                                      *
-*                                                                            *
-*****************************************************************************/
-
-while (clist_size(list) &gt; 0) {
-
-   if (clist_rem_next(list, list-&gt;head, (void **)&amp;data) == 0 &amp;&amp; list-&gt;destroy
-      != NULL) {
-
-      /***********************************************************************
-      *                                                                      *
-      *  Call a user-defined function to free dynamically allocated data.    *
-      *                                                                      *
-      ***********************************************************************/
-
-      list-&gt;destroy(data);
-
-   }
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  No operations are allowed now, but clear the structure as a precaution.   *
-*                                                                            *
-*****************************************************************************/
-
-memset(list, 0, sizeof(CList));
-
-return;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- clist_ins_next ----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-int clist_ins_next(CList *list, CListElmt *element, const void *data) {
-
-CListElmt          *new_element;
-
-/*****************************************************************************
-*                                                                            *
-*  Allocate storage for the element.                                         *
-*                                                                            *
-*****************************************************************************/
-
-if ((new_element = (CListElmt *)malloc(sizeof(CListElmt))) == NULL)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Insert the element into the list.                                         *
-*                                                                            *
-*****************************************************************************/
-
-new_element-&gt;data = (void *)data;
-
-if (clist_size(list) == 0) {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is empty.                               *
-   *                                                                         *
-   **************************************************************************/
-
-   new_element-&gt;next = new_element;
-   list-&gt;head = new_element;
-
-   }
-
-else {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle insertion when the list is not empty.                           *
-   *                                                                         *
-   **************************************************************************/
-
-   new_element-&gt;next = element-&gt;next;
-   element-&gt;next = new_element;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  Adjust the size of the list to account for the inserted element.          *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size++;
-
-return 0;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  ---------------------------- clist_rem_next ----------------------------  *
-*                                                                            *
-*****************************************************************************/
-
-int clist_rem_next(CList *list, CListElmt *element, void **data) {
-
-CListElmt          *old_element;
-
-/*****************************************************************************
-*                                                                            *
-*  Do not allow removal from an empty list.                                  *
-*                                                                            *
-*****************************************************************************/
-
-if (clist_size(list) == 0)
-   return -1;
-
-/*****************************************************************************
-*                                                                            *
-*  Remove the element from the list.                                         *
-*                                                                            *
-*****************************************************************************/
-
-*data = element-&gt;next-&gt;data;
-
-if (element-&gt;next == element) {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle removing the last element.                                      *
-   *                                                                         *
-   **************************************************************************/
-
-   old_element = element-&gt;next;
-   list-&gt;head = NULL;
-
-   }
-
-else {
-
-   /**************************************************************************
-   *                                                                         *
-   *  Handle removing other than the last element.                           *
-   *                                                                         *
-   **************************************************************************/
-
-   old_element = element-&gt;next;
-   element-&gt;next = element-&gt;next-&gt;next;
-
-}
-
-/*****************************************************************************
-*                                                                            *
-*  Free the storage allocated by the abstract data type.                     *
-*                                                                            *
-*****************************************************************************/
-
-free(old_element);
-
-/*****************************************************************************
-*                                                                            *
-*  Adjust the size of the list to account for the removed element.           *
-*                                                                            *
-*****************************************************************************/
-
-list-&gt;size--;
-
-return 0;
-
-}
+id __weak obj1 = obj0;
+id __autoreleasing tmp = obj1;    //本句是自动添加的
+NSLog(@"class is %@",[tmp class]);
 </code></pre>
+
+<h5>非显式的调用__autoreleasing</h5>
+
+<p>1)函数的构造类方法,返回的对象被注册到自动释放池,例如[NSArray array];
+2)在ARC下作为函数的返回值,会被自动的注册到自动释放池中
+3)在访问有<strong>weak变量修饰的变量的时候,默认会将该对象注册到自动释放池中,因为此时对象有可能已经被废弃,要保证该内存在@autoreleasepool结束之前能够被访问.
+4)id的指针 和 对象的指针都会被默认添加上</strong>autoreleasing修饰符.例如:NSError <em>* error;id</em> objPoint;</p>
+
+<pre><code>-(BOOL)performOperationWithError:(NSError **)error;
+&lt;!-- 等同于 --&gt;
+-(BOOL)performOperationWithError:(NSError * __autoreleaseing *)error;
+</code></pre>
+
+<h5>显式的调用__autoreleasing</h5>
+
+<p>1)显示调用的时候,必须要注意变量为局部变量,函数以及方法参数.不能作用于成员变量,全局变量等.
+2)在LLVM3.0以上,ARC无效的时候,@autoreleasing块也能够使用.</p>
+
+<h5>ARC规则</h5>
+
+<p>1)不能使用retain/release/retainCount/autorelease
+2)不能显式的调用dealloc</p>
+
+<pre><code>不能直接调用,但是能够在类里面做一些自己需要的事情,例如从通知中心中清除注册者.
+</code></pre>
+
+<p>3)遵循内存管理的命名</p>
+
+<pre><code>对于对象的生成和持有的方法,必须遵循下面的命名:alloc/new/copy/mutableCopy
+以上述名称开始的方法返回对象的时候,必须返回调用方应当持有的对象.
+使用init方法命名的对象更为严格,必须是实例方法,必须返回对象,返回的对象必须是id类型,或者该方法声明的类型,抑或是该类的超类或者子类型,该对象并不会
+注册到autoreleasepool上,基本上是对象alloc的方法进行初始化.
+</code></pre>
+
+<p>4)使用@autoreleasepool 代替 NSAutoreleasePool
+5)对象变量不能成为C语言结构体的成员</p>
+
+<pre><code>虽然可以加上__unsafe_unretained让编译器通过编译,但是有内存泄漏和程序崩溃的风险.
+</code></pre>
+
+<p>6)显式转换的id 和 void*</p>
+
+<p>在arc无效的时候,id和void*是可以直接转换的,并且不会产生问题,例如:</p>
+
+<pre><code>id object = [[NSObject alloc]init];
+void *object2 = object;     //id-&gt;void* 并不会产生问题
+
+id object3 = object2;       //void*-&gt;id 并不会产生问题
+[object3 release];
+</code></pre>
+
+<p>在arc有效中,可以直接通过添加__bridge来进行转换,但是这并不是安全的,形如:</p>
+
+<pre><code>id obj = [[NSObject alloc]init];
+void *p = (__bridge void *)obj;
+id o = (__bridge id)p;
+</code></pre>
+
+<p>其还有另外两种的转换方式:<strong>bridge_retained 和 </strong>bridge_transfer
+<strong>bridge_retained:使要转换赋值的变量也持有所赋值的对象.用于oc对象类型转换为c语言指针类型.其类似retain操作.
+</strong>bridge_transfer:被转换的变量所有持有对象在该变量被赋值给转换目标后随之释放.用于c语言类型转换为oc对象类型,类似release操作.</p>
+
+<p><strong>bridge：transfers a pointer between Objective-C and Core Foundation with no transfer of ownership.
+</strong>bridge_retained、CFBridgingRetain：casts an Objective-C pointer to a Core Foundation pointer and also transfers ownership to you.
+__bridge_transfer、CFBridgingRelease：moves a non-Objective-C pointer to Objective-C and also transfers ownership to ARC.</p>
+
+<p>为什么字符串必须是copy呢?
+答:It is still recommended to copy because you want to avoid something passing a mutable string and then changing it without you knowing. A copy guarantees that the string you have will not change.
+如果你使用retain来修饰一个字符串,如果将来其发生了更改,你得到的值也会被更改,而你却并不知道,如果使用copy的话,这个值就永远不会更改了.</p>
+
+<p>For attributes whose type is an immutable value class that conforms to the NSCopying protocol, you almost always should specify copy in your @property declaration. Specifying retain is something you almost never want in such a situation.</p>
+
+<p>Here&rsquo;s why you want to do that:</p>
+
+<pre><code>NSMutableString *someName = [NSMutableString stringWithString:@"Chris"];
+Person *p = [[[Person alloc] init] autorelease];
+p.name = someName;
+[someName setString:@"Debajit"];
+</code></pre>
+
+<p>The current value of the Person.name property will be different depending on whether the property is declared retain or copy — it will be @&ldquo;Debajit&rdquo; if the property is marked retain, but @&ldquo;Chris&rdquo; if the property is marked copy.</p>
+
+<p>Since in almost all cases you want to prevent mutating an object&rsquo;s attributes behind its back, you should mark the properties representing them copy. (And if you write the setter yourself instead of using @synthesize you should remember to actually use copy instead of retain in it.)</p>
+
+<h4>属性声明和所有权对应关系</h4>
+
+<p>assign &ndash;> <strong>unsafe_unretained
+copy &ndash;> </strong>strong(但是赋值的是被复制的对象),并不是简单的赋值,他的赋值是通过NSCopying接口的copyWithZone:方法赋值源所生成的对象.
+retain &ndash;> <strong>strong
+strong &ndash;> </strong>strong
+unsafe_unretained &ndash;> <strong>unsage_unretained
+weak &ndash;> </strong>weak</p>
 ]]></content>
   </entry>
   
@@ -1313,6 +832,695 @@ App 定义陈述是一份对 app 的主要目的及其目标用户简洁而具�
 
 <p>p180:
 设计一个app 的第一屏一样的启动画面,如果你认为下面这些准则会导致一个朴素、无趣的启动图像,你说对了。请记住,启动画面并不是一个供你艺术表达 的机会。它的唯一目的是让用户认为你的 app 启动迅速并已准备就绪。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CoreAnimation随手记]]></title>
+    <link href="http://MonaDogg.github.io/blog/2014/01/19/CoreAnimation/"/>
+    <updated>2014-01-19T16:41:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2014/01/19/CoreAnimation</id>
+    <content type="html"><![CDATA[<h1>0.关于核心动画</h1>
+
+<p>CA会将打大部分的实际绘图工作交给绘图硬件,由绘图硬件来加速绘制.apple极力推荐你使用CA来构建iOS app的动画,因为这种自动绘制所产生的高帧率和光滑的动画,没有加重cpu的负荷,也没有令你的app运行缓慢</p>
+
+<p>layer对象是用于管理和控制你内容的地方,在大多数app中,layer被用作于管理你试图内容的方法.layer对象会将你的内容转换为位图数据(bitmap),其能够被图形硬件更容易的控制.</p>
+
+<p>layer对象很像view对象也包含bound,positon,opacity,transform以及其他的可视属性,常常当你更改这些属性的时候,会引起隐式的动画.</p>
+
+<p>和view相似,layer也是具有层级结构的,它的层级结构影响显示的内容,你可以插入单个图层到层级中,用于拓展你app的显示.</p>
+
+<p>action对象能够更改你layer定义的默认行为,隐式的动画是通过action对象实现的,你能够分配给你的aciton对象到layer的一个属性(无论是你增加的属性还是原有的属性),当这个属性更改的时候会触发aciton对象,从而产生动画.</p>
+
+<h1>1.核心动画的基本概念</h1>
+
+<p>layer并不是view的替代品,其是为了更好的展示,以及支持其内容动画的技术.layer提供了基本的绘制和动画,其是2d平面组织在3d空间的技术,和view的不同之处是,其并没有定义自己的外观,仅仅是管理周边位图的状态信息,在你的app中,最主要的layer常常是被看作是一个数据模型对象,就因为他是用来管理数据的,这个概念十分重要,因为它会影响动画的行为.</p>
+
+<p>你app中的大多数layer并不做任何绘制的工作,仅仅是控制你app提供的内容,并将其缓存为位图数据.真正进行动画的是图形硬件,它使用bitmap和状态信息进行绘制,而CA只是制作和传递位图数据和状态信息.</p>
+
+<p>layer绘制和view绘制是显著不同的,view绘制是通过调用其drawRect:方法进行重绘,这样的绘制是消耗巨大的,因为是使用cpu的主线程绘制.
+但是CA是通过操作硬件中缓存的bitmap达到类似或者相同的结果,从而避免了高昂的代价.</p>
+
+<p>更改图层的属性,能够引起适当的动画,具体的细节查看"Animatable Properties"章节,其主要会引起动画的行为:移动,缩放,旋转,透明度,圆角和背景颜色.</p>
+
+<p>你只需要制定动画开始和结束的点,然后CA会在空闲的时候来做这个动画,并且你可以指定默认的时间信息和动画参数,CA还可以设置合适的默认值,如果你没有设置的话.</p>
+
+<p>layer对象定义了自己的几何系统,layer和view也有很多不同的地方,例如锚点,以及一些几何相关的属性.</p>
+
+<p>layer使用两种坐标系统:
+基本点坐标系统和单元坐标系统</p>
+
+<p>基本点坐标系统:当指定的值被直接映射到屏幕坐标中,或者必须被指定和其他图层有关系.例如position属性.</p>
+
+<p>单元坐标系统:当值不能够被绑定到屏幕坐标中,因为其和其他的值是有关的,例如anchorPoint属性.我们将很少使用frame属性,因为其的值是从position和bounds衍生而来的.iOS中默认是从坐标系的左上角开始的,而OS X中默认是从左下角开始的.</p>
+
+<p>anchorPoint的默认值是(0.5,0.5).</p>
+
+<p>anchorPoint就相当于白纸上的图钉，它主要的作用就是用来作为变换的支点，旋转就是一种变换，类似的还有平移、缩放。anchorPoint的更改不会造成position的更改.anchor point是你旋转的支持点.当你更改anchor point旋转也会不同.</p>
+
+<p>position就是anchorPoint在superLayer中的位置,但是更改不会影响anchorPoint</p>
+
+<p>1、position是layer中的anchorPoint在superLayer中的位置坐标。
+2、互不影响原则：单独修改position与anchorPoint中任何一个属性都不影响另一个属性,但是会影响Frame中origin的属性.</p>
+
+<p>3、frame、position与anchorPoint有以下关系：</p>
+
+<pre><code>frame.origin.x = position.x - anchorPoint.x * bounds.size.width；  
+frame.origin.y = position.y - anchorPoint.y * bounds.size.height；
+</code></pre>
+
+<p>frame.origin由position和anchorPoint共同决定</p>
+
+<p>(不够深入)
+transfor属性将会影响当前的layer和其包含的sublayers,当你想要更改你自己的layer的时候使用这个属性
+sublayerTransfor仅仅会影响sublayers,通常是增加一个透明的可视效果到情景内容上.</p>
+
+<p>图层树反映出不同的动画状态:</p>
+
+<p>模型树(model layer tree或者layer tree):大多数情况下它打交道,它中的对象是模型对象,并且保存了任何动画的目标值.当你更改layer的属性的时候,实际上使用的是其中的对象.</p>
+
+<p>显示树(presentation tree ):永远都不要更改此树中的对象,一般是用于读取当前动画的值,可能用于创建一个新的动画.</p>
+
+<p>渲染树(render tree):在此树上执行真正的动画,不能够直接的操作该树.</p>
+
+<p>通过访问模型树的对象的presentationLayer属性,能够得到其在presentation tree相对应的对象,你可以通过这个对象获取动画过程中的值.</p>
+
+<p>你只能在动画的执行过程中访问显示树的对象,当动画在进行中的时候,其和模型树的显示是不一样的,模型树总是呈现出动画的最终状态.</p>
+
+<p>view仅仅是layer的细粒度包装,所以很多方法都可以直接设置到layer上,但是这样会产生不可以预料的结果.除了你view相对应的layer,你也可以创建独立的layer对象,并将其嵌入到你app中对象中.</p>
+
+<p>你可以加载一次图片,然后让多个独立的layer对象以其关联,每一个图层都引用这张源图片,来替代创建这个图片的副本,从而节约内存空间.</p>
+
+<h1>2.构建图层对象</h1>
+
+<p>一般情况下,我们默认创建CALayer类的实例,只当你需要提升性能或者支持一种特殊类型的内容才需要创建其他类型的layer对象.我们可以通过重写view的layerClass方法,返回不同类型的layer对象,达到使用其他layer对象的目的,默认是CALayer对象,大部分情况下你不会改变.</p>
+
+<pre><code>+ (Class) layerClass {
+    return [CAEAGLLayer class];
+}
+</code></pre>
+
+<p>不同的layer类提供了不同的试用场合:</p>
+
+<p>CAEmitterLayer:Used to implement a Core Animation–based particle emitter system. The emitter layer object controls the generation of the particles and their origin.</p>
+
+<p>CAGradientLayer:Used to draw a color gradient that fills the shape of the layer (within the bounds of any rounded corners).</p>
+
+<p>CAEAGLLayer/CAOpenGLLayer:Used to set up the backing store and context needed to draw using OpenGL ES (iOS) or OpenGL (OS X).</p>
+
+<p>CAReplicatorLayer:Used when you want to make copies of one or more sublayers automatically. The replicator makes the copies for you and uses the properties you specify to alter the appearance or attributes of the copies.</p>
+
+<p>CAScrollLayer:Used to manage a large scrollable area composed of multiple sublayers.</p>
+
+<p>CAShapeLayer:Used to draw a cubic Bezier spline. Shape layers are advantageous for drawing path-based shapes because they always result in a crisp path, as opposed to a path you draw into a layer’s backing store, which would not look as good when scaled. However, the crisp results do involve rendering the shape on the main thread and caching the results.</p>
+
+<p>CATextLayer:Used to render a plain or attributed string of text.</p>
+
+<p>CATiledLayer:Used to manage a large image that can be divided into smaller tiles and rendered individually with support for zooming in and out of the content.</p>
+
+<p>CATransformLayer:Used to render a true 3D layer hierarchy, rather than the flattened layer hierarchy implemented by other layer classes.</p>
+
+<p>我们一般通过三种方式提供layer的内容(位图):
+1.直接指定一个image对象到layer对象的contents属性.(这是最好的办法,一般很少改变)
+2.指定代理对象绘制layer的内容
+3.定义了layer的子类,并且重写相关的绘制方法,自己提供内容</p>
+
+<p>仅仅当你自己创建一个layer对象的时候,你才要但是为其提供内容.如果你使用的是layer-backed类型的view,你需不要但是layer的内容.当你使用一张图片做为layer的内容的时候,你可以将多个需要这张图片的layer都指向同一张图片,通过这种方式,你可以节约你app的内存空间.注意这里的图片必须是CGImageRef类型的.需要注意的是同一张图片在普通屏幕和视网膜屏幕,是不会自动设置,在视网膜屏幕下需要设置图片的contentsScale属性.一般图片设置为1,同时也是默认值,视网膜屏幕的图片需要设置该属性为2.</p>
+
+<p>如果你layer的内容需要动态的改变,你可以使用delegate提供和更新你需要的内容,如果你的代理实现了displayLayer:方法,这个方法需要创建一个位图和指定layer的contents属性.如果你的代理实现了drawLayer:inContext:方法,CA创建了位图,并且创建了graphics context 用于绘制位图, 然后需要调用你的代理方法去填充位图,你的代理方法必须要做的就是在提供的graphics context中进行绘制.</p>
+
+<p>你的代理必须实现displayLayer: 或者 drawLayer:inContext:,如果同时实现了那么只调用displayLayer:方法.下面是在不同的情况下加载不同图片的代码片段:</p>
+
+<pre><code>- (void)displayLayer:(CALayer *)theLayer {
+    // Check the value of some state property
+    if (self.displayYesImage) {
+        // Display the Yes image
+        theLayer.contents = [someHelperObject loadStateYesImage];
+    }
+    else {
+        // Display the No image
+        theLayer.contents = [someHelperObject loadStateNoImage];
+    } }
+</code></pre>
+
+<p>如果没有事先准备好的图片,那么可以调用drawLayer:inContext:绘制内容</p>
+
+<pre><code>- (void)drawLayer:(CALayer *)theLayer inContext:(CGContextRef)theContext {
+    CGMutablePathRef thePath = CGPathCreateMutable();
+         CGPathMoveToPoint(thePath,NULL,15.0f,15.f);
+         CGPathAddCurveToPoint(thePath,
+                               NULL,
+                               15.f,250.0f,
+                               295.0f,250.0f,
+                               295.0f,15.0f);
+         CGContextBeginPath(theContext);
+         CGContextAddPath(theContext, thePath);
+         CGContextSetLineWidth(theContext, 5);
+         CGContextStrokePath(theContext);
+         // Release the path
+         CFRelease(thePath);
+     }
+</code></pre>
+
+<p>对于一个layer-backed的view来说,他会自动设置他的代理,并且实现他的代理方法,而我们需要做的是紧紧实现自己view的drawRect:方法.</p>
+
+<p>如果你需要实现一个自定义的layer,你可以重写绘制方法,你可以使用下面两种方法中的一种来为你的layer提供内容:
+1)重写display方法,然后直接的设置contents属性
+2)重写drawInContext:方法,然后使用其提供的graphics context来进行绘制.</p>
+
+<p>display方法是主要的方式用于更新你layer的内容,所以在这个方法中放入你完整的控制处理,重写这个方法同时意味着,你有责任创建CGImageRef类型的对象,并且只配给content属性,如果你只是想绘制内容或者是希望你的layer管理绘制的操作,你可以重写drawInContext:方法.</p>
+
+<p>(注:Tweaking指的是小的更改来提高整个系统.)</p>
+
+<p>当你为contents属性指定一张图片的时候,contentsGravity属性定义了图片是如何适配当前bounds的.默认情况下,如果图片或大,或小,layer对象将会拉伸图片以适应当前的bounds.</p>
+
+<p>你指定到contentsGravity属性分为以下两种类型的值:
+1)position_based gravity类型,并不拉伸你的图片,只是将你的图片防止在九宫格的某个位置.
+2)scaling-based gravity类型, 有可能拉伸图片, 可以令图片适应bounds, 也可以令bounds适应图片.</p>
+
+<p>layer还拥有自己的背景和边框,其主要分三层,底层是背景层,中间层是内容层,最上层是边框层.如果你需要将layer的背景颜色设置为一个非透明的颜色,可以设置opaque属性为YES,可以提升性能.如果你拥有一个圆角的话,记得不要设置layer为不透明的(opaque)属性.layer支持设置角落半径,因为其包含一个透明的遮罩,所以角落半径不能影响layer的contents属性的image,除非你设置了masksToBounds属性为YES,但是layer的背景颜色和border却可以根据角度半径而改变.</p>
+
+<p>Layers还支持内置的阴影,他包含了多个属性来控制阴影,你可以控制阴影的颜色,相对的位置,不透明度和形状.需要设置显示阴影和阴影的位移,而且其是在layer的坐标系统中,并且OS X和 iOS还不同,需要注意区分.当你设置了masksToBounds属性,并且需要显示背影,背影会被裁剪,当你设置了任何透明的属性,可能会增加奇怪的效果,此时的解决方案是用两个layer代替一个,用一个layer1正常显示,用来拥有同等尺寸的layer的阴影,专门显示layer1的阴影.</p>
+
+<p>CAAnimation和CALarer拓展了KVC,你可以添加数据到一个layer,并且关联一个由你定义的key,你甚至可以为你定制的属性关联action,当你更改这个属性的时候,一个事先定义的动画被执行</p>
+
+<h1>3.使图层的内容产生动画</h1>
+
+<p>隐式的动画使用默认的时间和动画属性去执行一个动画.
+显式的动画需要你明确的使用动画对象去配置动画属性.
+所以隐式的动画是简单的方式实现动画,并不需要编写很多代码.</p>
+
+<p>触发隐式动画的唯一步骤就是更新你layer对象的能够产生动画的属性.如下所示:</p>
+
+<pre><code>theLayer.opacity = 0.0;
+</code></pre>
+
+<p>你可以使用显式的动画创建同样的效果,例如:</p>
+
+<pre><code>CABasicAnimation* fadeAnim = [CABasicAnimation animationWithKeyPath:@"opacity"];
+fadeAnim.fromValue = [NSNumber numberWithFloat:1.0];
+fadeAnim.toValue = [NSNumber numberWithFloat:0.0];
+fadeAnim.duration = 1.0;
+[theLayer addAnimation:fadeAnim forKey:@"opacity"];
+// Change the actual data value in the layer to the final value.
+// 更改这个动画属性会再次触发隐式的动画,文章的后面会讲解如何更改隐式的动画
+theLayer.opacity = 0.0;
+</code></pre>
+
+<p>使用显式的动画的时候,需要指定动画的初始值,如果没有指定的话,那么当前值就被当作是初始值,如果你已经更新layer的属性为最终值,可能造成你意想不到的结果.与隐式的动画不同的是,显示动画并不会更改layer的属性值,而仅仅是进行动画,你需要手动的更新你动画的属性值.
+显式动画和隐式动画必须在当前的运行循环结束后执行.你可以同一时刻执行两种动画,例如位移和更改透明度同时执行,并且你还可以让一个动画在特定的时间执行.</p>
+
+<p>使用Keyframe Animation更改layer的属性 ,可以设定一组目标值 ,并且这些值可以是线性或者非线性的.</p>
+
+<p>例如下面的例子演示了,为layer对象的每一帧动画指定的postion.完整的代码例子,请参阅文章末尾的项目源码.</p>
+
+<pre><code>// create a CGPath that implements two arcs (a bounce)
+ CGMutablePathRef thePath = CGPathCreateMutable();
+ CGPathMoveToPoint(thePath,NULL,74.0,74.0);
+ CGPathAddCurveToPoint(thePath,NULL,74.0,500.0,
+                                    320.0,500.0,
+                                    320.0,74.0);
+ CGPathAddCurveToPoint(thePath,NULL,320.0,500.0,
+                                    566.0,500.0,
+                                    566.0,74.0);
+ CAKeyframeAnimation * theAnimation;
+ // Create the animation object, specifying the position property as the key path.
+ theAnimation=[CAKeyframeAnimation animationWithKeyPath:@"position"];
+ theAnimation.path=thePath;
+ theAnimation.duration=5.0;
+ // Add the animation to the layer.
+ [theLayer addAnimation:theAnimation forKey:@"position"];
+</code></pre>
+
+<p>往往关键帧的值是一组对象,你需要将基本类型包装为对象类型,需要遵循以下的规则:</p>
+
+<pre><code>CGRect-&gt;NSValue
+CATransform3D-&gt;NSValue
+在borderColor属性中:CGColorRef-&gt;id
+CGFloat-&gt;NSNumber
+在contents属性中:CGImageRef
+</code></pre>
+
+<p>于此同时你还需要指定关键帧的时间,你可以形象的理解为动画片的原理,是由一张一张图片构建而成,keyTimes的值是一个数组,其中的值都是小于等于1的浮点型,这个数组必须以0.0开始, 例如其中有4帧的动画,keyTimes数组中的元素为:应该是NSNumber类型
+[0.0,0.25,0.5,0.75,1.0];其中相邻的两个时间点的元素是该珍动画的执行时间,一般以0.0开始1.0结束.</p>
+
+<p>有时你还需要设置calculationMode属性来使用不同的动画计算法则:</p>
+
+<pre><code>1)线性和立体:设置为kCAAnimationLinear和CAAnimationCubic
+
+2)同步的动画设置为:始终如一的速度不受keyTime和timingFuncitons属性的影响
+kCAAnimationPaced
+kCAAnimationCublicPaced
+
+3)分离的动画设置为:
+kCAAnimationDiscrete,这时候按照keyImes属性指定的时间,但是忽略timingFunctions属性.
+
+4)keyTimes属性指定了没一帧动画需要的时间,只有当calculationMode设置为kCAAnimationLinear, kCAAnimationDiscrete, 或者 kCAAnimationCubic
+才会起作用.
+
+5)timingFunction属性制定了时间曲线,为每个关键帧的片段指定时间.
+
+6)如果你想自己指定时间,需要使用kCAAnimationLinear或者kCAAnimationCubic模式,并在keyTimes和timingFunctions属性中指定.如果你没有指定timing funcitons,那么整个动画是线性的.
+</code></pre>
+
+<p>停止一个正在运行的动画:</p>
+
+<pre><code>1)通过调用removeAnimationForKey:方法,这个key就是你addAnimation:forKey:指定的key.
+2)移除所有的动画:removeAllAnimations
+</code></pre>
+
+<p>如果动画在显示的时候突然被停止,CA会使用当前值重绘layer,但是一般当前值是动画的最终值,所以动画可能会产生突然的跳转,你可以通过presentation tree获取动画被打断时候值 ,然后设置到layer tree,就会避免这种情况.</p>
+
+<p>当你需要多个动画一起作用的时候,你需要使用CAAnimationGroup对象,下面的例子演示了同时执行同等长度的两个动画:</p>
+
+<pre><code>  // Animation 1
+  CAKeyframeAnimation* widthAnim = [CAKeyframeAnimation animationWithKeyPath:@"borderWidth"];
+  NSArray* widthValues = [NSArray arrayWithObjects:@1.0, @10.0, @5.0, @30.0, @0.5,
+  @15.0, @2.0, @50.0, @0.0, nil];
+  widthAnim.values = widthValues;
+  widthAnim.calculationMode = kCAAnimationPaced;
+  // Animation 2
+  CAKeyframeAnimation* colorAnim = [CAKeyframeAnimation
+  animationWithKeyPath:@"borderColor"];
+  NSArray* colorValues = [NSArray arrayWithObjects:(id)[UIColor greenColor].CGColor, (id)[UIColor redColor].CGColor, (id)[UIColor blueColor].CGColor, nil];
+  colorAnim.values = colorValues;
+  colorAnim.calculationMode = kCAAnimationPaced;
+  // Animation group
+  CAAnimationGroup* group = [CAAnimationGroup animation];
+  group.animations = [NSArray arrayWithObjects:colorAnim, widthAnim, nil];
+  group.duration = 5.0;
+  [myLayer addAnimation:group forKey:@"BorderChanges"];
+</code></pre>
+
+<p>这里有一个更高级的方式去让一组动画一起工作,这就是使用transaction对象,使用transaction对象能够提供更多的灵活性,可以提供嵌套的动画,并且为每个不同的动画指定不同的参数.</p>
+
+<p>有的时候你需要检测动画的结束:</p>
+
+<pre><code>1&gt;当你使用transaction对象的时候,设置setCompletionBlock:方法,当所有事务中所有动画执行完成后会调用.
+2&gt;设置CAAnimation的代理对象,并且实现其代理方法监测.
+</code></pre>
+
+<p>但是当你想要在一个动画A结束后开始动画B,你不要使用动画的通知(block或者delefate),而是使用beginTime属性来取代.</p>
+
+<p>如果一个layer属于layer-backed view的,那么被推荐的做法是使用在UIKit中定义的view_based 动画接口,你也可以使用CA接口,但是按照下面的方法来设置动画.
+当你为一个view-based设置动画的时候,需要在view的block中设置动画,而block外边的动画设置会被忽略的.下面的例子中制定了两个动画:</p>
+
+<pre><code>1)隐式的动画按照默认的时间执行
+2)CABaseAnimation按照指定的时间执行
+3)block外边的时间设置被忽略.
+</code></pre>
+
+<p>示例代码如下所示:</p>
+
+<pre><code>[UIView animateWithDuration:1.0 animations:^{
+   // Change the opacity implicitly.
+   myView.layer.opacity = 0.0;
+// Change the position explicitly.
+CABasicAnimation* theAnim = [CABasicAnimation animationWithKeyPath:@"position"];
+   theAnim.fromValue = [NSValue valueWithCGPoint:myView.layer.position];
+   theAnim.toValue = [NSValue valueWithCGPoint:myNewPosition];
+   theAnim.duration = 3.0;
+   [myView.layer addAnimation:theAnim forKey:@"AnimateFrame"];
+}];
+</code></pre>
+
+<h1>4.建立图层的层级结构</h1>
+
+<p>大多数情况下,最好的方法使用layer是控制其对应的view对象,当你使用layer能够提供更好的性能或者实现一个使用view难以实现的功能的时候,你需要构建view的层级结构.</p>
+
+<p>layer对象拥有一系列的方法来更改来进行layer的添加,插入和移出操作,你只能将其用到你自己创建的layer上,对于layer-backed view,你并不能使用这些方法来更改layer的顺序,但是其能够扮演你layer父亲的角色.</p>
+
+<p>你可以设置sublayer的位置和大小,通过bound属性和positon属性,用frame属性也是可以的,其默认值都是0.layer的宽度和高度都最好设置为整形.speed属性默认值是1,会影响layer的动画速度,如果设置为2,那么会运行两次,每次是原来时间的一半,如果sublayer也设置了这个属性为2,那么subview就会运行4次,他们之间是一个乘法关系.大多数layer的更改是可以预料到的,例如你旋转一个layer,你所有的子layer都会被旋转,你更改一个layer的位置,所有的子layer都会变化.</p>
+
+<p>layer级别的显示只有当你使用单个layer构造的layer层级结构才有有作用,如果使用的是view_backed layer通过改变view来改变layer.</p>
+
+<p>在iOS中你可以手动的处理布局,通过实现superlayer的代理对象的layoutSublayersOfLayer:方法.如果你实现了一个自定义的layer的子类,你的子类可以重写layoutSublayers方法,而且使用这些方法去处理任何layer相关的任务,你仅仅需要重写这些方法在你需要完成你sublayer在你的自定义layer类内部的布局的时候.</p>
+
+<p>与view不同的是,superlayer不会自动裁剪你sublayer展示在superlayer矩形区域外的内容,你需要自己设置maksToBounds属性为YES.</p>
+
+<p>当你需要在两个layer坐标系统中转换坐标的时候,其提供了一组方法:</p>
+
+<pre><code>1.convertPoint:fromLayer:
+2.convertPoint:toLayer:
+3.convertRect:fromLayer:
+4.convertRect:toLayer:
+</code></pre>
+
+<p>与此同时还定义了同步时间的方法:
+convertTime:fromLayer: 和 convertTime:toLayer:
+每一个layer定义了属于自己的本地时间空间,并且在系统闲置的时候,同步动画的开始和结束时间.
+但是当你更改了一组layer的时候,这些layer的时间空间就被改变了.所以你可以使用上述的方法来确保两个layer的时间是同步的.</p>
+
+<h1>5.高级动画技巧</h1>
+
+<h2>CATransition</h2>
+
+<p>这里有很多的方法去控制你的基本属性动画和keyframe动画,当你的app需要执行多个动画在一起,从而使用更多的高级行为,同步
+那些动画的时间或者将他们连在一起.你可以使用其他类型的动画创建一个可视的过渡效果,或者其他的有趣的动画效果.</p>
+
+<p>在显示一个layer的时候,隐藏一个layer,这种情况下使用Transition Animations十分合适,
+CATransition可以创建一个动画的过度效果,下面是一个在两个view间产生过渡效果的例子:</p>
+
+<pre><code>  CATransition* transition = [CATransition animation];
+  transition.startProgress = 0;
+  transition.endProgress = 1.0;
+  transition.type = kCATransitionPush;
+  transition.subtype = kCATransitionFromRight;
+    transition.duration = 1.0;
+    // Add the transition animation to both layers
+    [myView1.layer addAnimation:transition forKey:@"transition"];
+    [myView2.layer addAnimation:transition forKey:@"transition"];
+    // Finally, change the visibility of the layers.
+    myView1.hidden = YES;
+    myView2.hidden = NO;
+</code></pre>
+
+<p>有时候你还需要明确的控制时间,这时候你需要通过CAMediaTiming协议来明确精确的控制时间.</p>
+
+<p>CAAnimation类包含了这个协议,所以你可以指定时间信息到你动画对象.</p>
+
+<p>CALayer也包含了这个协议,你可以配置
+时间相关的属性在隐式的动画里,通过这些隐式的动画对象,你可以包装这些动画,让其使用你设定的时间值.</p>
+
+<p>每一个layer都有自己的本地时间,但是由于图层间的时间十分相近,所以不容易被用户察觉,但是图层的本地时间能够被其父图层或者是自己的时间参数更改,例如更改layer的speed属性.</p>
+
+<p>为了确定给合适的layer准确的额时间,所以其提供了两个方法用于时间转换,你可以用于:
+1.将一个固定的时间值转换到一个layer上.
+2.将一个layer的本地时间用于另一个layer.</p>
+
+<p>CACurrentMediaTime()f方法可以获取计算机当前时钟的时间,下面的例子演示了具体的用法:</p>
+
+<pre><code>CFTimeInterval localLayerTime = [myLayer convertTime:CACurrentMediaTime()
+fromLayer:nil];
+</code></pre>
+
+<p>当在你的layer的本地时间内,你拥有了一个时间值,你就可以更改时间相关的属性了,例如beginTime属性.
+延迟一个动画的开始时间的时候,需要设置fillMode属性为kCAFillModeBackwards,不然有可能造成动画跳跃式的显示.
+autoreverses属性的设置导致动画执行在一个特定的时间里面并且返回动画的开始值.你可以配合repeatCount属性结束的时候在其结束值.
+timeOffset属性用于在执行某些动画在稍后的时间里.</p>
+
+<p>当你需要停止一个动画的时候,首先将该layer的speed设置为0,其次是设置layer的timeOffset的时间为当前的时间,
+当你需要恢复一个动画的时候,首先设置layer的speed为1.0,其次设置layer的timeOffset为0,最后获取该layer的当前时间 减去 其暂停的时间 就是layer的开始时间.</p>
+
+<p>具体的代码片段如下所示:</p>
+
+<pre><code>-(void)pauseLayer:(CALayer*)layer {
+     CFTimeInterval pausedTime = [layer convertTime:CACurrentMediaTime()
+  fromLayer:nil];
+     layer.speed = 0.0;
+     layer.timeOffset = pausedTime;
+  }
+  -(void)resumeLayer:(CALayer*)layer {
+     CFTimeInterval pausedTime = [layer timeOffset];
+     layer.speed = 1.0;
+          layer.timeOffset = 0.0;
+          layer.beginTime = 0.0;
+          CFTimeInterval timeSincePause = [layer convertTime:CACurrentMediaTime()
+       fromLayer:nil] - pausedTime;
+          layer.beginTime = timeSincePause;
+   }
+</code></pre>
+
+<p>关于当前的时间(pausedTIme)timeoffset和begintime:</p>
+
+<p>pausedTIme:是该动画的总共时间.例如100,这个数字是递减的
+timeoffset:动画的起点
+beginTime:是指其父级对象的时间线上的某个时间,默认是0,所以代码中设置的开始时间已经执行过的时间.</p>
+
+<h2>Transaction</h2>
+
+<p>明确的事务(Transaction)令你更改动画的参数
+任何你对一个layer的更改必须是事务的一部分,CATransaction类管理动画的分组和创建,以及他们在恰当的时间执行,你没有必要去创建自己的事务,CA为你的显式和隐式的动画默认创建了事务,当然你也可以显式的创建一个事务,来更加细粒度的控制动画.</p>
+
+<p>当你创建和管理事务的时候,需要使用CATransaction类的方法,一个新的事务在begin方法后开始,在commit方法后结束,在这张两个方法之中,你可以做一些你想对事务的更改:</p>
+
+<pre><code>[CATransaction begin];
+theLayer.zPosition=200.0;
+theLayer.opacity=0.0;
+[CATransaction commit];
+</code></pre>
+
+<p>创建一个显示的transaction动画的主要原因是,你需要改变duraction,timing function,或者其他的参数,当你transaction中的一组动画完成的时候,你还可以指定一个完成的block,另外你还可以更改动画所必须的参数,使用setValues:forKey:方法更改transaction字典中必要的key.</p>
+
+<pre><code>[CATransaction begin];
+[CATransaction setValue:[NSNumber numberWithFloat:10.0f]
+                  forKey:kCATransactionAnimationDuration];
+ // Perform the animations
+ [CATransaction commit];
+</code></pre>
+
+<p>当你想要为不同组的动画提供不同的参数的时候,你可以嵌套使用transaction来进行构建.在一个transaction中构建另一个transaction,你需要再次调用beigin方法,与其对应的是,你还需要调用commit方法.只要当你最外层的transaction动画被commit了,整个CA才开始执行动画.下面是一个嵌套事务的例子:</p>
+
+<pre><code>[CATransaction begin]; // Outer transaction
+// Change the animation duration to two seconds
+[CATransaction setValue:[NSNumber numberWithFloat:2.0f]
+                forKey:kCATransactionAnimationDuration];
+// Move the layer to a new position
+theLayer.position = CGPointMake(0.0,0.0);
+[CATransaction begin]; // Inner transaction
+// Change the animation duration to five seconds
+[CATransaction setValue:[NSNumber numberWithFloat:5.0f]
+                 forKey:kCATransactionAnimationDuration];
+// Change the zPosition and opacity
+theLayer.zPosition=200.0;
+theLayer.opacity=0.0;
+[CATransaction commit]; // Inner transaction
+[CATransaction commit]; // Outer transaction
+</code></pre>
+
+<h1>6.更改图层的默认行为</h1>
+
+<h2>CAAction</h2>
+
+<p>CA实现他的隐式动画通过使用action对象,一个action对象是遵循CAAction协议的,其定义了一些执行在layer上的相关的行为,所有的CAAnimation对象都实现了这个协议,当一个layer的属性更改的时候,这些对象能够被执行.
+动画属性是一类action,你几乎能够通过定义这些action实现你想要的任何效果:</p>
+
+<pre><code>1)定义你的action对象
+2)让他们和你app的layer对象相关联
+</code></pre>
+
+<p>自定义action对象需要遵循了CAAction协议,通过实现CAAction协议的runActionForKey:object:arguments:方法,在这个方法里增加可视的信息去执行,你可以在这方法里面添加动画对象到layer上或者是用这个方法去执行其他的任务.</p>
+
+<p>当你定义好了一个action对象,你必须指定是如何触发的,这个action为触发定义了一个key,你可以通过以下方式来触发:</p>
+
+<pre><code>1.layer的属性值发生了改变,他能够设置为layer的任何属性(并不仅仅和动画相关的),标记到这个action的key就是该属性的名字.
+2.这个layer变得可视或者被添加到layer层级中,这个action被定义的key需要命名为kCAOnOrderIn.
+3.一个layer将要从layer的层级结构中移出,key需要定义为KCAOnOrderOut.
+4.这个图层被包含在一个transition动画中,key需要被定义为kCATransiton.
+</code></pre>
+
+<p>Action对象必须要被添加到一个layer上,才可以产生作用,CA通过以下的顺序查找action对象:</p>
+
+<p>1.如果layer有代理并且实现了actionForLayer:forKey:方法,你必须实现了下述中的其中一条:</p>
+
+<pre><code>1)返回对应key的action对象
+2)返回nil,搜索会继续向下进行
+3)返回NSNull对象,搜索终止.
+</code></pre>
+
+<p>2.查找layer的actions字典.
+3.查找layer的style字典.
+4.调用defaultActionForKey:方法
+5.如果CA定义了该key的隐式的action,那么执行.</p>
+
+<p>当layer发现了action对象,就会调用这个对象的runActionForKey:object:arguments:方法,去执行这个action,如果这个action已经定义一个CAAnimation类存在key,你可以使用该方法默认的实现.</p>
+
+<p>如果你定义了你自己的自定义对象,并且遵循CAAction协议,你必须在那个方法中使用你的对象的实现.</p>
+
+<p>你的action对象在什么地方装配,取决于你想要怎样的更改你的layer:</p>
+
+<pre><code>1.如果这个action对象仅仅出现在特殊的情况下,或者layer已经在代理中使用过了,需要通过实现actionForLayer:forKey:方法.
+2.layer对象并不经常使用代理的话,添加这个action到你layer的actions字典中.
+3.如果是你自己定义的属性在layer对象中的话,把action添加到style字段中.
+4.如果这个action是layer的默认行为,那么子类化layer,并且重写defaultActionForKey:方法.
+</code></pre>
+
+<p>这里演示了如果监测contents属性的默认动画,并且更改其实现的方法.</p>
+
+<pre><code>- (id&lt;CAAction&gt;)actionForLayer:(CALayer *)theLayer
+                        forKey:(NSString *)theKey {
+    CATransition *theAnimation=nil;
+    if ([theKey isEqualToString:@"contents"]) {
+        theAnimation = [[CATransition alloc] init];
+        theAnimation.duration = 1.0;
+        theAnimation.timingFunction = [CAMediaTimingFunction
+functionWithName:kCAMediaTimingFunctionEaseIn];
+        theAnimation.type = kCATransitionPush;
+        theAnimation.subtype = kCATransitionFromRight;
+    }
+    return theAnimation;
+}
+</code></pre>
+
+<p>每当你改变一个layer的属性,CA通常创建了隐式的transaction对象去展示这些改变,你可通过设置kCATransactionDisableActions为true来使得默认动画失效,下面是让移除动画失效的方法:</p>
+
+<pre><code>  [CATransaction begin];
+  [CATransaction setValue:(id)kCFBooleanTrue
+                   forKey:kCATransactionDisableActions];
+  [aLayer removeFromSuperlayer];
+  [CATransaction commit];
+</code></pre>
+
+<h1>7.提升图层性能</h1>
+
+<p>CA是一种很棒的方式去提高帧率,但是并不能保证性能.尤其是在OS X中,下面是使你的动画更加有效率的几种方式:</p>
+
+<pre><code>1.当必要的时候使用透明的layer.
+2.为CAShapeLayer使用简单的路径.
+3.为显示相同的layer明确设置同一个的内容.
+4.总是为layer的size 属性设置为整形值.
+5.在需要的时候使用异步的图层
+6.设置shadowPath属性,当你为你的layer添加一个背影的时候.
+</code></pre>
+
+<h1>8.图层风格属性动画</h1>
+
+<h2>几何属性</h2>
+
+<p>几何属性定义了layer相对于其父layer是如何显示的,其主要包含下面的属性:</p>
+
+<pre><code>bounds
+position
+frame
+anchorPoint
+cornetRadius
+transform
+zPosition
+</code></pre>
+
+<h2>背景属性</h2>
+
+<pre><code>backgroundColor
+</code></pre>
+
+<h2>图层的内容</h2>
+
+<pre><code>contents
+contentsGravity
+masksToBounds
+</code></pre>
+
+<h2>子图层的内容</h2>
+
+<pre><code>sublayers
+masksToBounds
+sublayerTransform
+</code></pre>
+
+<h2>边框属性</h2>
+
+<pre><code>borderColor
+borderWidth
+</code></pre>
+
+<h2>阴影属性</h2>
+
+<pre><code>shadowColor
+shadowOffset
+shadowOpacity
+shadowRadius
+shadowPath
+</code></pre>
+
+<h2>透明度属性</h2>
+
+<pre><code>opacity
+</code></pre>
+
+<h2>遮罩属性</h2>
+
+<p>你能够通过该属性模糊你layer的一部分内容,或者所有的内容.</p>
+
+<pre><code>mask
+</code></pre>
+
+<h1>9.能够产生动画的属性</h1>
+
+<p>当你更改下列这些属性的时候,将会引起默认的动画:</p>
+
+<pre><code>anchorPoint
+backgroundColor
+backgroundFilters
+borderColor
+borderWidth
+bounds
+compositingFilter
+contents
+contentsRect
+cornerRadius
+doubleSided
+filters
+frame
+hidden
+mask
+masksToBounds
+opacity
+position
+shadowColor
+shadowOffset
+shadowOpacity
+shadowPath
+shadowRadius
+sublayers
+sublayerTransform
+transform
+zPosition
+</code></pre>
+
+<h1>10.KVC的拓展</h1>
+
+<p>CA拓展了NSKeyValueCoding协议,适用于CAAnimation和CALayer类,这样的拓展为一些key增加了默认的行为,
+支持了CGPoint,CGRect,CGSize和CATransform3D类型.</p>
+
+<p>对于CAAnimation和CALayer类,你可以为其任意的属性设置值,包含那些你自己定义的属性,例如:</p>
+
+<pre><code>[theLayer setValue:[NSNumber numberWithInteger:50] forKey:@"someKey"];
+</code></pre>
+
+<p>你可以通过下面的方法获取到你设置的值:</p>
+
+<pre><code>someKeyValue=[theLayer valueForKey:@"someKey"];
+</code></pre>
+
+<p>你还可以为那些没有设置默认值的key指定一个默认值,通过子类化当前类,并且重写defaultValueForKey:方法,无论是自己定义的属性还是自己添加的属性,你都是可以更改的.</p>
+
+<pre><code>+ (id)defaultValueForKey:(NSString *)key
+{
+    if ([key isEqualToString:@"masksToBounds"])
+         return [NSNumber numberWithBool:YES];
+    return [super defaultValueForKey:key];
+}
+</code></pre>
+
+<p>你可以把一些基本类型包装成对象类型,只需要遵循下面的约定:</p>
+
+<pre><code>CGPoint-&gt;NSValue
+CGSize-&gt;NSValue
+CGRect-&gt;NSValue
+CATransform3D-&gt;NSValue
+</code></pre>
+
+<p>对结构体数据访问的支持,在CAAnimation 和 CALayer中,你可以通过使用setValue:forKeyPath: 和 valueForKeyPath: 两个方法对其结构体属性的数据进行访问和设置,其包含以下这些属性:</p>
+
+<pre><code>rotation.x
+rotation.y
+rotation.z
+rotation
+scale.x
+scale.y
+scale.z
+scale
+translation.x
+translation.y
+translation.z
+translation
+</code></pre>
+
+<p>使用方法,如下面的例子所示:</p>
+
+<pre><code>[myLayer setValue:[NSNumber numberWithFloat:10.0]
+forKeyPath:@"transform.translation.x"];
+</code></pre>
 ]]></content>
   </entry>
   

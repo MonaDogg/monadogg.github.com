@@ -1,0 +1,508 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>GCD - MonaDogg</title>
+	<meta name="author" content="MonaDogg">
+
+	
+	<meta name="description" content="Grand Central Dispatch(GCD) 从iOS4开始实现 GCD是异步执行任务的技术之一,一般将应用程序中记述的线程管理用的代码在系统级的实现.开发者只需要定义想执行的任务并追加到适当的Dispatch Quere中,GCD就能生成必要的线程并计划执行任务. &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="MonaDogg" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="/javascripts/jquery-1.7.2.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">MonaDogg</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:MonaDogg.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:MonaDogg.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">GCD</h2>
+	<div class="entry-content"><h1>Grand Central Dispatch(GCD)</h1>
+
+<p>从iOS4开始实现</p>
+
+<p>GCD是异步执行任务的技术之一,一般将应用程序中记述的线程管理用的代码在系统级的实现.开发者只需要定义想执行的任务并追加到适当的Dispatch Quere中,GCD就能生成必要的线程并计划执行任务.由于线程管理是作为系统的一部分来实现的,因此可以统一管理,也可以执行任务,这样就比以前的线程更有效率.</p>
+
+<p>下面的代码是在后台线程中执行长时间处理,处理结束的时候,主线程处理该结果的源代码.</p>
+
+<pre><code>dispatch_async(queue,^{
+    &lt;!-- 长时间处理 --&gt;
+    &lt;!-- 例如画像识别 --&gt;
+    &lt;!-- 例如数据库访问 --&gt;
+
+    dispatch_async(dispatch_get_main_queue(),^{
+        &lt;!-- 只有在主线程中执行的任务 --&gt;
+        &lt;!-- 例如用户的界面刷新 --&gt;
+    });
+});
+</code></pre>
+
+<p>在GCD之前,cocoa框架提供了NSObject类的performSelectorInBackground:withObject和performSelectorOnMainThread实例方法等多线程技术,但是代码实现起来很累赘,例如:</p>
+
+<pre><code>-(void)launchThreadByNSObject_performSelectorInBackground_withObject{
+    &lt;!-- 执行后台处理 --&gt;
+    [self performSelectorInBackground:@selector(doWork) withObject:nil];
+}
+
+-(void)doWork{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+    &lt;!-- 长时间的处理,例如图像识别,数据库访问 --&gt;
+    &lt;!-- 长时间处理结束之后,主线程调用其处理结果 --&gt;
+    [self performSelectorOnMainThread:@selector(doneWork) withObject:nil waitUntilDone:NO];
+    [pool drain];
+}
+
+-(void)doneWork{
+    &lt;!-- 仅有主线程可以执行的处理,例如用户界面的刷新 --&gt;
+}
+</code></pre>
+
+<p>gcd是真正提供了多个cpu核并行执行多个线程的操作.
+&ldquo;主线程&#8221;用来描绘用户界面,处理触摸屏幕的事件等.</p>
+
+<h2>GCD的API</h2>
+
+<p>开发者要做的只是定义想执行的任务并追加到适当的Dispatch Queue中.</p>
+
+<p>1)Serial Dispatch Queue连续的执行,等待现在执行中处理结束.每次处理一个任务.</p>
+
+<p>2)Concurrent Dispatch Queue并发的执行,不等待现在执行中的处理结束,具体创建几个线程,由系统决定,执行顺序会根据处理内容和系统状态发生变化,它不同于执行
+顺序固定的Serial Dispatch Queue,在不想干煸执行处理顺序,或者不想并行执行多个处理时使用Serial Dispatch Queue.</p>
+
+<h2>dispatch_queue_create</h2>
+
+<p>下面是创建一个Serial Dispatch Queue的方法:</p>
+
+<pre><code>dispatch_queue_t mySerialDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",NULL);
+</code></pre>
+
+<p>虽然Serial Dispatch Queue每次只能执行一个任务,但是通过dispatch_queue_create创建多个Serial Dispatch Queue,依然可以并发执行.每个Serial Dispatch Queue都会创建一个线程,会消耗大量的内存,引起大量的上下文切换,降低系统的响应性能.</p>
+
+<p>避免多个线程更新相同资源导致数据竞争时,使用Serial Dispatch Queue.</p>
+
+<p>创建Serial Dispatch Queue的时候,第一个参数是Dispatch Queue的名字,第二个参数设置为NULL,例如下面所示:</p>
+
+<pre><code>dispatch_queue_t mySerialDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",NULL);
+</code></pre>
+
+<p>创建Concurrent Dispatch Queue的时候,第一个参数是Dispatch Queue的名字,第二个参数设置为DISPATCH_QUEUE_CONCURRENT,例如下面所示:</p>
+
+<pre><code>dispatch_queue_t myConcurrentDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",DISPATCH_QUEUE_CONCURRENT);
+</code></pre>
+
+<p>通过dispath_queue_create创建的Dispatch Queue必须在结束的时候,手动释放,相对应的也包含相应的retain方法:</p>
+
+<pre><code>dispatch_release(mySerialDispatchQueue);
+dispatch_retain(mySerialDispatchQueue);
+</code></pre>
+
+<p>例如:</p>
+
+<pre><code>dispatch_queue_t myConcurrentDispatchQueue = 
+    dispath_queue_create("com.example.gcd.MySerialDispatchQueue",DISPATCH_QUEUE_CONCURRENT);
+dispath_async(queue,^{NSLog(@"block on myConcurrentDispatchQueue");});
+dispatch_release(myConcurrentDispatchQueue);
+</code></pre>
+
+<p>在创建dispatch_queue后,立即调用dispatch_release并不会产生问题,是因为在block追加到Dispath Queue后,
+自动的调用了dispatch_retain方法,在block执行完成后,自动释放.</p>
+
+<p>凡是带有GCD的API中含有&#8221;create&#8221;的API生成对象的时候,在不需要的时候,需要立即调用dispatch_release方法进行释放.
+通过函数或者方法获取Dispath_queue以及其他命名含有create的api生成的对象时,有必要通过dispatch_retain方法持有,并在不需要的时候dispatch_release.</p>
+
+<p>???如何返回???</p>
+
+<h3>Main Dispatch Queue/Global Dispatch Queue</h3>
+
+<p>这两个是不需要创建的Dispath Queue.
+Main Dispatch Queue是在主线程中执行的Dispath Queue,因为主线程只有一个,所以是Serial Dispatch Queue,其和NSObject的performSelectorOnMainThread方法作用相同,</p>
+
+<p>Global Dispatch Queue是所有应用程序都能使用的Concurrent Dispatch Queue,没有必要自己生成Concurrent Dispatch Queue,只需要获取Global Dispatch Queue即可.</p>
+
+<p>另外其还具有四个优先级,分别为高优先级,默认优先级,低优先级和后台优先级.
+各种Dispath Queue获取方法如下:</p>
+
+<pre><code>&lt;!-- 获取MAIN DISPATCH QUEUE --&gt;
+dispatch_queue_t mainDispatchQueue = dispatch_get_main_queue();
+
+&lt;!-- 获取高优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
+
+&lt;!-- 获取默认优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+
+&lt;!-- 获取低优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,0);
+
+&lt;!-- 获取后台优先级GLOBAL DISPATCH QUEUE --&gt;
+dispatch_queue_t globalDispatchQueueHigh = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0);
+</code></pre>
+
+<p>对MAIN DISPATCH QUEUE和GLOBAL DISPATH QUEUE执行dispatch_release和dispatch_retain方法没有任何效果.</p>
+
+<p>下面的例子为在MAIN DISPATCH QUEUE和GLOBAL DISPATCH QUEUE同时作用的代码实例:</p>
+
+<pre><code>dispath_async(dispath_get_global_queue(DISPATH_QUEUE_PRIORITY_DEFAULT,0),^{
+    &lt;!-- 可以并行处理的任务 --&gt;
+  dispath_async(dispatch_get_main_queue(),^{
+    &lt;!-- 主线程中的任务 --&gt;
+  });
+});
+</code></pre>
+
+<h3>dispatch_set_target_queue</h3>
+
+<p>dispatch_queue_create函数生成的Dispatch Queue不管是Serial还是Concurrent的dispatch queue,都是与默认有限的Global Dispatch Queue相同执行优先级的线程.而变更Dispatch Queue要使用dispatch_set_target_queue函数,例如:</p>
+
+<pre><code>dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.alex.mySerialDispatchQueue",NULL);
+dispatch_queue_t globalDispatchQueueBackground = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0);
+dispatch_set_target_queue(mySerialDispatchQueue,globalDispatchQueueBackground);
+</code></pre>
+
+<p>将需要变更优先级的queue作为函数的第一个参数,指定需要相同优先级的queue作为第二个参数.</p>
+
+<h3>dispatch_after</h3>
+
+<p>想要在指定的时间之后执行,需要使用dispatch_after
+dispatch_after并不是在指定的时间后执行处理,而只是在指定的时间后追加到Dispatch Queue中.</p>
+
+<pre><code>dispatch_tme_t time = dispatch_time(DISPATCH_TIME_NOW,3ull * NSEC_PER_SEC);
+dispatch_after(time,dispatch_get_main_queue(),^{
+    NSLog(@"wait for 3 seconds");
+});
+</code></pre>
+
+<p>dispatch_time函数从第一个参数开始,到第二个参数指定的毫微秒单位时候后的时间.</p>
+
+<p>NSEC_PER_SEC:秒为单位的数值
+NESC_PRE_MSEC:毫秒为单位的数值</p>
+
+<p>可以很轻松的将NSDate时间转换为dispatch_time_t类型:</p>
+
+<pre><code>dispatch_time_t getDispatchTimeByDate(NSDate *date){
+    NSTimeInterval interval;
+    double second,subsecond;
+    struct timespec time;
+    dispatch_time_t milestone;
+
+    interval = [date timeIntervalSince1970];
+    subsecond = modf(interval,&amp;second);
+    time.tv_sec = second;
+    time.tv_nsec = subsecond * NSEC_PER_SEC;
+    milestone = dispatch_walltime(&amp;time,0);
+
+    return milestone;
+}
+</code></pre>
+
+<h3>Dispatch Group</h3>
+
+<p>当追加到多个Dispatch Queue中多个处理全部结束的时候想要执行结束处理,当你使用Serial Dispatch Queue的时候,只需要将任务追加到最后,但是当你使用
+Concurrent Dispatch Queue中的时候,源代码变的很复杂.这时候用Dispatch Group就十分合适.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_group_t group = dispatch_group_create();
+&lt;!-- 含有create创建的函数,需要在使用后使用release --&gt;
+
+dispatch_group_async(group,queue,^{NSLog(@"blk0";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk1";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk2";)});
+
+dispatch_group_notify(group,dispatch_get_main_queue(),^{NSLog(@"work is done!")});
+dispatch_relelase(group);
+</code></pre>
+
+<p>代码中的其他任务执行顺序不变,但是notify任务一定是最后执行的.</p>
+
+<p>dispatch_group_notify可以监测到所人吴的执行结束,一旦结束了,就把最后的处理添加到指定的Dispatch Queue中.
+dispatch_group_async函数和dispatch_async作用相同.</p>
+
+<p>diaptch_queue_wait函数近等待全部处理执行结束.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_group_t group = dispatch_group_create();
+&lt;!-- 含有create创建的函数,需要在使用后使用release --&gt;
+
+dispatch_group_async(group,queue,^{NSLog(@"blk0";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk1";)});
+dispatch_group_async(group,queue,^{NSLog(@"blk2";)});
+
+dispatch_group_wait(group,DISPATCH_TIME_FOREVER);
+dispatch_relelase(group);
+</code></pre>
+
+<p>dispatch_group_wait第二个参数是等待的时间,DISPATCH_TIME_FOREVER是永远等待的意思,只要group的处理没有结束,我们就会一直等待.这个方法返回的情况一般有两种,一种是组内的所有任务都结束了,另外一种是等待的时间到了,一般会在其后面进行group的release操作.</p>
+
+<h3>dispatch_barrier_async</h3>
+
+<p>写入处理确实不可以和其他的写入处理以及包含读取处理的其他某些处理并行执行,但是如果读取处理仅仅和读取处理并行执行,那么多个并行处理就不会发生问题.
+也就是说为了搞笑的进行访问,读取处理追加到Concurrent Dispatch Queue中,写入处理在没有读取处理没有执行的状态下,追加到Serial Dispach Queue.(在写入处理之前,读取处理不可执行).
+值得注意的是需要同dispatch_queue_create生成的Concurrent Dispatch Queue一起工作.
+这时候使用dispatch_barrier_async就十分合适:</p>
+
+<p>所有blk0_for_reading都是并行处理的,直到执行到blk_for_writing此时变成串行处理.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_queue_create("com.monadogg.queue",DISPATCH_QUEUE_CONCURRENT);
+
+dispatch_async(queue,blk0_for_reading);
+dispatch_async(queue,blk1_for_reading);
+dispatch_async(queue,blk2_for_reading);
+dispatch_barrier_async(queue,blk_for_writing);
+dispatch_async(queue,blk3_for_reading);
+dispatch_async(queue,blk4_for_reading);
+dispatch_async(queue,blk5_for_reading);
+
+dispatch_release(queue);
+</code></pre>
+
+<h3>dispatch_sync / dispatch_async</h3>
+
+<p>dispatch_async表示&#8221;非同步&#8221;的追加到指定的Dispatch Queue中,立刻返回,不做任何等待.
+dispatch_sync意味着同步的,也就是在追加的Block执行结束之前,dispatch_sync一直会在这里等待,一直等待block执行结束.</p>
+
+<h3>dispatch_apply</h3>
+
+<p>该函数按照指定的次数将指定的block追加到指定的Dsipatch Queue中,并等待全部处理执行结束.
+第一个参数是执行的次数,第二个参数是追加的queue,第三个参数是带有参数的block.</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_apply(10,queue,^(size_t index){
+    NSLog(@"%zu",index);
+});
+NSLog(@"done");
+</code></pre>
+
+<p>如果希望NSLog(@&ldquo;done&rdquo;)异步执行,就将这段代码放在dispatch_async中即可,形如:</p>
+
+<pre><code>dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
+dispatch_async(queue,{
+    dispatch_apply(10,queue,^(size_t index){
+        NSLog(@"%zu",index);
+    });
+    NSLog(@"done");
+});
+</code></pre>
+
+<h3>dispatch_suspend/dispatch_resume</h3>
+
+<p>挂起指定的dispatch queue:</p>
+
+<pre><code>dispatch_suspend(queue);
+</code></pre>
+
+<p>恢复指定的dispatch queue:</p>
+
+<pre><code>dispatch_resume(queue);
+</code></pre>
+
+<h3>Dispatch Semaphore</h3>
+
+<p>自从ios4.0/mac osx10.6引入了GCD之后，让我们在使用多线程的时候确实方便了很多，关于GCD的一些介绍和使用本站中已经转过一位资深开发者的几篇系列文章，非常彻底的介绍了GCD的用法和一些特性，有兴趣的朋友可以去翻阅。
+但当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用
+NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是
+dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。
+在GCD中有三个函数是semaphore的操作，分别是：</p>
+
+<pre><code>dispatch_semaphore_create          创建一个semaphore
+dispatch_semaphore_signal          发送一个信号
+dispatch_semaphore_wait              等待信号
+</code></pre>
+
+<p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制。</p>
+
+<pre><code>dispatch_group_t group = dispatch_group_create();
+dispatch_semaphore_t semaphore = dispatch_semaphore_create(10);
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+for (int i = 0; i &lt; 100; i++)
+{
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_group_async(group, queue, ^{
+        NSLog(@"%i",i);
+        sleep(2);
+        dispatch_semaphore_signal(semaphore);
+    });
+}
+dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+dispatch_release(group);
+dispatch_release(semaphore);
+</code></pre>
+
+<p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
+
+<h3>dispatch_once</h3>
+
+<p>dispatch_once函数是保证在应用程序执行中只执行一次指定处理的api,通过该函数即便是在多线程环境下执行,也可以保证百分之百安全.</p>
+
+<pre><code>static dispatch_one_t pred;
+dispatch_once(&amp;pred,^{
+    &lt;!-- 初始化 --&gt;
+});
+</code></pre>
+
+<p>其等价于:</p>
+
+<pre><code>static int initalized = NO;
+if(initalized == NO)
+{
+    &lt;!-- 初始化 --&gt;
+    initalized = YES;
+}
+</code></pre>
+
+<h3>Dispatch I/O</h3>
+
+<p>在读取大文件的时候,如果将文件分成合适的大小,并使用Global Dispatch Queue并列读取的话,应该比一般的读取速度快不少.
+通过DispatchI/O和Dispatch Data就可以这么做.</p>
+
+<p>注意网络请求中:线程是魔鬼,应该首先选用Cocoa提供的异步网络请求API.</p>
+
+<p>参考并感谢:
+老谭的博客:<a href="http://www.tanhao.me/">http://www.tanhao.me/</a></p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-10T16:41:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		
+		
+	</div>
+	
+</div>
+
+
+
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_xiaoyou"></a>
+	<a href="http://www.jiathis.com/share?uid=1865940" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=1354413288083326" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1865940"></script>
+<!-- UY END -->
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2014
+
+    MonaDogg
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>

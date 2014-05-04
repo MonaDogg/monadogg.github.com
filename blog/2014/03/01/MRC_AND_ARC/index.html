@@ -1,0 +1,460 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MRC与ARC - MonaDogg</title>
+	<meta name="author" content="MonaDogg">
+
+	
+	<meta name="description" content="MRC dealloc实际上是调用了释放了你对象的内存空间,你永远不应该显示的调用dealloc方法(虽然这样是可行的),这个dealloc方法将有运行时进行调用.如果你使用了arc,并且需要继承dealloc方法,需要在该方法的末尾调用父类的dealloc方法. copy retain &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="MonaDogg" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="/javascripts/jquery-1.7.2.min.js"></script>
+	
+</head>
+
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">MonaDogg</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/blog/categories/ios">iOS</a></li>
+	<li><a href="/blog/categories/os">OS</a></li>
+	<li><a href="/blog/categories/myLife">myLife</a></li>
+	<li><a href="/about_me">aboutMe</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:MonaDogg.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:MonaDogg.github.io">
+	</form>
+</nav>
+
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">MRC与ARC</h2>
+	<div class="entry-content"><h2>MRC</h2>
+
+<p>dealloc实际上是调用了释放了你对象的内存空间,你永远不应该显示的调用dealloc方法(虽然这样是可行的),这个dealloc方法将有运行时进行调用.如果你使用了arc,并且需要继承dealloc方法,需要在该方法的末尾调用父类的dealloc方法.</p>
+
+<p>copy</p>
+
+<p>retain</p>
+
+<p>等方法对内存的影响</p>
+
+<p>为什么字符串用copy?</p>
+
+<h3>1.1什么是自动引用计数</h3>
+
+<p>在LLVM编译器中设置ARC为有效的状态,就无需再次键入retain或者是release代码了.</p>
+
+<pre><code>1)使用xcode4.2以上的版本
+2)使用LLVM编译器3.0或以上的版本
+3)编译器中arc的设置为有效
+</code></pre>
+
+<h3>1.2内存管理和引用计数</h3>
+
+<p>办公室开灯和引用计数的故事</p>
+
+<p>开灯       &mdash;> 生成对象
+需要照明     &mdash;> 持有对象
+不需要照明 &mdash;>  释放对象
+关灯   &mdash;>  废弃对象</p>
+
+<h4>内存管理的思考方式</h4>
+
+<p>对象的操作和oc对应的方法:</p>
+
+<pre><code>生成并持有对象:alloc/new/copy/mutableCopy等等
+持有对象:retain
+释放对象:release
+废弃对象:dealloc
+</code></pre>
+
+<p>1)自己生成的对象,自己持有</p>
+
+<p>使用alloc,new,copy,mutableCopy方法生成的对象只有自己持有.按照某些约定命名的方法,也能声称自己持有的对象.</p>
+
+<p>copy方法利用基于NSCopying方法的约定,由各类实现copyWithZone:方法生成并持有对象的副本,生成不可变更的对象.
+mutableCopy方法利用基于NSMutableCopying方法的约定,由各类实现mutableCopyWithZone:方法生成并持有对象的副本,生成可变更的对象.
+另外使用下面名称命名的时候,也意味着自己生成并持有对象:
+allocMyObject;newThatObject;copyThis;mutableCopyYourObject;</p>
+
+<p>对于下面的方法,即便使用了alloc/new/copy/mutableCopy名称开头,也并不属于同一类方法,注意这里的驼峰明明:
+allocate;newwe;copying;mutableCopyed;</p>
+
+<p>2)非自己生成的对象,自己也能持有</p>
+
+<p>利用alloc/new/copy/mutableCopy方法以外的方法持有对象,例如使用NSMutableArray的array类方法赋值给变量obj的时候,obj并不持有该对象,调用retain方法就可以持有该对象.</p>
+
+<p>3)不再需要自己持有的对象时释放</p>
+
+<p>当一个对象不再需要的时候,就将其释放了,例如使用alloc/new/copy/mutableCopy/retain等方法持有的对象,一旦不再需要就需要调用release方法,将其释放.</p>
+
+<p>4)非自己持有的对象无法释放</p>
+
+<p>释放非自己持有的对象的时候,就会产生问题,例如为autorelease的对象调用release方法.</p>
+
+<h4>autorelease</h4>
+
+<p>c语言的作用域,若某些自动变量超过了其作用域,该自动变亮将要自动废弃.autorelease会像c语言的自动变亮那样对待对象实例.
+aotorelease的具体使用方法是:
+1)生成并持有NSAutoreleasePool对象
+2)调用已分配对象的aotorelease方法
+3)废弃NSAutoreleasePool对象</p>
+
+<pre><code>NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
+id obj = [[NSObject alloc]init];
+[obj autorelease];
+[pool drain];
+</code></pre>
+
+<p>NSRunLoop每次循环过程中NSAutoreleasePool对象被生成或者废弃.</p>
+
+<p>1)放入autoreleasepool并不会增加引用计数,如果一个对象添加到autorelease后,就不能再调用这个对象release的方法了.也就是说autorelease方法相当于一个延后操作的release方法,其并不会增加引用计数.
+2)使用autorelease方法,可以使的对象存在,但是并不持有该对象
+3)autorelease提供在对象超出指定的生存范围的时候能够自动并正确的释放
+4)添加到集合以后会增加引用计数,例如array,当集合元素销毁以后,该元素的引用计数会自己销毁.
+5)当你放入到autorelease pool中后,该对象就不会被你持有了.</p>
+
+<h2>ARC</h2>
+
+<p>在LLVM中编译器中设置ARC为有效状态,就无需再次键入retain或者是release代码.</p>
+
+<h3>1.1ARC规则</h3>
+
+<p>*acr下并不关心引用计数</p>
+
+<p>设置ARC有效的编译方法如下所示:</p>
+
+<pre><code>1)使用clang(LLVM编译器)3.0或者以上版本
+2)指定编译器的属性为"-fobjc-arc"
+</code></pre>
+
+<p>没有必要在arc模式下调用dealloc方法,并且也不能调用[super dealloc]方法,但是如果你在对象销毁的时候,需要做一些额外的操作,例如注销通知中心的对象,你可以在这里编写额外的代码.</p>
+
+<p>循环引用容易发生内存泄漏,发生内存泄漏的原因是因为引用计数一直大于1.</p>
+
+<h4>所有权修饰符</h4>
+
+<p>1)<strong>strong
+</strong>strong是id类型和对象类型的默认所有权修饰符,所以下面两行代码是等价的:</p>
+
+<pre><code>id obj = [[NSObject alloc]init];
+
+id __strong obj = [[NSObject alloc]init];
+</code></pre>
+
+<p>__strong修饰符表示对对象的&#8221;强引用&#8221;,持有强引用的变量在超出作用域的时候被废弃,随着强饮用的失效,引用的对象会随之释放.所以下面的代码可以正常的执行:(自动帮你持有对象了,对象在没有强引用指向的时候废弃)</p>
+
+<pre><code>{
+id __strong obj = [NSMutableArray array];
+//因为__strong的作用,持有对象
+}
+超出作用域对象被自动释放
+
+{
+id __strong obj = [NSObject alloc]init];
+//因为__strong的作用,持有对象
+}
+超出作用域对象被自动释放
+</code></pre>
+
+<p>注意成员变量和形参是__strong类型,在超出作用域后能够正常的释放.</p>
+
+<p><strong>strong,</strong>weak,__autoreleasing可以保证这些变量的初始化都是nil.</p>
+
+<p>arc下容易产生引用循环,有如下类定义:</p>
+
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+
+@interface TestObject : NSObject
+
+@property(nonatomic,strong) TestObject *myObj;
+
+@end
+</code></pre>
+
+<p>情况1:</p>
+
+<pre><code>TestObject *test1 = [TestObject new];    //对象T1
+TestObject *test2 = [TestObject new];    //对象T2
+test1.myObj = test2;
+</code></pre>
+
+<p>情况2:</p>
+
+<pre><code>TestObject *test1 = [TestObject new];
+TestObject *test2 = [TestObject new];
+test1.myObj = test2;
+test2.myObj = test1;   
+</code></pre>
+
+<p>情况1:
+当函数超出作用域的时候,指向对象T1的强引用test1失效,导致T1对象的释放,
+随即test1.myObj也失效,导致指向对象T2的强引用-1,
+然后强饮用test2指针超出作用域后失效,导致对象T2释放,
+最终所有的对象均被释放</p>
+
+<p>情况2:
+当函数超出作用域的时候,指向对象T1的强引用test1失效,导致T1对象的强引用-1,目前为1,
+指向对象T2的强引用test2失效,导致T2对象强引用-1,目前为1,
+最终对象T1和T2,都因为引用计数大于1而不能释放内存.</p>
+
+<p>2)__weak</p>
+
+<p><strong>weak和</strong>stong指针正好相反,提供弱引用,弱引用并不能持有对象的实例.并且有如果弱引用指向的对象被废弃后,该弱引用将被自动设置为nil.
+通过判断<strong>weak修饰的变量是否为nil,则可以判断对象是否被释放,需要注意的是仅仅支持iOS5以上的应用程序,在iOS4以下的应用程序,可以使用</strong>unsafe__unretained修饰符来修饰.</p>
+
+<p>3)__unsafa_unretained</p>
+
+<p>是不安全的内存修饰符,其并不属于编译器内存管理的对象。与weak相同的地方是并不会持有对象，如果对象被释放了以后，并不会被设置为nil，从而可能访问了错误的内存。</p>
+
+<p>4)<strong>autoreleasing
+使用了@autoreleasepool块来代替，当有</strong>autoreleasing修饰符修饰变量的时候,就相当于MRC下修饰的变量调用了autorelease方法.但是显示的使用__autoreleasing十分罕见,例如下面:</p>
+
+<pre><code>@autoreleasepool{
+  //持有非自己生成的对象
+  id __strong obj = [NSMutableArray array];
+  //因为obj是强引用,所以持有对象
+  //因为该方法的类名array,所以将对象自动注册到autoreleasepool
+}
+//因为obj超出作用域,所以强引用失效
+//因为autoreleasepool块的结束,所以其中的所有对象被释放,因为没有对象的所有者都不存在,所以被废弃
+</code></pre>
+
+<p>在ARC下作为函数的返回值,会被自动的注册到自动释放池中:</p>
+
+<pre><code>+(id)array{
+  return [[NSMutableArray alloc]init];
+}
+//在ARC下作为函数的返回值,会被自动的注册到自动释放池中
+
+
+id __weak obj1 = obj0;
+id __autoreleasing tmp = obj1;    //本句是自动添加的
+NSLog(@"class is %@",[tmp class]);
+</code></pre>
+
+<h5>非显式的调用__autoreleasing</h5>
+
+<p>1)函数的构造类方法,返回的对象被注册到自动释放池,例如[NSArray array];
+2)在ARC下作为函数的返回值,会被自动的注册到自动释放池中
+3)在访问有<strong>weak变量修饰的变量的时候,默认会将该对象注册到自动释放池中,因为此时对象有可能已经被废弃,要保证该内存在@autoreleasepool结束之前能够被访问.
+4)id的指针 和 对象的指针都会被默认添加上</strong>autoreleasing修饰符.例如:NSError <em>* error;id</em> objPoint;</p>
+
+<pre><code>-(BOOL)performOperationWithError:(NSError **)error;
+&lt;!-- 等同于 --&gt;
+-(BOOL)performOperationWithError:(NSError * __autoreleaseing *)error;
+</code></pre>
+
+<h5>显式的调用__autoreleasing</h5>
+
+<p>1)显示调用的时候,必须要注意变量为局部变量,函数以及方法参数.不能作用于成员变量,全局变量等.
+2)在LLVM3.0以上,ARC无效的时候,@autoreleasing块也能够使用.</p>
+
+<h5>ARC规则</h5>
+
+<p>1)不能使用retain/release/retainCount/autorelease
+2)不能显式的调用dealloc</p>
+
+<pre><code>不能直接调用,但是能够在类里面做一些自己需要的事情,例如从通知中心中清除注册者.
+</code></pre>
+
+<p>3)遵循内存管理的命名</p>
+
+<pre><code>对于对象的生成和持有的方法,必须遵循下面的命名:alloc/new/copy/mutableCopy
+以上述名称开始的方法返回对象的时候,必须返回调用方应当持有的对象.
+使用init方法命名的对象更为严格,必须是实例方法,必须返回对象,返回的对象必须是id类型,或者该方法声明的类型,抑或是该类的超类或者子类型,该对象并不会
+注册到autoreleasepool上,基本上是对象alloc的方法进行初始化.
+</code></pre>
+
+<p>4)使用@autoreleasepool 代替 NSAutoreleasePool
+5)对象变量不能成为C语言结构体的成员</p>
+
+<pre><code>虽然可以加上__unsafe_unretained让编译器通过编译,但是有内存泄漏和程序崩溃的风险.
+</code></pre>
+
+<p>6)显式转换的id 和 void*</p>
+
+<p>在arc无效的时候,id和void*是可以直接转换的,并且不会产生问题,例如:</p>
+
+<pre><code>id object = [[NSObject alloc]init];
+void *object2 = object;     //id-&gt;void* 并不会产生问题
+
+id object3 = object2;       //void*-&gt;id 并不会产生问题
+[object3 release];
+</code></pre>
+
+<p>在arc有效中,可以直接通过添加__bridge来进行转换,但是这并不是安全的,形如:</p>
+
+<pre><code>id obj = [[NSObject alloc]init];
+void *p = (__bridge void *)obj;
+id o = (__bridge id)p;
+</code></pre>
+
+<p>其还有另外两种的转换方式:<strong>bridge_retained 和 </strong>bridge_transfer
+<strong>bridge_retained:使要转换赋值的变量也持有所赋值的对象.用于oc对象类型转换为c语言指针类型.其类似retain操作.
+</strong>bridge_transfer:被转换的变量所有持有对象在该变量被赋值给转换目标后随之释放.用于c语言类型转换为oc对象类型,类似release操作.</p>
+
+<p><strong>bridge：transfers a pointer between Objective-C and Core Foundation with no transfer of ownership.
+</strong>bridge_retained、CFBridgingRetain：casts an Objective-C pointer to a Core Foundation pointer and also transfers ownership to you.
+__bridge_transfer、CFBridgingRelease：moves a non-Objective-C pointer to Objective-C and also transfers ownership to ARC.</p>
+
+<p>为什么字符串必须是copy呢?
+答:It is still recommended to copy because you want to avoid something passing a mutable string and then changing it without you knowing. A copy guarantees that the string you have will not change.
+如果你使用retain来修饰一个字符串,如果将来其发生了更改,你得到的值也会被更改,而你却并不知道,如果使用copy的话,这个值就永远不会更改了.</p>
+
+<p>For attributes whose type is an immutable value class that conforms to the NSCopying protocol, you almost always should specify copy in your @property declaration. Specifying retain is something you almost never want in such a situation.</p>
+
+<p>Here&rsquo;s why you want to do that:</p>
+
+<pre><code>NSMutableString *someName = [NSMutableString stringWithString:@"Chris"];
+Person *p = [[[Person alloc] init] autorelease];
+p.name = someName;
+[someName setString:@"Debajit"];
+</code></pre>
+
+<p>The current value of the Person.name property will be different depending on whether the property is declared retain or copy — it will be @&ldquo;Debajit&rdquo; if the property is marked retain, but @&ldquo;Chris&rdquo; if the property is marked copy.</p>
+
+<p>Since in almost all cases you want to prevent mutating an object&rsquo;s attributes behind its back, you should mark the properties representing them copy. (And if you write the setter yourself instead of using @synthesize you should remember to actually use copy instead of retain in it.)</p>
+
+<h4>属性声明和所有权对应关系</h4>
+
+<p>assign &ndash;> <strong>unsafe_unretained
+copy &ndash;> </strong>strong(但是赋值的是被复制的对象),并不是简单的赋值,他的赋值是通过NSCopying接口的copyWithZone:方法赋值源所生成的对象.
+retain &ndash;> <strong>strong
+strong &ndash;> </strong>strong
+unsafe_unretained &ndash;> <strong>unsage_unretained
+weak &ndash;> </strong>weak</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-01T16:41:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2014</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/ios/'>iOS</a>
+
+
+</div>
+	
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		
+		
+	</div>
+	
+</div>
+
+
+
+     <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_weixin"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_xiaoyou"></a>
+	<a href="http://www.jiathis.com/share?uid=1865940" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=1354413288083326" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1865940"></script>
+<!-- UY END -->
+
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2014
+
+    MonaDogg
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+
+
+
+
+</body>
+</html>
