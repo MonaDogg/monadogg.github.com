@@ -4,7 +4,7 @@
   <title><![CDATA[MonaDogg]]></title>
   <link href="http://MonaDogg.github.io/atom.xml" rel="self"/>
   <link href="http://MonaDogg.github.io/"/>
-  <updated>2014-05-04T13:11:59+08:00</updated>
+  <updated>2014-05-04T21:56:08+08:00</updated>
   <id>http://MonaDogg.github.io/</id>
   <author>
     <name><![CDATA[MonaDogg]]></name>
@@ -12,6 +12,455 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[KVC与KVO]]></title>
+    <link href="http://MonaDogg.github.io/blog/2014/05/04/kvc-kvo/"/>
+    <updated>2014-05-04T21:54:00+08:00</updated>
+    <id>http://MonaDogg.github.io/blog/2014/05/04/kvc-kvo</id>
+    <content type="html"><![CDATA[<h1>KVC</h1>
+
+<p>全称是Key-value coding，翻译成键值编码。它提供了一种使用字符串而不是访问器方法去访问一个对象实例变量的机制。</p>
+
+<h2>1.Key和Key Path</h2>
+
+<p>KVC定义了一种按名称访问对象属性的机制，支持这种访问的主要方法是：</p>
+
+<pre><code>- (id)valueForKey:(NSString *)key;
+- (void)setValue:(id)value forKey:(NSString *)key;
+- (id)valueForKeyPath:(NSString *)keyPath;
+- (void)setValue:(id)value forKeyPath:(NSString *)keyPath;
+</code></pre>
+
+<p>前边两个方法用到的Key较容易理解，就是要访问的属性名称对应的字符串。
+后面两个方法用到的KeyPath是一个被点操作符隔开的用于访问对象的指定属性的字符串序列。比如KeyPath address.street将会访问消息接收对象所包含的address属性中包含的一个street属性。其实KeyPath说白了就是我们平时使用点操作访问某个对象的属性时所写的那个字符串。</p>
+
+<h2>2.点语法和KVC</h2>
+
+<p>对于没有实现setter和getter方法的变量,使用KVC也可以轻松访问,但是使用对象的点语法,就无法访问了.</p>
+
+<pre><code>&lt;!-- _sexFrined是私有变量,并不提供公开访问 --&gt;
+[self setValue:@"lily" forKeyPath:@"person._sexFrined"];
+NSString *sexFrined = [self valueForKeyPath:@"person._sexFrined"];
+NSLog(@"sexFrined name from keypath is %@",sexFrined);
+</code></pre>
+
+<h2>3.一对多关系（To-Many）中的集合访问器方法</h2>
+
+<p>当我们访问一对多关系的集合对象的时候,我们又两种方法来实现访问.</p>
+
+<h3>1)间接访问</h3>
+
+<p>先通过KVC方法取到集合属性，然后通过集合属性操作集合中的元素。</p>
+
+<h3>2)直接访问(不推荐使用)</h3>
+
+<p>苹果为我们提供了一些方法模板，我们可以以规定的格式实现这些方法来达到访问集合属性中元素的目的。
+有序集合对应方法如下：</p>
+
+<pre><code>-countOf&lt;Key&gt;
+//必须实现，对应于NSArray的基本方法count:
+-objectIn&lt;Key&gt;AtIndex:
+-&lt;key&gt;AtIndexes:
+//这两个必须实现一个，对应于 NSArray 的方法 objectAtIndex: 和 objectsAtIndexes:
+-get&lt;Key&gt;:range:
+//不是必须实现的，但实现后可以提高性能，其对应于 NSArray 方法 getObjects:range:
+
+-insertObject:in&lt;Key&gt;AtIndex:
+-insert&lt;Key&gt;:atIndexes:
+//两个必须实现一个，类似于 NSMutableArray 的方法 insertObject:atIndex: 和 insertObjects:atIndexes:
+-removeObjectFrom&lt;Key&gt;AtIndex:
+-remove&lt;Key&gt;AtIndexes:
+//两个必须实现一个，类似于 NSMutableArray 的方法 removeObjectAtIndex: 和 removeObjectsAtIndexes:
+-replaceObjectIn&lt;Key&gt;AtIndex:withObject:
+-replace&lt;Key&gt;AtIndexes:with&lt;Key&gt;:
+//可选的，如果在此类操作上有性能问题，就需要考虑实现之
+</code></pre>
+
+<p>无序集合对应方法如下：</p>
+
+<pre><code>-countOf&lt;Key&gt;
+//必须实现，对应于NSArray的基本方法count:
+-objectIn&lt;Key&gt;AtIndex:
+-&lt;key&gt;AtIndexes:
+//这两个必须实现一个，对应于 NSArray 的方法 objectAtIndex: 和 objectsAtIndexes:
+-get&lt;Key&gt;:range:
+//不是必须实现的，但实现后可以提高性能，其对应于 NSArray 方法 getObjects:range:
+
+-insertObject:in&lt;Key&gt;AtIndex:
+-insert&lt;Key&gt;:atIndexes:
+//两个必须实现一个，类似于 NSMutableArray 的方法 insertObject:atIndex: 和 insertObjects:atIndexes:
+-removeObjectFrom&lt;Key&gt;AtIndex:
+-remove&lt;Key&gt;AtIndexes:
+//两个必须实现一个，类似于 NSMutableArray 的方法 removeObjectAtIndex: 和 removeObjectsAtIndexes:
+-replaceObjectIn&lt;Key&gt;AtIndex:withObject:
+-replace&lt;Key&gt;AtIndexes:with&lt;Key&gt;:
+//这两个都是可选的，如果在此类操作上有性能问题，就需要考虑实现之
+</code></pre>
+
+<h2>4.键值验证（Key-Value Validation）</h2>
+
+<p>你可以直接调用验证方法，通过调用validateValue:forKey:error,并指定一个键。该方法的默认实现搜索接收类名字匹配validate<Key>Error:的验证方法，如果这个方法被找到，他将被调用并返回结果。如果没有找到，返回YES。</p>
+
+<p>KVC提供了验证Key对应的Value是否可用的方法：</p>
+
+<pre><code>- (BOOL)validateValue:(inout id *)ioValue forKey:(NSString *)inKey error:(out NSError **)outError;
+</code></pre>
+
+<p>该方法默认的实现是调用一个如下格式的方法：</p>
+
+<pre><code>- (BOOL)validate&lt;Key&gt;:error:
+</code></pre>
+
+<p>比如属性name对应的方法为：</p>
+
+<pre><code>-(BOOL)validateName:(id *)ioValue error:(NSError * __autoreleasing *)outError {
+    // Implementation specific code.
+    return ...;
+}
+</code></pre>
+
+<p>这样就给了我们一次纠错的机会。
+调用代码的示例是:</p>
+
+<pre><code>-(BOOL)validateAge:(id *)ioValue error:(NSError * __autoreleasing *)outError {
+    if (*ioValue == nil) {
+        // Trap this in setNilValueForKey.
+        // An alternative might be to create new NSNumber with value 0 here.            
+        return YES;
+    }
+    if ([*ioValue floatValue] &lt;= 0.0) { 
+        if (outError != NULL) {
+            NSString *errorString = NSLocalizedStringFromTable(
+                @"Age must be greater than zero", @"Person",
+                @"validation: zero age error");
+            NSDictionary *userInfoDict = @{ NSLocalizedDescriptionKey : errorString };
+            NSError *error = [[NSError alloc] initWithDomain:PERSON_ERROR_DOMAIN
+                code:PERSON_INVALID_AGE_CODE
+                userInfo:userInfoDict];
+            *outError = error;
+        }
+        return NO;
+    }
+    else {
+        return YES;
+    }
+}
+</code></pre>
+
+<p>需要指出的是，KVC是不会自动调用键值验证方法的，就是说我们需要手动验证。但是有些技术，比如CoreData会自动调用。</p>
+
+<h2>5.KVC对数值和结构体型属性的支持</h2>
+
+<p>KVC可以自动的将数值或结构体型的数据打包或解包成NSNumber或NSValue对象，以达到适配的目的。
+举个例子，Person类有个个NSInteger类型的age属性</p>
+
+<h3>1)修改值</h3>
+
+<p>我们通过KVC技术使用如下方式设置age属性的值：</p>
+
+<pre><code>[person setValue:[NSNumber numberWithInteger:5] forKey:@"age"];
+</code></pre>
+
+<p>我们赋给age的是一个NSNumber对象，KVC会自动的将NSNumber对象转换成NSInteger对象，然后再调用相应的访问器方法设置age的值。</p>
+
+<h3>2)获取值</h3>
+
+<p>同样，以如下方式获取age属性值：</p>
+
+<pre><code>[person valueForKey:@"age"];
+</code></pre>
+
+<p>这时，会以NSNumber的形式返回age的值。
+需要说明的是，什么时候返回的是NSNumber，什么时候返回的是NSValue？</p>
+
+<h3>3)使用NSNumber封装</h3>
+
+<p>可以使用NSNumber的数据类型有：</p>
+
+<pre><code>+ (NSNumber *)numberWithChar:(char)value;
++ (NSNumber *)numberWithUnsignedChar:(unsigned char)value;
++ (NSNumber *)numberWithShort:(short)value;
++ (NSNumber *)numberWithUnsignedShort:(unsigned short)value;
++ (NSNumber *)numberWithInt:(int)value;
++ (NSNumber *)numberWithUnsignedInt:(unsigned int)value;
++ (NSNumber *)numberWithLong:(long)value;
++ (NSNumber *)numberWithUnsignedLong:(unsigned long)value;
++ (NSNumber *)numberWithLongLong:(long long)value;
++ (NSNumber *)numberWithUnsignedLongLong:(unsigned long long)value;
++ (NSNumber *)numberWithFloat:(float)value;
++ (NSNumber *)numberWithDouble:(double)value;
++ (NSNumber *)numberWithBool:(BOOL)value;
++ (NSNumber *)numberWithInteger:(NSInteger)value NS_AVAILABLE(10_5, 2_0);
++ (NSNumber *)numberWithUnsignedInteger:(NSUInteger)value NS_AVAILABLE(10_5, 2_0);
+</code></pre>
+
+<p>总之就是一些常见的数值型数据。</p>
+
+<h3>4)使用NSValue封装</h3>
+
+<p>NSValue主要用于处理结构体型的数据，它本身提供了如下集中结构的支持：</p>
+
+<pre><code>+ (NSValue *)valueWithCGPoint:(CGPoint)point;
++ (NSValue *)valueWithCGSize:(CGSize)size;
++ (NSValue *)valueWithCGRect:(CGRect)rect;
++ (NSValue *)valueWithCGAffineTransform:(CGAffineTransform)transform;
++ (NSValue *)valueWithUIEdgeInsets:(UIEdgeInsets)insets;
++ (NSValue *)valueWithUIOffset:(UIOffset)insets NS_AVAILABLE_IOS(5_0);
+</code></pre>
+
+<p>任何结构体都是可以转换的.</p>
+
+<h2>6.集合运算符（Collection Operators）</h2>
+
+<p>集合运算符是一个特殊的Key Path，可以作为参数传递给valueForKeyPath：方法，注意只能是这个方法，如果传给了valueForKey:方法保证你程序崩溃。
+运算符是一个以@开头的特殊字符串，格式如下所示：</p>
+
+<p><a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#58;&#x6b;&#x65;&#x79;&#112;&#97;&#x74;&#104;&#84;&#111;&#x43;&#111;&#108;&#108;&#x65;&#99;&#x74;&#105;&#x6f;&#x6e;&#x2e;&#x40;&#99;&#111;&#108;&#x6c;&#101;&#99;&#116;&#x69;&#111;&#110;&#79;&#x70;&#x65;&#114;&#97;&#116;&#x6f;&#114;&#46;&#107;&#101;&#x79;&#112;&#x61;&#x74;&#x68;&#84;&#x6f;&#x50;&#x72;&#111;&#x70;&#x65;&#114;&#116;&#121;">&#107;&#101;&#x79;&#x70;&#97;&#x74;&#104;&#84;&#x6f;&#67;&#111;&#108;&#108;&#x65;&#99;&#116;&#105;&#x6f;&#110;&#x2e;&#64;&#99;&#111;&#x6c;&#x6c;&#101;&#99;&#116;&#105;&#111;&#110;&#x4f;&#112;&#x65;&#114;&#x61;&#116;&#111;&#x72;&#46;&#x6b;&#x65;&#121;&#x70;&#97;&#x74;&#104;&#84;&#111;&#80;&#114;&#111;&#112;&#101;&#114;&#x74;&#x79;</a>
+Left key path       Collection operator   Right key path</p>
+
+<h3>1)简单集合运算符</h3>
+
+<p>简单集合运算符共有@avg，@count，@max，@min，@sum5种</p>
+
+<p>例如有一个集合类的对象：transactions，它存储了一个个的Transaction类的实例，该类有三个属性：payee，amount，date。下面以此为例说明如何使用这些运算符：
+要获取amount的平均值可以这样：</p>
+
+<pre><code>NSNumber *transactionAverage = [transactions valueForKeyPath:@"@avg.amount"];
+</code></pre>
+
+<p>要获取transactions集合中元素数目可以这样：</p>
+
+<pre><code>NSNumber *numberOfTransactions = [transactions valueForKeyPath:@"@count"];
+</code></pre>
+
+<p>需要之处的是，@count是这些集合运算符中比较特殊的一个，因为它没有右路经，原因很容易理解。</p>
+
+<pre><code>Person *p1= [Person new];
+p1.age = 1;
+
+Person *p2= [Person new];
+p2.age = 8;
+
+Person *p3= [Person new];
+p3.age = 3;
+
+NSArray *personArr = @[p1,p2,p3];
+
+NSNumber *ageNumber =  [personArr valueForKeyPath:@"@avg.age"];
+NSLog(@"avg age value is %@",ageNumber);
+
+NSNumber *ageCount =  [personArr valueForKeyPath:@"@count"];
+NSLog(@"age count is %@",ageCount);
+
+NSNumber *maxAge = [personArr valueForKeyPath:@"@max.age"];
+NSLog(@"max age is %@",maxAge);
+</code></pre>
+
+<h3>2)对象运算符</h3>
+
+<p>比集合运算符稍微复杂，能以数组的方式返回指定的内容，一共有两种：</p>
+
+<pre><code>@distinctUnionOfObjects
+@unionOfObjects
+</code></pre>
+
+<p>它们的返回值都是NSArray，区别是前者返回的元素都是唯一的，是去重以后的结果；后者返回的元素是全集。
+用法如下：</p>
+
+<pre><code>NSArray *payees = [transactions valueForKeyPath:@"@distinctUnionOfObjects.payee"];
+NSArray *payees = [transactions valueForKeyPath:@"@unionOfObjects.payee"];
+</code></pre>
+
+<p>前者会将收款人的姓名去除重复的以后返回，后者直接返回所有收款人的姓名。</p>
+
+<h3>3)Array和Set操作符(集合中的集合操作)</h3>
+
+<p>这种情况更复杂了，说的是集合中包含集合的情况，我们执行了如下的一段代码：</p>
+
+<pre><code>// Create the array that contains additional arrays.
+self.arrayOfTransactionsArray = [NSMutableArray array];
+// Add the array of objects used in the above examples.
+[arrayOfTransactionsArray addObject:transactions];
+// Add a second array of objects; this array contains alternate values.
+[arrayOfTransactionsArrays addObject:moreTransactions];
+</code></pre>
+
+<p>得到了一个包含集合的集合：arrayOfTransactionsArray
+这时如果我们想操作arrayOfTransactionsArray中包含的集合中的元素时，可以使用如下三个运算符：</p>
+
+<pre><code>@distinctUnionOfArrays  //返回截然不同的对象数组(有重复的)
+@unionOfArrays          //返回指定属性对象的数组(有重复的)
+@distinctUnionOfSets    //返回指定属性截然不同对象的集合
+</code></pre>
+
+<p>前两个针对的集合是Arrays，后一个针对的集合是Sets。因为Sets中的元素本身就是唯一的，所以没有对应的@unionOfSets运算符。
+它们的用法举例如下：</p>
+
+<pre><code>NSArray *payees = [arrayOfTransactionsArrays valueForKeyPath:@"@unionOfArrays.payee"];
+</code></pre>
+
+<h2>7.实现原理</h2>
+
+<h3>1)KVC如何访问属性值</h3>
+
+<p>KVC再某种程度上提供了访问器的替代方案。不过访问器方法是一个很好的东西，以至于只要是有可能，KVC也尽量再访问器方法的帮助下工作。为了设置或者返回对象属性，KVC按顺序使用如下技术：</p>
+
+<p>1.get和set方法 2.<em>get和</em>set方法 3.访问实例变量 4.调用默认处理方法valueForUndefinedKey:和setValue:forUndefinedKey:方法.</p>
+
+<pre><code>1.检查是否存在-&lt;key&gt;、-is&lt;key&gt;（只针对布尔值有效）或者-get&lt;key&gt;的访问器方法，如果有可能，就是用这些方法返回值；
+检查是否存在名为-set&lt;key&gt;:的方法，并使用它做设置值。对于-get&lt;key&gt;和-set&lt;key&gt;:方法，将大写Key字符串的第一个字母，并与Cocoa的方法命名保持一致；
+2.如果上述方法不可用，则检查名为-_&lt;key&gt;、-_is&lt;key&gt;（只针对布尔值有效）、-_get&lt;key&gt;和-_set&lt;key&gt;:方法；
+3.如果没有找到访问器方法，可以尝试直接访问实例变量。实例变量可以是名为：&lt;key&gt;或_&lt;key&gt;;
+4如果仍为找到，则调用valueForUndefinedKey:和setValue:forUndefinedKey:方法。这些方法的默认实现都是抛出异常，我们可以根据需要重写它们。
+</code></pre>
+
+<h3>2)KVC/KVO实现原理</h3>
+
+<p>键值编码和键值观察是根据isa-swizzling技术来实现的，主要依据runtime的强大动态能力。</p>
+
+<p>当某个类的对象第一次被观察时，系统就会在运行期动态地创建该类的一个派生类，在这个派生类中重写基类中任何被观察属性的 setter 方法。
+派生类在被重写的 setter 方法实现真正的通知机制，就如前面手动实现键值观察那样。这么做是基于设置属性会调用 setter 方法，而通过重写就获得了 KVO 需要的通知机制。当然前提是要通过遵循 KVO 的属性设置方式来变更属性值，如果仅是直接修改属性对应的成员变量，是无法实现 KVO 的。</p>
+
+<p>同时派生类还重写了 class 方法以“欺骗”外部调用者它就是起初的那个类。然后系统将这个对象的 isa 指针指向这个新诞生的派生类，因此这个对象就成为该派生类的对象了，因而在该对象上对 setter 的调用就会调用重写的 setter，从而激活键值通知机制。此外，派生类还重写了 dealloc 方法来释放资源。</p>
+
+<p>isa指针指向的其实是类的元类，如果之前的类名为：Person，那么被runtime更改以后的类名会变成：NSKVONotifying_Person。
+新的NSKVONotifying_Person类会重写以下方法：
+增加了监听的属性对应的set方法，class，dealloc，_isKVOA。</p>
+
+<h4>1.class</h4>
+
+<p>重写class方法是为了我们调用它的时候返回跟重写继承类之前同样的内容。
+打印如下内容：</p>
+
+<pre><code>NSLog(@"self-&gt;isa:%@",self-&gt;isa);
+NSLog(@"self class:%@",[self class]);
+</code></pre>
+
+<p>在建立KVO监听前，打印结果为：</p>
+
+<pre><code>self-&gt;isa:Person
+self class:Person
+</code></pre>
+
+<p>在建立KVO监听之后，打印结果为：</p>
+
+<pre><code>self-&gt;isa:NSKVONotifying_Person
+self class:Person
+</code></pre>
+
+<p>这也是isa指针和class方法的一个区别，大家使用的时候注意。</p>
+
+<h4>2.重写set方法</h4>
+
+<p>新类会重写对应的set方法，是为了在set方法中增加另外两个方法的调用：</p>
+
+<pre><code>- (void)willChangeValueForKey:(NSString *)key
+- (void)didChangeValueForKey:(NSString *)key
+</code></pre>
+
+<p>其中，didChangeValueForKey:方法负责调用：</p>
+
+<pre><code>- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+</code></pre>
+
+<p>方法，这就是KVO实现的原理了！
+如果没有任何的访问器方法，-setValue:forKey方法会直接调用：</p>
+
+<pre><code>- (void)willChangeValueForKey:(NSString *)key
+- (void)didChangeValueForKey:(NSString *)key
+</code></pre>
+
+<p>如果在没有使用键值编码且没有使用适当命名的访问起方法的时候，我们只需要显示调用上述两个方法，同样可以使用KVO！</p>
+
+<p>总结一下，想使用KVO有三种方法：</p>
+
+<h5>1.使用了KVC</h5>
+
+<p>使用了KVC，如果有访问器方法，则运行时会在访问器方法中调用will/didChangeValueForKey:方法；
+没用访问器方法，运行时会在setValue:forKey方法中调用will/didChangeValueForKey:方法。</p>
+
+<h5>2.有访问器方法</h5>
+
+<p>运行时会重写访问器方法调用will/didChangeValueForKey:方法。
+因此，直接调用访问器方法改变属性值时，KVO也能监听到。</p>
+
+<h5>3.显示调用will/didChangeValueForKey:方法。</h5>
+
+<p>总之，想使用KVO，只要有will/didChangeValueForKey:方法就可以了。</p>
+
+<h4>3._isKVOA</h4>
+
+<p>这个私有方法估计是用来标示该类是一个 KVO 机制声称的类。</p>
+
+<h3>3)优点和缺点</h3>
+
+<h4>1.优点</h4>
+
+<p>①可以再很大程度上简化代码
+例子网上很多，这就不举了
+②能跟脚本语言很好的配合
+才疏学浅，没学过AppleScript等脚本语言，所以没能深刻体会到该优点。</p>
+
+<h4>2.缺点</h4>
+
+<p>KVC的缺点不明显，主要是KVO的，详情可以参考这篇文章：
+<a href="http://www.mikeash.com/pyblog/key-value-observing-done-right.html">http://www.mikeash.com/pyblog/key-value-observing-done-right.html</a>
+核心思想是说KVO的回调机制，不能传一个selector或者block作为回调，而必须重写-addObserver:forKeyPath:options:context:方法所引发的一系列问题。问了解决这个问题，作者还亲自实现了一个MAKVONotificationCenter类，代码见github:
+<a href="https://github.com/mikeash/MAKVONotificationCenter">https://github.com/mikeash/MAKVONotificationCenter</a>
+不过个人认为这只是苹果做的KVO不够完美，不能算是缺陷。</p>
+
+<h2>参考文献:</h2>
+
+<p>本文绝大部分内容均来自:<a href="http://blog.csdn.net/wzzvictory/article/details/9674431">http://blog.csdn.net/wzzvictory/article/details/9674431</a>
+仅仅是对该文章的整理,版权归作者所有.</p>
+
+<h2>KVO实例:</h2>
+
+<p>通过调用进行观察指定属性:</p>
+
+<pre><code>[object addObserver: observer forKeyPath: @"frame" options: 0 context: nil];
+</code></pre>
+
+<p>说明:</p>
+
+<pre><code>   object : 被观察对象
+　　observer: 观察对象
+　　forKeyPath里面带上property的name，如UIView的frame、center等等
+　　options: 有4个值，分别是：
+　　NSKeyValueObservingOptionNew 把更改之前的值提供给处理方法
+　　NSKeyValueObservingOptionOld 把更改之后的值提供给处理方法
+　　NSKeyValueObservingOptionInitial 把初始化的值提供给处理方法，一旦注册，立马就会调用一次。通常它会带有新值，而不会带有旧值。
+　　NSKeyValueObservingOptionPrior 分2次调用。在值改变之前和值改变之后。
+　　　　注：例子里的0就代表不带任何参数进去
+　　context: 可以带入一些参数，其实这个挺好用的，任何类型都可以，自己强转就好了。
+</code></pre>
+
+<p>观察对象的相关属性更改以后,下面的方法就会被调用:</p>
+
+<pre><code>- (void) observeValueForKeyPath:(NSString *)keyPath
+                       ofObject:(id)object 
+                         change:(NSDictionary *)change
+                        context:(void *)context
+</code></pre>
+
+<p>说明:</p>
+
+<pre><code>    keyPath: 对应forKeyPath
+　　  object:  被观察的对象
+　　  change:  对应options里的NSKeyValueObservingOptionNew、NSKeyValueObservingOptionOld等
+　　  context： 对应context
+</code></pre>
+
+<p>记住使用之后需要移除:</p>
+
+<pre><code>[target removeObserver:observer forKeyPath:@"age"];
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GCD]]></title>
